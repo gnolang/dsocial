@@ -11,6 +11,8 @@ PODS:
     - ExpoModulesCore
   - Expo (49.0.21):
     - ExpoModulesCore
+  - ExpoHead (0.0.20):
+    - ExpoModulesCore
   - ExpoKeepAwake (12.3.0):
     - ExpoModulesCore
   - ExpoModulesCore (1.5.12):
@@ -339,6 +341,12 @@ PODS:
     - glog
   - react-native-get-random-values (1.10.0):
     - React-Core
+  - react-native-safe-area-context (4.6.3):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - ReactCommon/turbomodule/core
   - React-NativeModulesApple (0.72.6):
     - hermes-engine
     - React-callinvoker
@@ -449,6 +457,11 @@ PODS:
     - React-jsi (= 0.72.6)
     - React-logger (= 0.72.6)
     - React-perflogger (= 0.72.6)
+  - RNGestureHandler (2.12.1):
+    - React-Core
+  - RNScreens (3.22.1):
+    - React-Core
+    - React-RCTImage
   - SocketRocket (0.6.1)
   - Yoga (1.14.0)
 
@@ -460,6 +473,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - Expo (from `../node_modules/expo`)
+  - ExpoHead (from `../node_modules/expo-head/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
@@ -485,6 +499,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -502,6 +517,8 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -525,6 +542,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-font/ios"
   Expo:
     :path: "../node_modules/expo"
+  ExpoHead:
+    :path: "../node_modules/expo-head/ios"
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoModulesCore:
@@ -572,6 +591,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -606,6 +627,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
+  RNScreens:
+    :path: "../node_modules/react-native-screens"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -617,6 +642,7 @@ SPEC CHECKSUMS:
   EXFileSystem: f8b838a880254de42a5a7da20ed5ce12e2697c1b
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   Expo: 61a8e1aa94311557c137c0a4dfd4fe78281cfbb4
+  ExpoHead: ac95331e2a45cb94f6aee8ba6b8cb3d0a2cc6817
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoModulesCore: c480fd4e3c7c8e81f0a6ba3a7c56869f25fe016d
   EXSplashScreen: c0e7f2d4a640f3b875808ed0b88575538daf6d82
@@ -642,6 +668,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 194e32c6aab382d88713ad3dd0025c5f5c4ee072
   React-logger: cebf22b6cf43434e471dc561e5911b40ac01d289
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
+  react-native-safe-area-context: 36cc67648134e89465663b8172336a19eeda493d
   React-NativeModulesApple: 02e35e9a51e10c6422f04f5e4076a7c02243fff2
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
   React-RCTActionSheet: 17ab132c748b4471012abbcdcf5befe860660485
@@ -659,6 +686,8 @@ SPEC CHECKSUMS:
   React-runtimescheduler: f23e337008403341177fc52ee4ca94e442c17ede
   React-utils: fa59c9a3375fb6f4aeb66714fd3f7f76b43a9f16
   ReactCommon: dd03c17275c200496f346af93a7b94c53f3093a4
+  RNGestureHandler: c0d04458598fcb26052494ae23dda8f8f5162b13
+  RNScreens: 50ffe2fa2342eabb2d0afbe19f7c1af286bc7fb3
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: b76f1acfda8212aa16b7e26bcce3983230c82603
 
