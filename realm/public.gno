@@ -59,3 +59,36 @@ func PostReply(userPostsAddr std.Address, threadid, postid PostID, body string) 
 		return reply.id
 	}
 }
+
+// Repost the message from the user posts of userPostsAddr where threadid is the ID returned by
+// the original call to PostMessage. This must be a top-level thread (not a reply).
+// Return the new post ID.
+// (This is similar to boards.CreateRepost.)
+func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) PostID {
+	std.AssertOriginCall()
+	caller := std.GetOrigCaller()
+	name := usernameOf(caller)
+	if name == "" {
+		panic("please register")
+	}
+	dstUserPosts := getUserPosts(caller)
+	if dstUserPosts == nil {
+		url := "/r/berty/social:" + name
+		dstUserPosts = newUserPosts(url, caller)
+		gUserPostsByAddress.Set(caller.String(), dstUserPosts)
+	}
+
+	if userPostsAddr == caller {
+		panic("Cannot repost a user's own message")
+	}
+	userPosts := getUserPosts(userPostsAddr)
+	if userPosts == nil {
+		panic("posts for userPostsAddr do not exist")
+	}
+	thread := userPosts.GetThread(threadid)
+	if thread == nil {
+		panic("threadid in user posts does not exist")
+	}
+	repost := thread.AddRepostTo(caller, comment, dstUserPosts)
+	return repost.id
+}
