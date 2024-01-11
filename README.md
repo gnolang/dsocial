@@ -3,7 +3,7 @@ Experimental: Social apps and dApps on Gno.land
 
 # Test from command line
 
-To install gnokey, gnofaucet etc., in the gno repo in gno/gno.land enter:
+To install gnokey in the gno repo in gno/gno.land enter:
 
     make install
 
@@ -15,14 +15,19 @@ To start gnodev, in this repo in gnosocial/realm enter:
 
     gnodev .
 
-To use gnofaucet, follow instructions at https://github.com/gnolang/gno/blob/master/gno.land/cmd/gnofaucet/README.md
-to locally set up the test1 account. To start the faucet, enter the following for example (with your home directory):
+To install the faucet, in another terminal enter:
 
-    gnofaucet serve -send 10000000000ugnot -chain-id tendermint_test -remote localhost:36657 test1 -home "/Users/jefft0/Library/Application Support/gno"
+    git clone github.com/gnolang/faucet
+    cd faucet
+    make build
+
+To start the faucet using the mnemonic of the test1 key, enter:
+
+    ./build/faucet serve -send-amount 10000000000ugnot -chain-id tendermint_test -remote http://localhost:36657 -mnemonic "source bonus chronic canvas draft south burst lottery vacant surface solve popular case indicate oppose farm nothing bullet exhibit title speed wink action roast"
 
 To send coins to your user account, in another terminal enter the following (with your account number):
 
-    curl --location --request POST 'http://localhost:5050' --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'toaddr=g1juz2yxmdsa6audkp6ep9vfv80c8p5u76e03vvh'
+    curl --location --request POST 'http://localhost:8545' --header 'Content-Type: application/json' --data '{"To": "g1juz2yxmdsa6audkp6ep9vfv80c8p5u76e03vvh"}'
 
 To register the user, enter the following (change jefft0 to your account username):
 
