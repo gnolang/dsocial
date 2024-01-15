@@ -2,7 +2,6 @@ package gnosocial
 
 import (
 	"std"
-	"time"
 
 	"gno.land/p/demo/avl"
 )
@@ -12,11 +11,10 @@ import (
 // A user's "userPosts" may contain other posts (from followed users, etc.) but this only
 // has the top-level posts from the user (not replies to other posts).
 type UserPosts struct {
-	url       string
-	userAddr  std.Address
-	threads   avl.Tree // Post.id -> *Post
-	postsCtr  uint64   // increments Post.id
-	createdAt time.Time
+	url      string
+	userAddr std.Address
+	threads  avl.Tree // Post.id -> *Post
+	postsCtr uint64   // increments Post.id
 }
 
 // Create a new userPosts for the user. Panic if there is already a userPosts for the user.
@@ -25,10 +23,9 @@ func newUserPosts(url string, userAddr std.Address) *UserPosts {
 		panic("userPosts already exists")
 	}
 	return &UserPosts{
-		url:       url,
-		userAddr:  userAddr,
-		threads:   avl.Tree{},
-		createdAt: time.Now(),
+		url:      url,
+		userAddr: userAddr,
+		threads:  avl.Tree{},
 	}
 }
 
@@ -44,7 +41,7 @@ func (userPosts *UserPosts) GetThread(pid PostID) *Post {
 func (userPosts *UserPosts) AddThread(creator std.Address, body string) *Post {
 	pid := userPosts.incGetPostID()
 	pidkey := postIDKey(pid)
-	thread := newPost(userPosts, pid, creator, body, pid, 0)
+	thread := newPost(userPosts, pid, creator, body, pid, 0, "")
 	userPosts.threads.Set(pidkey, thread)
 	return thread
 }

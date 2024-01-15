@@ -26,16 +26,16 @@ type Post struct {
 	id         PostID
 	creator    std.Address
 	body       string
-	replies    avl.Tree // Post.id -> *Post
-	repliesAll avl.Tree // Post.id -> *Post (all replies, for top-level posts)
-	reposts    avl.Tree // UserPosts user std.Address -> Post.id
-	threadID   PostID   // original Post.id
-	parentID   PostID   // parent Post.id (if reply or repost)
+	replies    avl.Tree    // Post.id -> *Post
+	repliesAll avl.Tree    // Post.id -> *Post (all replies, for top-level posts)
+	reposts    avl.Tree    // UserPosts user std.Address -> Post.id
+	threadID   PostID      // original Post.id
+	parentID   PostID      // parent Post.id (if reply or repost)
+	repostUser std.Address // UserPosts user std.Address of original post (if repost)
 	createdAt  time.Time
-	updatedAt  time.Time
 }
 
-func newPost(userPosts *UserPosts, id PostID, creator std.Address, body string, threadID, parentID PostID) *Post {
+func newPost(userPosts *UserPosts, id PostID, creator std.Address, body string, threadID, parentID PostID, repostUser std.Address) *Post {
 	return &Post{
 		userPosts:  userPosts,
 		id:         id,
@@ -46,6 +46,7 @@ func newPost(userPosts *UserPosts, id PostID, creator std.Address, body string, 
 		reposts:    avl.Tree{},
 		threadID:   threadID,
 		parentID:   parentID,
+		repostUser: repostUser,
 		createdAt:  time.Now(),
 	}
 }
@@ -62,7 +63,7 @@ func (post *Post) AddReply(creator std.Address, body string) *Post {
 	userPosts := post.userPosts
 	pid := userPosts.incGetPostID()
 	pidkey := postIDKey(pid)
-	reply := newPost(userPosts, pid, creator, body, post.threadID, post.id)
+	reply := newPost(userPosts, pid, creator, body, post.threadID, post.id, "")
 	post.replies.Set(pidkey, reply)
 	if post.threadID == post.id {
 		post.repliesAll.Set(pidkey, reply)
@@ -71,6 +72,19 @@ func (post *Post) AddReply(creator std.Address, body string) *Post {
 		thread.repliesAll.Set(pidkey, reply)
 	}
 	return reply
+}
+
+func (post *Post) AddRepostTo(creator std.Address, comment string, dst *UserPosts) *Post {
+	if !post.IsThread() {
+		panic("cannot repost non-thread post")
+	}
+
+	pid := dst.incGetPostID()
+	pidkey := postIDKey(pid)
+	repost := newPost(dst, pid, creator, comment, pid, post.id, post.userPosts.userAddr)
+	dst.threads.Set(pidkey, repost)
+	post.reposts.Set(creator.String(), pid)
+	return repost
 }
 
 func (thread *Post) GetReply(pid PostID) *Post {
@@ -102,15 +116,35 @@ func (post *Post) GetReplyFormURL() string {
 		"&userPostsAddr=" + post.userPosts.userAddr.String() +
 		"&threadid=" + post.threadID.String() +
 		"&postid=" + post.id.String() +
+		"&comment.type=textarea"
+}
+
+func (post *Post) GetRepostFormURL() string {
+	return "/r/berty/social?help&__func=RepostThread" +
+		"&userPostsAddr=" + post.userPosts.userAddr.String() +
+		"&threadid=" + post.threadID.String() +
+		"&postid=" + post.id.String() +
 		"&body.type=textarea"
 }
 
 func (post *Post) RenderSummary() string {
+	if post.repostUser != "" {
+		dstUserPosts := getUserPosts(post.repostUser)
+		if dstUserPosts == nil {
+			panic("repost user does not exist")
+		}
+		thread := dstUserPosts.GetThread(PostID(post.parentID))
+		if thread == nil {
+			return "reposted post does not exist"
+		}
+		return "Repost: " + post.GetSummary() + "\n\n" + thread.RenderSummary()
+	}
 	str := ""
 	str += post.GetSummary() + "\n"
 	str += "\\- " + displayAddressMD(post.creator) + ","
 	str += " [" + post.createdAt.Format("2006-01-02 3:04pm MST") + "](" + post.GetURL() + ")"
-	str += " (" + strconv.Itoa(post.replies.Size()) + " replies)" + "\n"
+	str += " (" + strconv.Itoa(post.replies.Size()) + " replies)"
+	str += " (" + strconv.Itoa(post.reposts.Size()) + " reposts)" + "\n"
 	return str
 }
 
@@ -122,7 +156,11 @@ func (post *Post) RenderPost(indent string, levels int) string {
 	str += indentBody(indent, post.body) + "\n" // TODO: indent body lines.
 	str += indent + "\\- " + displayAddressMD(post.creator) + ", "
 	str += "[" + post.createdAt.Format("2006-01-02 3:04pm (MST)") + "](" + post.GetURL() + ")"
-	str += " \\[[reply](" + post.GetReplyFormURL() + ")]\n"
+	str += " \\[[reply](" + post.GetReplyFormURL() + ")]"
+	if post.IsThread() {
+		str += " \\[[repost](" + post.GetRepostFormURL() + ")]"
+	}
+	str += "\n"
 	if levels > 0 {
 		if post.replies.Size() > 0 {
 			post.replies.Iterate("", "", func(key string, value interface{}) bool {
