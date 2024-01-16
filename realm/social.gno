@@ -1,4 +1,4 @@
-package gnosocial
+package social
 
 import (
 	"gno.land/p/demo/avl"
