@@ -1,6 +1,3 @@
-import { Button, StyleSheet, Text, View, Pressable } from "react-native";
-import { Link } from 'expo-router';
-
 // order matters here
 import "react-native-polyfill-globals/auto";
 
@@ -9,35 +6,20 @@ import "react-native-polyfill-globals/auto";
 (Symbol as any).asyncIterator =
   Symbol.asyncIterator || Symbol.for("Symbol.asyncIterator");
 
-import { useGno } from "@gno/hooks/use-gno";
 import React from "react";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import Button from "components/button";
 
 export default function Page() {
-
-  const gno = useGno();
-
-  React.useEffect(() => {
-    gno
-      .render("gno.land/r/demo/boards", "gnonative/1")
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-  }, []);
-
-
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <Text style={styles.title}>Hello World</Text>
-        <Text style={styles.subtitle}>This is the first page of your app.</Text>
+        <Text style={styles.title}>GnoSocial</Text>
+        <Text style={styles.subtitle}>Experimental social dApp on Gno.land</Text>
+        <View style={styles.create}>
+          <Button.Link label="Sign in" href="/sign-in" />
+        </View>
       </View>
-
-
-      <Link href="/signup" asChild>
-      <Pressable>
-        <Text>Create account</Text>
-      </Pressable>
-      </Link>
-
     </View>
   );
 }
@@ -61,5 +43,8 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 36,
     color: "#38434D",
+  },
+  create: {
+    marginTop: 24,
   },
 });
