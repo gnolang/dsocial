@@ -17,7 +17,7 @@ To start gnodev, in this repo in gnosocial/realm enter:
 
 To install the faucet, in another terminal enter:
 
-    git clone github.com/gnolang/faucet
+    git clone https://github.com/gnolang/faucet
     cd faucet
     make build
 
