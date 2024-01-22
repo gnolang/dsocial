@@ -1,18 +1,20 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
-import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Slot, SplashScreen, Stack } from "expo-router";
+import { useEffect, useRef } from "react";
+import { AppState, useColorScheme } from "react-native";
+import { Provider } from "../context/auth";
+import { useGno } from "@gno/hooks/use-gno";
 
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from 'expo-router';
+} from "expo-router";
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: "(tabs)",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -20,7 +22,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
 
@@ -45,12 +47,35 @@ export default function RootLayout() {
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
+  const appState = useRef(AppState.currentState);
+  const gno = useGno();
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+        console.log("initBridge()");
+        gno.initBridge();
+      }
+
+      if (appState.current.match(/active/) && nextAppState === "background") {
+        console.log("closeBridge()");
+        gno.closeBridge();
+      }
+
+      appState.current = nextAppState;
+      console.log("AppState", appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        {/* <Stack.Screen name="modal" options={{ presentation: 'modal' }} /> */}
-      </Stack>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Provider>
+        <Slot />
+      </Provider>
     </ThemeProvider>
   );
 }
