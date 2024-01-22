@@ -9,6 +9,7 @@ import "react-native-polyfill-globals/auto";
 import React from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import Button from "components/button";
+import Spacer from "components/spacer";
 
 export default function Page() {
   return (
@@ -18,6 +19,8 @@ export default function Page() {
         <Text style={styles.subtitle}>Experimental social dApp on Gno.land</Text>
         <View style={styles.create}>
           <Button.Link label="Sign in" href="/sign-in" />
+          <Spacer />
+          <Button.Link label="Sign up" href="/sign-up" />
         </View>
       </View>
     </View>
