@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "gnosocial",
+    "slug": "gnosocial",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "land.gno.gnosocial",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "land.gno.gnosocial"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "land.gno.gnosocial"
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
