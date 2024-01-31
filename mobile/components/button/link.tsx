@@ -1,39 +1,21 @@
 import { Link } from "expo-router";
-import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
-
-export type ButtonVariant = "primary" | "secondary" | "tertiary" | "link" | "white" | "primary2";
+import { PressableProps } from "react-native";
+import Button, { ButtonVariant } from "./button";
 
 interface ButtonProps extends PressableProps {
-  label: string;
+  title: string;
   href: string;
+  variant?: ButtonVariant;
 }
 
 const LinkButton = (props: ButtonProps) => {
-  const { style, href, label, ...rest } = props;
+  const { href, title, variant = "primary" } = props;
 
   return (
     <Link href={href} asChild>
-      <Pressable style={styles.button} {...rest}>
-        <Text style={styles.text}>{label}</Text>
-      </Pressable>
+      <Button title={title} variant={variant} onPress={() => {}} />
     </Link>
   );
 };
 
 export default LinkButton;
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: "#006eff",
-    width: "100%",
-    height: 48,
-    borderRadius: 28,
-    justifyContent: "center",
-  },
-  text: {
-    textAlign: "center",
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-});
