@@ -7,9 +7,14 @@
 ## 🚀 How to use
 
 ```sh
-# to run on ios:
-yarn ios 
+# to build and run on ios:
+make ios 
 
-# to run on android:
-yarn android 
+# to build and run on android:
+make android 
+
+# to start Metro Bundler:
+make start
 ```
+
+
