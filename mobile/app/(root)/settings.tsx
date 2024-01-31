@@ -16,6 +16,12 @@ export default function Page() {
       try {
         const account = await gno.getActiveAccount();
         setActiveAccount(JSON.stringify(account));
+
+        const chainId = await gno.getChainID();
+        const remote = await gno.getRemote();
+        console.log("chainId: " + chainId);
+        console.log("remote: " + remote);
+        
       } catch (error: unknown | Error) {
         console.log(error);
       }

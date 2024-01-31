@@ -35,19 +35,15 @@ export default function Page() {
 
   const recoverAccount = async (override: boolean = false) => {
     setError(undefined);
-    console.log("createAccount1: " + name + " " + recoveryPhrase + " " + password);
 
     if (!recoveryPhrase || !name || !password || !confirmPassword) return;
-    console.log("createAccount2: " + name + " " + recoveryPhrase + " " + password);
 
     if (password !== confirmPassword) {
-      console.log("createAccount3: " + name + " " + recoveryPhrase + " " + password);
       setError("Passwords do not match.");
       console.log("password and confirmPassword are not the same");
       return;
     }
 
-    console.log("createAccount4: " + name + " " + recoveryPhrase + " " + password);
     if (!override) {
       const hasKeyByName = await gno.hasKeyByName(name);
       if (hasKeyByName) {
@@ -62,11 +58,11 @@ export default function Page() {
       if (!response) throw new Error("createAccount response is null");
       await gno.selectAccount(name);
       await gno.setPassword(password);
-      console.log("createAccount response: " + response);
+      console.log("createAccount response: " + JSON.stringify(response));
       signIn({ name, password, pubKey: response.pubKey, address: response.address });
     } catch (error) {
       setError("" + error);
-      console.log(error);
+      console.log(JSON.stringify(error));
     }
   };
 
