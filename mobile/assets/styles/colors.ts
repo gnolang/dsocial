@@ -28,6 +28,11 @@ export const colors = {
     secondary: "rgba(30, 46, 66, 0.5)",
   },
 
+  icon: {
+    focus: "#006eff",
+    default: "#546e7a",
+  },
+
   grayscale: {
     200: "#A8A8A8",
     700: "#333333",
