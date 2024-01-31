@@ -67,7 +67,7 @@ export default function Page() {
           <Spacer space={64} />
           <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" />
           <Spacer space={16} />
-          <Button.Link label="Back" href="/landing" />
+          <Button.Link title="Back" href="/landing" />
         </View>
       </View>
     </View>

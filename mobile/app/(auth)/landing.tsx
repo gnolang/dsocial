@@ -17,7 +17,10 @@ export default function Page() {
         <Text style={styles.title}>GnoSocial</Text>
         <Text style={styles.subtitle}>Experimental social dApp on Gno.land</Text>
         <View style={styles.create}>
-          <Button.Link label="Sign in" href="/sign-in" />
+          <Button.Link title="Sign in" href="/sign-in" />
+        </View>
+        <View style={styles.signUp}>
+          <Button.Link title="Sign Up" href="/sign-up" variant='tertiary' />
         </View>
       </View>
     </View>
@@ -46,5 +49,8 @@ const styles = StyleSheet.create({
   },
   create: {
     marginTop: 24,
+  },
+  signUp: {
+    marginTop: 12,
   },
 });

@@ -10,8 +10,8 @@ interface AuthContext {
 interface User {
   name: string;
   password: string;
-  pubKey: string;
-  address: string;
+  pubKey: string | Uint8Array;
+  address: string | Uint8Array;
 }
 
 interface PropsWithChildren {
