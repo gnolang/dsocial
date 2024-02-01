@@ -36,6 +36,7 @@ export default function Page() {
   const onCreate = async () => {
     try {
       const response = await gno.createAccount(name, phrase, password);
+      if (!response) throw new Error("Failed to create account");
       await gno.selectAccount(name);
       await gno.setPassword(password);
       console.log("createAccount response: " + JSON.stringify(response));

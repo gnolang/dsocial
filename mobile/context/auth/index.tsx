@@ -1,3 +1,4 @@
+import { useGno } from "@gno/hooks/use-gno";
 import { useRouter, useSegments } from "expo-router";
 import React from "react";
 
