@@ -12,7 +12,7 @@ export default function Page() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
-        const response = await gno.render("gno.land/r/demo/boards", "gnonative/1");
+        const response = await gno.render("gno.land/r/berty/social", "jefft0");
         setBoardContent(response);
       } catch (error: unknown | Error) {
         console.log(error);
