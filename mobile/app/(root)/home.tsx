@@ -1,8 +1,9 @@
+import { Feed } from "@gno/components/feed/feed";
 import { useGno } from "@gno/hooks/use-gno";
 import { useNavigation } from "expo-router";
 import React, { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import Markdown from 'react-native-marked';
+import Markdown from "react-native-marked";
 
 export default function Page() {
   const gno = useGno();
@@ -13,6 +14,7 @@ export default function Page() {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
         const response = await gno.render("gno.land/r/berty/social", "jefft0");
+        console.log(response);
         setBoardContent(response);
       } catch (error: unknown | Error) {
         console.log(error);
@@ -24,6 +26,8 @@ export default function Page() {
   return (
     <View style={styles.container}>
       <View style={styles.main}>
+        <Feed data={[]} />
+
         {boardContent ? (
           <Markdown
             value={boardContent}
