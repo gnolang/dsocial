@@ -1,5 +1,6 @@
+import Icons from "@gno/components/icons";
 import { colors } from "assets/styles/colors";
-import Home from "components/icons/Home";
+
 import { Tabs } from "expo-router";
 
 export default function AppLayout() {
@@ -11,7 +12,7 @@ export default function AppLayout() {
           options={{
             title: "Post",
             href: "/post",
-            tabBarIcon: ({ focused }) => <Home color={focused ? colors.icon.focus : colors.icon.default} />,
+            tabBarIcon: ({ focused }) => <Icons.Home color={focused ? colors.icon.focus : colors.icon.default} />,
           }}
         />
         <Tabs.Screen
@@ -19,7 +20,7 @@ export default function AppLayout() {
           options={{
             title: "Home",
             href: "/home",
-            tabBarIcon: ({ focused }) => <Home color={focused ? colors.icon.focus : colors.icon.default} />,
+            tabBarIcon: ({ focused }) => <Icons.Home color={focused ? colors.icon.focus : colors.icon.default} />,
           }}
         />
         <Tabs.Screen
@@ -27,7 +28,7 @@ export default function AppLayout() {
           options={{
             title: "Settings",
             href: "/settings",
-            tabBarIcon: ({ focused }) => <Home color={focused ? colors.icon.focus : colors.icon.default} />,
+            tabBarIcon: ({ focused }) => <Icons.Home color={focused ? colors.icon.focus : colors.icon.default} />,
           }}
         />
       </Tabs>
