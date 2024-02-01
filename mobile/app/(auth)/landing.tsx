@@ -30,15 +30,12 @@ export default function Page() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
-        // setLoading('Loading accounts...');
         const response = await gno.listKeyInfo();
 
         console.log("response", response);
 
         setAccounts(response);
-        // setLoading(undefined);
       } catch (error: unknown | Error) {
-        // setLoading(error?.toString());
         console.log(error);
       }
     });
@@ -73,7 +70,6 @@ export default function Page() {
     <>
       <Layout.Container>
         <Layout.Body>
-          {/* <Text style={styles.subtitle}>Experimental social dApp on Gno.land</Text> */}
           {accounts && accounts.length > 0 && (
             <>
               <Text.Body>Please, select one of the existing accounts to start:</Text.Body>

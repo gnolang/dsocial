@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, Button as RNButton } from "react-native";
 import React, { useState } from "react";
-import { useNavigation } from "expo-router";
 import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
@@ -18,20 +17,8 @@ export default function Page() {
   const [error, setError] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
 
-  const navigation = useNavigation();
   const gno = useGno();
   const { signIn } = useAuth();
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener("focus", async () => {
-  //     try {
-  //       setPhrase(await gno.generateRecoveryPhrase());
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
 
   const recoverAccount = async (override: boolean = false) => {
     setError(undefined);

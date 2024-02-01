@@ -1,9 +1,9 @@
-import { Feed } from "@gno/components/feed/feed";
-import { useGno } from "@gno/hooks/use-gno";
 import { useNavigation } from "expo-router";
 import React, { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import Markdown from "react-native-marked";
+import { StyleSheet } from "react-native";
+import { Feed } from "@gno/components/feed/feed";
+import { useGno } from "@gno/hooks/use-gno";
+import { Post } from "../../types";
 
 export default function Page() {
   const gno = useGno();
@@ -14,7 +14,6 @@ export default function Page() {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
         const response = await gno.render("gno.land/r/berty/social", "jefft0");
-        console.log(response);
         setBoardContent(response);
       } catch (error: unknown | Error) {
         console.log(error);
@@ -23,22 +22,58 @@ export default function Page() {
     return unsubscribe;
   }, [navigation]);
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Feed data={[]} />
+  /**
+   * Given the following content as an example:
+   *  \- [@jefft0](/r/demo/users:jefft0), [2024-01-30 2:21pm UTC](/r/berty/social:jefft0/1) (0 replies)
+   *
+   * The following regex will match and capture the following:
+   *  \[@([^\]]+)\]: Matches [@jefft0] and captures jefft0 in a group.
+   *  \(([^)]+)\): Matches (/r/berty/social:jefft0/1) and captures /r/berty/social:jefft0/1 in a group.
+   *  \[(\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}[ap]m UTC)\]: Matches [2024-01-30 2:21pm UTC] and captures 2024-01-30 2:21pm UTC in a group.
+   *  \(([^)]+)\): Matches the (0 replies) part and captures 0 replies in a group.
+   */
+  const pattern = /\[@([^)]+)]\(([^)]+)\), \[([^)]+)\]\(([^)]+)\) \((\d+) replies\) \((\d+) reposts\)/g;
 
-        {boardContent ? (
-          <Markdown
-            value={boardContent}
-            flatListProps={{
-              initialNumToRender: 8,
-            }}
-          />
-        ) : null}
-      </View>
-    </View>
-  );
+  const convertToPost = (content: string | undefined) => {
+    const data = content?.split("----------------------------------------");
+
+    const posts: Post[] = [];
+
+    data?.forEach((element) => {
+      const post = element.split("\n");
+
+      const match = post[2].split(pattern);
+
+      if (match) {
+        console.log("match found.", match);
+        const username = match[1];
+        const userLink = match[2];
+        const date = match[3];
+        const postLink = match[4];
+        const replies = match[5];
+
+        posts.push({
+          user: {
+            user: username,
+            name: username,
+            image: "https://www.gravatar.com/avatar/tmp",
+            followers: 0,
+            url: "string",
+            bio: "string",
+          },
+          post: post[1],
+          id: Math.random().toString(),
+          date,
+        });
+      } else {
+        console.log("No match found.");
+      }
+    });
+
+    return posts.reverse();
+  };
+
+  return <Feed contentInsetAdjustmentBehavior="automatic" data={convertToPost(boardContent)} />;
 }
 
 const styles = StyleSheet.create({

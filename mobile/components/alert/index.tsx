@@ -51,7 +51,6 @@ const Alert = ({ message, severity }: Props) => {
     <Wrapper>
       {message ? (
         <InnerContent severity={severity}>
-          {/* {isError && <Exclamation />} */}
           <ErrorText paddingLeft={Boolean(isError)}>{message}</ErrorText>
         </InnerContent>
       ) : (

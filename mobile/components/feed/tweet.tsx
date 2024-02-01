@@ -1,6 +1,8 @@
-import { Link, useRouter, useSegments } from "expo-router";
-import { Image, Pressable, Text, View } from "react-native";
-import { Post } from "types";
+import React from "react";
+import { Image, Pressable, View } from "react-native";
+import { useRouter, useSegments } from "expo-router";
+import { Post } from "../../types";
+import Text from "@gno/components/text";
 
 type Group<T extends string> = `(${T})`;
 
@@ -10,11 +12,7 @@ export function Tweet({ item }: { item: Post }) {
   const [segment] = useSegments() as [SharedSegment];
   const router = useRouter();
   return (
-    <Pressable
-      onPress={() => {
-        router.push(`/${segment}/post/${item.id}`);
-      }}
-    >
+    <Pressable>
       {({ hovered, pressed }) => (
         <View
           style={[
@@ -34,26 +32,20 @@ export function Tweet({ item }: { item: Post }) {
             },
           ]}
         >
-          <Image
-            source={{ uri: item.user.image }}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-            }}
-          />
+          <Image source={{ uri: item.user.image }} style={{ width: 48, height: 48, borderRadius: 24 }} />
           <View style={{ gap: 4, flex: 1, alignItems: "flex-start" }}>
-            <Link href={`/${segment}/${item.user.user}`} asChild>
-              <Pressable style={{ alignItems: "flex-start" }}>
-                {({ hovered }) => (
-                  <Text style={[{ fontWeight: "bold", fontSize: 16 }, hovered && { textDecorationLine: "underline" }]}>
-                    @{item.user.user}
-                  </Text>
-                )}
-              </Pressable>
-            </Link>
+            <Pressable style={{ alignItems: "flex-start" }}>
+              {({ hovered }) => (
+                <Text.Body style={[{ fontWeight: "bold", fontSize: 16 }, hovered && { textDecorationLine: "underline" }]}>
+                  @{item.user.user}
+                </Text.Body>
+              )}
+            </Pressable>
 
-            <Text selectable>{item.post}</Text>
+            <Text.Body selectable>{item.post}</Text.Body>
+            <View >
+              <Text.Caption1 selectable>{item.date}</Text.Caption1>
+            </View>
           </View>
         </View>
       )}

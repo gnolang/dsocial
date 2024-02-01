@@ -8,5 +8,6 @@ export type Post = {
     bio: string;
   };
   post: string;
+  date: string;
   id: string;
 };

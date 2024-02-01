@@ -1,7 +1,8 @@
+import React from "react";
 import { FlatList, Platform } from "react-native";
 import { Tweet } from "./tweet";
 import { useRef } from "react";
-import { Post } from "types";
+import { Post } from "../../types";
 import useScrollToTop from "../utils/useScrollToTopWithOffset";
 
 export function Feed({ data, ...props }: { data: Post[] } & Partial<FlatList["props"]>) {
@@ -20,6 +21,7 @@ export function Feed({ data, ...props }: { data: Post[] } & Partial<FlatList["pr
       style={{ flex: 1 }}
       {...props}
       data={data}
+      keyExtractor={(item) => `${item.id}`}
       renderItem={({ item }) => <Tweet item={item} />}
     />
   );
