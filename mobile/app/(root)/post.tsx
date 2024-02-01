@@ -18,10 +18,9 @@ export default function Page() {
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
-      const args: Array<string> = ["2", "1", "1", postContent];
+      const args: Array<string> = [postContent];
       for await (const response of await gno.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
         console.log("response: ", response);
-        console.log(Buffer.from(response.result).toString());
       }
     } catch (error) {
       console.log(error);
