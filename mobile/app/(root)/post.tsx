@@ -3,7 +3,7 @@ import Alert from "components/alert";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import TextInput from "components/textinput";
-import { useAuth } from "context/auth";
+import { router } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -11,8 +11,6 @@ export default function Page() {
   const gno = useGno();
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
-
-  const { user } = useAuth();
 
   const onPost = async () => {
     try {
@@ -22,6 +20,7 @@ export default function Page() {
       for await (const response of await gno.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
         console.log("response: ", response);
       }
+      router.push("/home");
     } catch (error) {
       console.log(error);
       setError("" + error);
@@ -42,7 +41,7 @@ export default function Page() {
           />
           <Spacer />
           <Button.TouchableOpacity title="Post" variant="primary" onPress={onPost} />
-          <Alert severity='error' message={error} />
+          <Alert severity="error" message={error} />
         </View>
       </View>
     </View>

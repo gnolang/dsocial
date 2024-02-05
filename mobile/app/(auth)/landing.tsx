@@ -82,9 +82,9 @@ export default function Page() {
           )}
 
           <Spacer />
-          <Button.Link title="Sign in" href="/sign-in" />
+          <Button.Link title="Sign up" href="/sign-up" />
           <Spacer />
-          <Button.Link title="Sign Up" href="/sign-up" variant="tertiary" />
+          <Button.Link title="Import Account" href="/import-account" variant="tertiary" />
         </Layout.Body>
       </Layout.Container>
       {reenterPassword ? (
