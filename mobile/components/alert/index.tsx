@@ -1,10 +1,12 @@
-import { colors } from 'assets/styles/colors';
-import styled from 'styled-components/native';
+import { colors } from "assets/styles/colors";
+import Spacer from "components/spacer";
+import { Text, View } from "react-native";
+import styled from "styled-components/native";
 // import Exclamation from '../icons/Exclamation';
 
 export interface Props {
   message?: string;
-  severity: 'error' | 'warning' | 'info' | 'success';
+  severity: "error" | "warning" | "info" | "success";
 }
 
 const Wrapper = styled.View`
@@ -12,7 +14,7 @@ const Wrapper = styled.View`
   align-items: center;
 `;
 
-const InnerContent = styled.View<{ severity: Props['severity'] }>`
+const InnerContent = styled.View<{ severity: Props["severity"] }>`
   flex-direction: row;
   align-items: center;
   border-radius: 16px;
@@ -20,13 +22,13 @@ const InnerContent = styled.View<{ severity: Props['severity'] }>`
   padding-right: 12px;
   background-color: ${({ severity }) => {
     switch (severity) {
-      case 'error':
+      case "error":
         return colors.danger;
-      case 'warning':
+      case "warning":
         return colors.warning;
-      case 'info':
+      case "info":
         return colors.main;
-      case 'success':
+      case "success":
         return colors.success;
     }
   }};
@@ -38,21 +40,22 @@ const ErrorText = styled.Text<{ paddingLeft: boolean }>`
   font-weight: 500;
   line-height: 20px;
   letter-spacing: 0;
-  padding-left: ${(props) => (props.paddingLeft ? '5.5px' : '4.5px')};
+  padding-left: ${(props) => (props.paddingLeft ? "5.5px" : "4.5px")};
   text-align: center;
 `;
 
 const Alert = ({ message, severity }: Props) => {
-  const isError = severity === 'error';
+  const isError = severity === "error";
 
   return (
     <Wrapper>
       {message ? (
         <InnerContent severity={severity}>
-          {/* {isError && <Exclamation />} */}
           <ErrorText paddingLeft={Boolean(isError)}>{message}</ErrorText>
         </InnerContent>
-      ) : null}
+      ) : (
+        <Spacer space={40} />
+      )}
     </Wrapper>
   );
 };

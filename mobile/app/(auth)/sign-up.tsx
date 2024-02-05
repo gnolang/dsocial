@@ -36,6 +36,7 @@ export default function Page() {
   const onCreate = async () => {
     try {
       const response = await gno.createAccount(name, phrase, password);
+      if (!response) throw new Error("Failed to create account");
       await gno.selectAccount(name);
       await gno.setPassword(password);
       console.log("createAccount response: " + JSON.stringify(response));
@@ -67,7 +68,7 @@ export default function Page() {
           <Spacer space={64} />
           <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" />
           <Spacer space={16} />
-          <Button.Link label="Back" href="/landing" />
+          <Button.Link title="Back" href="/landing" />
         </View>
       </View>
     </View>

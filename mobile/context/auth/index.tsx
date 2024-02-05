@@ -1,3 +1,4 @@
+import { useGno } from "@gno/hooks/use-gno";
 import { useRouter, useSegments } from "expo-router";
 import React from "react";
 
@@ -10,8 +11,8 @@ interface AuthContext {
 interface User {
   name: string;
   password: string;
-  pubKey: string;
-  address: string;
+  pubKey: string | Uint8Array;
+  address: string | Uint8Array;
 }
 
 interface PropsWithChildren {
@@ -46,7 +47,7 @@ function useProtectedRoute(user: User | null) {
       router.replace("/landing");
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in page.
-      router.replace("/following");
+      router.replace("/home");
     }
   }, [user, segments]);
 }

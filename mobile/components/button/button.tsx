@@ -5,7 +5,7 @@ import { colors } from "../../assets/styles/colors";
 import styled from "styled-components/native";
 import Text from "../text";
 
-type ButtonVariant = "primary" | "secondary" | "tertiary" | "white" | "primary2" | "primary-red" | "secondary-red";
+export type ButtonVariant = "primary" | "secondary" | "tertiary" | "white" | "primary2" | "primary-red" | "secondary-red";
 
 export type Props = {
   title: string;
