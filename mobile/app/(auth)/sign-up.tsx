@@ -7,6 +7,8 @@ import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
 import { useGno } from "@gno/hooks/use-gno";
 import { useAuth } from "context/auth";
+import { logedIn } from "redux/features/accountSlice";
+import { useAppDispatch } from "redux/store";
 
 export default function Page() {
   const [name, setName] = React.useState("");
@@ -16,7 +18,7 @@ export default function Page() {
 
   const navigation = useNavigation();
   const gno = useGno();
-  const { signIn } = useAuth();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -42,7 +44,7 @@ export default function Page() {
       console.log("createAccount response: " + JSON.stringify(response));
       await gno.selectAccount(name);
       await gno.setPassword(password);
-      signIn({ name, password, pubKey: response.pubKey, address: response.address });
+      dispatch(logedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
     } catch (error) {
       setError("" + error);
       console.log(error);

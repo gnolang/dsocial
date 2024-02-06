@@ -1,18 +1,13 @@
-import { useGno } from "@gno/hooks/use-gno";
 import { useRouter, useSegments } from "expo-router";
 import React from "react";
+import { User } from "@gno/types";
+import { useAppSelector } from "redux/store";
+import { selectAccount } from "redux/features/accountSlice";
 
 interface AuthContext {
-  signIn: (user: User) => void;
-  signOut: () => void;
-  user: User | null;
-}
-
-interface User {
-  name: string;
-  password: string;
-  pubKey: string | Uint8Array;
-  address: string | Uint8Array;
+  // signIn: (user: User) => void;
+  // signOut: () => void;
+  // user: User | null;
 }
 
 interface PropsWithChildren {
@@ -31,7 +26,7 @@ export function useAuth(): AuthContext {
 }
 
 // This hook will protect the route access based on user authentication.
-function useProtectedRoute(user: User | null) {
+function useProtectedRoute(user: User | undefined) {
   const segments = useSegments();
   const router = useRouter();
 
@@ -53,17 +48,18 @@ function useProtectedRoute(user: User | null) {
 }
 
 export function Provider(props: PropsWithChildren) {
-  const [user, setAuth] = React.useState<User | null>(null);
+  const account = useAppSelector(selectAccount);
 
-  useProtectedRoute(user);
+  useProtectedRoute(account);
 
   return (
     <AuthContext.Provider
-      value={{
-        signIn: (user) => setAuth(user),
-        signOut: () => setAuth(null),
-        user,
-      }}
+      value={
+        {
+          // signIn: (user) => setAuth(user),
+          // signOut: () => setAuth(null),
+        }
+      }
     >
       {props.children}
     </AuthContext.Provider>

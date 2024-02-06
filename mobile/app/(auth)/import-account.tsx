@@ -4,10 +4,11 @@ import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import { useGno } from "@gno/hooks/use-gno";
-import { useAuth } from "context/auth";
 import SeedBox from "components/seedbox";
 import { ModalConfirm } from "components/modal";
 import Alert from "components/alert";
+import { logedIn } from "redux/features/accountSlice";
+import { useAppDispatch } from "redux/store";
 
 export default function Page() {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");
@@ -16,9 +17,9 @@ export default function Page() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
+  const dispatch = useAppDispatch();
 
   const gno = useGno();
-  const { signIn } = useAuth();
 
   const recoverAccount = async (override: boolean = false) => {
     setError(undefined);
@@ -46,7 +47,8 @@ export default function Page() {
       await gno.selectAccount(name);
       await gno.setPassword(password);
       console.log("createAccount response: " + JSON.stringify(response));
-      signIn({ name, password, pubKey: response.pubKey, address: response.address });
+
+      dispatch(logedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
     } catch (error) {
       setError("" + error);
       console.log(JSON.stringify(error));

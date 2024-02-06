@@ -11,3 +11,10 @@ export type Post = {
   date: string;
   id: string;
 };
+
+export interface User {
+  name: string;
+  password: string;
+  pubKey: string | Uint8Array;
+  address: string | Uint8Array;
+}

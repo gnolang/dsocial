@@ -4,8 +4,10 @@ import { useFonts } from "expo-font";
 import { Slot, SplashScreen, Stack } from "expo-router";
 import { useEffect, useRef } from "react";
 import { AppState, useColorScheme } from "react-native";
-import { Provider } from "../context/auth";
+import { Provider as AuthProvider } from "../context/auth";
 import { useGno } from "@gno/hooks/use-gno";
+import { Provider } from "react-redux";
+import { store } from "redux/store";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -72,10 +74,12 @@ function RootLayoutNav() {
   }, []);
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Provider>
-        <Slot />
-      </Provider>
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <AuthProvider>
+          <Slot />
+        </AuthProvider>
+      </ThemeProvider>
+    </Provider>
   );
 }

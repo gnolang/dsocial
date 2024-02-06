@@ -14,9 +14,10 @@ import SideMenuAccountList from "@gno/components/list/account/account-list";
 import Layout from "@gno/components/layout";
 import Ruller from "@gno/components/row/Ruller";
 import { Spacer } from "@gno/components/row";
-import { useAuth } from "context/auth";
 import ReenterPassword from "@gno/components/modal/reenter-password";
 import Text from "@gno/components/text";
+import { useAppDispatch } from "redux/store";
+import { logedIn } from "redux/features/accountSlice";
 
 export default function Page() {
   const [accounts, setAccounts] = useState<GnoAccount[]>([]);
@@ -25,7 +26,7 @@ export default function Page() {
 
   const gno = useGno();
   const navigation = useNavigation();
-  const { signIn } = useAuth();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -52,7 +53,7 @@ export default function Page() {
         return;
       }
 
-      signIn({ name: value.name, password: "", pubKey: value.pubKey, address: value.address });
+      dispatch(logedIn({ name: value.name, password: "", pubKey: value.pubKey.toString(), address: value.address.toString() }));
     } catch (error: unknown | Error) {
       setLoading(error?.toString());
       console.log(error);
@@ -61,7 +62,9 @@ export default function Page() {
 
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
-      signIn({ name: reenterPassword.name, password: "", pubKey: reenterPassword.pubKey, address: reenterPassword.address });
+      dispatch(
+        logedIn({ name: reenterPassword.name, password: "", pubKey: reenterPassword.pubKey.toString(), address: reenterPassword.address.toString() })
+      );
     }
     setReenterPassword(undefined);
   };
