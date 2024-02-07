@@ -13,6 +13,7 @@
     "@bufbuild/protobuf": "^1.6.0",
     "@connectrpc/connect": "^1.2.1",
     "@connectrpc/connect-web": "^1.2.1",
+    "@reduxjs/toolkit": "^2.1.0",
     "base-64": "^1.0.0",
     "expo": "~49.0.15",
     "expo-clipboard": "~4.3.1",
@@ -32,6 +33,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-svg": "^14.1.0",
     "react-native-url-polyfill": "^2.0.0",
+    "react-redux": "^9.1.0",
     "styled-components": "^6.1.8",
     "text-encoding": "^0.7.0",
     "web-streams-polyfill": "^3.3.2"
