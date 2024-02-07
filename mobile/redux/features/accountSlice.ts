@@ -14,7 +14,7 @@ export const accountSlice = createSlice({
   name: "account",
   initialState,
   reducers: {
-    logedIn: (state, action: PayloadAction<User>) => {
+    loggedIn: (state, action: PayloadAction<User>) => {
       state.account = action.payload;
     },
     logedOut: (state) => {
@@ -27,6 +27,6 @@ export const accountSlice = createSlice({
   },
 });
 
-export const { logedIn, logedOut } = accountSlice.actions;
+export const { loggedIn, logedOut } = accountSlice.actions;
 
 export const { selectAccount } = accountSlice.selectors;

@@ -16,7 +16,7 @@ import Ruller from "@gno/components/row/Ruller";
 import { Spacer } from "@gno/components/row";
 import ReenterPassword from "@gno/components/modal/reenter-password";
 import Text from "@gno/components/text";
-import { logedIn } from "redux/features/accountSlice";
+import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
 
 export default function Page() {
@@ -53,7 +53,7 @@ export default function Page() {
         return;
       }
 
-      dispatch(logedIn({ name: value.name, password: "", pubKey: value.pubKey.toString(), address: value.address.toString() }));
+      dispatch(loggedIn({ name: value.name, password: "", pubKey: value.pubKey.toString(), address: value.address.toString() }));
     } catch (error: unknown | Error) {
       setLoading(error?.toString());
       console.log(error);
@@ -63,7 +63,7 @@ export default function Page() {
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
       dispatch(
-        logedIn({ name: reenterPassword.name, password: "", pubKey: reenterPassword.pubKey.toString(), address: reenterPassword.address.toString() })
+        loggedIn({ name: reenterPassword.name, password: "", pubKey: reenterPassword.pubKey.toString(), address: reenterPassword.address.toString() })
       );
     }
     setReenterPassword(undefined);

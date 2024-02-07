@@ -6,7 +6,7 @@ import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
 import { useGno } from "@gno/hooks/use-gno";
-import { logedIn } from "redux/features/accountSlice";
+import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
 
 export default function Page() {
@@ -43,7 +43,7 @@ export default function Page() {
       console.log("createAccount response: " + JSON.stringify(response));
       await gno.selectAccount(name);
       await gno.setPassword(password);
-      dispatch(logedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
+      dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
     } catch (error) {
       setError("" + error);
       console.log(error);

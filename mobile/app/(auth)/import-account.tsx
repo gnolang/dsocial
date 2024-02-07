@@ -7,7 +7,7 @@ import { useGno } from "@gno/hooks/use-gno";
 import SeedBox from "components/seedbox";
 import { ModalConfirm } from "components/modal";
 import Alert from "components/alert";
-import { logedIn } from "redux/features/accountSlice";
+import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
 
 export default function Page() {
@@ -48,7 +48,7 @@ export default function Page() {
       await gno.setPassword(password);
       console.log("createAccount response: " + JSON.stringify(response));
 
-      dispatch(logedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
+      dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
     } catch (error) {
       setError("" + error);
       console.log(JSON.stringify(error));
