@@ -8,7 +8,7 @@ import SeedBox from "components/seedbox";
 import { ModalConfirm } from "components/modal";
 import Alert from "components/alert";
 import { logedIn } from "redux/features/accountSlice";
-import { useAppDispatch } from "redux/store";
+import { useAppDispatch } from "@gno/redux";
 
 export default function Page() {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");

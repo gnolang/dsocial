@@ -6,9 +6,8 @@ import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
 import { useGno } from "@gno/hooks/use-gno";
-import { useAuth } from "context/auth";
 import { logedIn } from "redux/features/accountSlice";
-import { useAppDispatch } from "redux/store";
+import { useAppDispatch } from "@gno/redux";
 
 export default function Page() {
   const [name, setName] = React.useState("");

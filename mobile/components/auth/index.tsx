@@ -4,25 +4,8 @@ import { User } from "@gno/types";
 import { useAppSelector } from "redux/store";
 import { selectAccount } from "redux/features/accountSlice";
 
-interface AuthContext {
-  // signIn: (user: User) => void;
-  // signOut: () => void;
-  // user: User | null;
-}
-
 interface PropsWithChildren {
   children: React.ReactNode;
-}
-
-const AuthContext = React.createContext<AuthContext | null>(null);
-
-// This hook can be used to access the user info.
-export function useAuth(): AuthContext {
-  const context = React.useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 }
 
 // This hook will protect the route access based on user authentication.
@@ -47,21 +30,10 @@ function useProtectedRoute(user: User | undefined) {
   }, [user, segments]);
 }
 
-export function Provider(props: PropsWithChildren) {
+export function Guard(props: PropsWithChildren) {
   const account = useAppSelector(selectAccount);
 
   useProtectedRoute(account);
 
-  return (
-    <AuthContext.Provider
-      value={
-        {
-          // signIn: (user) => setAuth(user),
-          // signOut: () => setAuth(null),
-        }
-      }
-    >
-      {props.children}
-    </AuthContext.Provider>
-  );
+  return props.children;
 }

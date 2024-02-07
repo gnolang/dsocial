@@ -2,8 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useGno } from "@gno/hooks/use-gno";
-import { useAppDispatch } from "@gno/redux/store";
-import { logedOut } from "@gno/redux/features/accountSlice";
+import { logedOut, useAppDispatch } from "@gno/redux";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<string | undefined>(undefined);

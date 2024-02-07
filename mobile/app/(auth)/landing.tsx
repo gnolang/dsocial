@@ -16,8 +16,8 @@ import Ruller from "@gno/components/row/Ruller";
 import { Spacer } from "@gno/components/row";
 import ReenterPassword from "@gno/components/modal/reenter-password";
 import Text from "@gno/components/text";
-import { useAppDispatch } from "redux/store";
 import { logedIn } from "redux/features/accountSlice";
+import { useAppDispatch } from "@gno/redux";
 
 export default function Page() {
   const [accounts, setAccounts] = useState<GnoAccount[]>([]);

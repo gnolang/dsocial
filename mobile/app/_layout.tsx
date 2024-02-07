@@ -4,10 +4,10 @@ import { useFonts } from "expo-font";
 import { Slot, SplashScreen, Stack } from "expo-router";
 import { useEffect, useRef } from "react";
 import { AppState, useColorScheme } from "react-native";
-import { Provider as AuthProvider } from "../context/auth";
 import { useGno } from "@gno/hooks/use-gno";
 import { Provider } from "react-redux";
 import { store } from "redux/store";
+import { Guard } from "@gno/components/auth";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -76,9 +76,9 @@ function RootLayoutNav() {
   return (
     <Provider store={store}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <AuthProvider>
+        <Guard>
           <Slot />
-        </AuthProvider>
+        </Guard>
       </ThemeProvider>
     </Provider>
   );
