@@ -9,6 +9,7 @@ import { useGno } from "@gno/hooks/use-gno";
 import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
 import Alert from "@gno/components/alert";
+import useOnboarding from "@gno/hooks/use-onboarding";
 
 export default function Page() {
   const [name, setName] = React.useState("");
@@ -19,6 +20,7 @@ export default function Page() {
   const navigation = useNavigation();
   const gno = useGno();
   const dispatch = useAppDispatch();
+  const onboarding = useOnboarding();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -36,6 +38,7 @@ export default function Page() {
   };
 
   const onCreate = async () => {
+    setError(undefined)
     if (!name || !password) {
       setError("Please fill out all fields");
       return;
@@ -54,6 +57,7 @@ export default function Page() {
       console.log("createAccount response: " + JSON.stringify(response));
       await gno.selectAccount(name);
       await gno.setPassword(password);
+      await onboarding.onboard(response.name, response.address);
       dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
     } catch (error) {
       setError("" + error);
