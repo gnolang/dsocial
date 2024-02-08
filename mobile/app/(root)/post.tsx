@@ -30,6 +30,7 @@ export default function Page() {
   }, [navigation]);
 
   const onPost = async () => {
+    setError(undefined);
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
