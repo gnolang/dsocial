@@ -8,6 +8,7 @@ import * as Clipboard from "expo-clipboard";
 import { useGno } from "@gno/hooks/use-gno";
 import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
+import Alert from "@gno/components/alert";
 
 export default function Page() {
   const [name, setName] = React.useState("");
@@ -67,7 +68,7 @@ export default function Page() {
         <View style={{ minWidth: 200, paddingTop: 8 }}>
           <Spacer />
           <TextInput placeholder="Account Name" value={name} onChangeText={setName} autoCapitalize="none" autoCorrect={false} />
-          <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} error={error} />
+          <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} />
           <Spacer />
         </View>
         <View style={{ minWidth: 200, paddingTop: 8 }}>
@@ -76,6 +77,7 @@ export default function Page() {
           <Text>{phrase}</Text>
           <RNButton title="copy" onPress={copyToClipboard} />
           <Spacer />
+          <Alert severity="error" message={error} />
           <Spacer space={64} />
           <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" />
           <Spacer space={16} />
