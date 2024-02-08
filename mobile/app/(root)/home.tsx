@@ -85,17 +85,15 @@ export default function Page() {
 
   const hasNoContent = !boardContent || boardContent.length === 0;
 
-  return (
-    <Layout.Container>
-      <Layout.Body>
-        {hasNoContent ? (
-          <Text.Body>No post yet.</Text.Body>
-        ) : (
-          <Feed contentInsetAdjustmentBehavior="automatic" data={boardContent} />
-        )}
-      </Layout.Body>
-    </Layout.Container>
-  );
+  if (hasNoContent) {
+    return (
+      <Layout.Container>
+        <Layout.Body>{hasNoContent ? <Text.Body>No post yet.</Text.Body> : null}</Layout.Body>
+      </Layout.Container>
+    );
+  }
+
+  return <Feed contentInsetAdjustmentBehavior="automatic" data={boardContent} />;
 }
 
 const styles = StyleSheet.create({
