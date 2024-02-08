@@ -13,7 +13,11 @@ export default function Page() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
-        const response = await gno.render("gno.land/r/berty/social", "jefft0");
+        const accountResponse = await gno.getActiveAccount();
+        if (!accountResponse.key) throw new Error("No active account");
+
+        const name = accountResponse.key.name;
+        const response = await gno.render("gno.land/r/berty/social", name);
         setBoardContent(response);
       } catch (error: unknown | Error) {
         console.log(error);
