@@ -4,10 +4,12 @@ import { StyleSheet } from "react-native";
 import { Feed } from "@gno/components/feed/feed";
 import { useGno } from "@gno/hooks/use-gno";
 import { Post } from "../../types";
+import Text from "@gno/components/text";
+import Layout from "@gno/components/layout";
 
 export default function Page() {
   const gno = useGno();
-  const [boardContent, setBoardContent] = React.useState<string | undefined>(undefined);
+  const [boardContent, setBoardContent] = React.useState<Post[] | undefined>(undefined);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -18,7 +20,9 @@ export default function Page() {
 
         const name = accountResponse.key.name;
         const response = await gno.render("gno.land/r/berty/social", name);
-        setBoardContent(response);
+
+        const feed = convertToPost(response);
+        setBoardContent(feed);
       } catch (error: unknown | Error) {
         console.log(error);
       }
@@ -39,6 +43,8 @@ export default function Page() {
   const pattern = /\[@([^)]+)]\(([^)]+)\), \[([^)]+)\]\(([^)]+)\) \((\d+) replies\) \((\d+) reposts\)/g;
 
   const convertToPost = (content: string | undefined) => {
+    if (!content || content.startsWith("Unknown user")) return [];
+
     const data = content?.split("----------------------------------------");
 
     const posts: Post[] = [];
@@ -77,7 +83,19 @@ export default function Page() {
     return posts.reverse();
   };
 
-  return <Feed contentInsetAdjustmentBehavior="automatic" data={convertToPost(boardContent)} />;
+  const hasNoContent = !boardContent || boardContent.length === 0;
+
+  return (
+    <Layout.Container>
+      <Layout.Body>
+        {hasNoContent ? (
+          <Text.Body>No post yet.</Text.Body>
+        ) : (
+          <Feed contentInsetAdjustmentBehavior="automatic" data={boardContent} />
+        )}
+      </Layout.Body>
+    </Layout.Container>
+  );
 }
 
 const styles = StyleSheet.create({
