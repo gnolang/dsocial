@@ -35,6 +35,16 @@ export default function Page() {
   };
 
   const onCreate = async () => {
+    if (!name || !password) {
+      setError("Please fill out all fields");
+      return;
+    }
+
+    if (name.length < 6) {
+      setError("Account name must be at least 6 characters");
+      return;
+    }
+
     try {
       const response = await gno.createAccount(name, phrase, password);
       if (!response) throw new Error("Failed to create account");
@@ -56,7 +66,7 @@ export default function Page() {
         <Text style={styles.title}>Create your account</Text>
         <View style={{ minWidth: 200, paddingTop: 8 }}>
           <Spacer />
-          <TextInput placeholder="Account Name" value={name} onChangeText={setName} autoCapitalize="none" />
+          <TextInput placeholder="Account Name" value={name} onChangeText={setName} autoCapitalize="none" autoCorrect={false} />
           <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} error={error} />
           <Spacer />
         </View>
