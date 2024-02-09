@@ -21,8 +21,9 @@ const useOnboarding = () => {
     try {
       const gasFee = "10000000ugnot";
       const gasWanted = 20000000;
+      const send = "200000000ugnot";
       const args: Array<string> = ["", name, "Profile description"];
-      for await (const response of await gno.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted)) {
+      for await (const response of await gno.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, send)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
