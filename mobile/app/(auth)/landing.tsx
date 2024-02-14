@@ -33,7 +33,7 @@ export default function Page() {
       try {
         const response = await gno.listKeyInfo();
 
-        console.log("response", response);
+        console.log("response response:", response);
 
         setAccounts(response);
       } catch (error: unknown | Error) {

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button as RNButton } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import TextInput from "components/textinput";
 import Button from "components/button";
