@@ -14,6 +14,7 @@ export default function Page() {
 
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
   const [account, setAccount] = useState<KeyInfo | undefined>(undefined);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function Page() {
   }, [navigation]);
 
   const onPost = async () => {
+    setLoading(true);
     setError(undefined);
     try {
       const gasFee = "1000000ugnot";
@@ -42,6 +44,8 @@ export default function Page() {
     } catch (error) {
       console.log(error);
       setError("" + error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,7 +73,7 @@ export default function Page() {
             style={{ height: 100 }}
           />
           <Spacer />
-          <Button.TouchableOpacity title="Post" variant="primary" onPress={onPost} />
+          <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPost} />
           <Alert severity="error" message={error} />
         </View>
       </View>
