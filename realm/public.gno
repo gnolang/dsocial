@@ -109,7 +109,7 @@ func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startI
 		panic("posts for userPostsAddr do not exist")
 	}
 
-	if threadID <= 0 {
+	if threadID == 0 {
 		return getPosts(userPosts.threads, startIndex, endIndex)
 	}
 
@@ -118,7 +118,7 @@ func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startI
 		panic(ufmt.Sprintf("thread does not exist with id %d", threadID))
 	}
 
-	if replyID <= 0 {
+	if replyID == 0 {
 		return getPosts(thread.replies, startIndex, endIndex)
 	} else {
 		reply := thread.GetReply(PostID(replyID))
