@@ -37,13 +37,16 @@ export default function Page() {
   }, [navigation]);
 
   const onboard = async () => {
-    // console.log("onboarding", activeAccount?.name, activeAccount?.address);
+    if (!activeAccount) {
+      console.log("No active account");
+      return;
+    }
     await onboarding.onboard(activeAccount?.name, activeAccount?.address);
   };
 
   const onDeleteAccount = async () => {
     router.push("settings/remove-account");
-  }
+  };
 
   return (
     <Layout.Container>
