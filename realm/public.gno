@@ -2,6 +2,8 @@ package social
 
 import (
 	"std"
+
+	"gno.land/p/demo/ufmt"
 )
 
 // Post a message to the caller's main user posts.
@@ -91,4 +93,39 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 	}
 	repost := thread.AddRepostTo(caller, comment, dstUserPosts)
 	return repost.id
+}
+
+// Get posts in a thread for a user. A thread is the sequence of posts without replies.
+// While each post has an an arbitrary id, it also has an index within the thread starting from 0.
+// Limit the response to posts from startIndex up to (not including) endIndex within the thread.
+// If threadID is 0 then return the user's top-level posts. (Like render args "user".)
+// If threadID is X and replyID is 0, then return the posts (without replies) in that thread. (Like render args "user/2".)
+// If threadID is X and replyID is Y, then return the posts in the thread starting with replyID. (Like render args "user/2/5".)
+// The response includes reposts by this user (only if threadID is 0), but not messages of other
+// users that are being followed. The response is a JSON string.
+func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startIndex int, endIndex int) string {
+	userPosts := getUserPosts(userPostsAddr)
+	if userPosts == nil {
+		panic("posts for userPostsAddr do not exist")
+	}
+
+	if threadID == 0 {
+		return getPosts(userPosts.threads, startIndex, endIndex)
+	}
+
+	thread := userPosts.GetThread(PostID(threadID))
+	if thread == nil {
+		panic(ufmt.Sprintf("thread does not exist with id %d", threadID))
+	}
+
+	if replyID == 0 {
+		return getPosts(thread.replies, startIndex, endIndex)
+	} else {
+		reply := thread.GetReply(PostID(replyID))
+		if reply == nil {
+			panic(ufmt.Sprintf("reply does not exist with id %d in thread with id %d", replyID, threadID))
+		}
+
+		return getPosts(reply.replies, startIndex, endIndex)
+	}
 }

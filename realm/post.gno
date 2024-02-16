@@ -1,11 +1,13 @@
 package social
 
 import (
+	"bytes"
 	"std"
 	"strconv"
 	"time"
 
 	"gno.land/p/demo/avl"
+	"gno.land/p/demo/ufmt"
 )
 
 //----------------------------------------
@@ -200,4 +202,44 @@ func (post *Post) RenderInner() string {
 	str += "\n"
 	str += post.RenderPost("> ", 5)
 	return str
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (post *Post) MarshalJSON() ([]byte, error) {
+	createdAt, err := post.createdAt.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+
+	json := new(bytes.Buffer)
+
+	json.WriteString(ufmt.Sprintf(`{"id": %d, "createdAt": %s, "n_replies": %d, "n_replies_all": %d, "parent_id": %d`,
+		uint64(post.id), string(createdAt), post.replies.Size(), post.repliesAll.Size(), uint64(post.parentID)))
+	if post.repostUser != "" {
+		json.WriteString(ufmt.Sprintf(`, "repost_user": %s`, strconv.Quote(post.repostUser.String())))
+	}
+	json.WriteString(ufmt.Sprintf(`, "body": %s}`, strconv.Quote(post.body)))
+
+	return json.Bytes(), nil
+}
+
+func getPosts(posts avl.Tree, startIndex int, endIndex int) string {
+	json := ufmt.Sprintf("{\"n_threads\": %d, \"posts\": [\n  ", posts.Size())
+
+	for i := startIndex; i < endIndex && i < posts.Size(); i++ {
+		if i > startIndex {
+			json += ",\n  "
+		}
+
+		_, postI := posts.GetByIndex(i)
+		post := postI.(*Post)
+		postJson, err := post.MarshalJSON()
+		if err != nil {
+			panic("can't get post JSON")
+		}
+		json += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", i, string(postJson))
+	}
+
+	json += "]}"
+	return json
 }
