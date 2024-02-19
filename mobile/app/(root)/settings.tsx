@@ -9,9 +9,11 @@ import { KeyInfo } from "@gno/api/gnonativetypes_pb";
 import Layout from "@gno/components/layout";
 import Text from "@gno/components/text";
 import Spacer from "@gno/components/spacer";
+import { LoadingModal } from "@gno/components/loading";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
 
   const gno = useGno();
   const navigation = useNavigation();
@@ -41,7 +43,14 @@ export default function Page() {
       console.log("No active account");
       return;
     }
-    await onboarding.onboard(activeAccount?.name, activeAccount?.address);
+    setLoading(true);
+    try {
+      await onboarding.onboard(activeAccount?.name, activeAccount?.address);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onDeleteAccount = async () => {
@@ -49,33 +58,38 @@ export default function Page() {
   };
 
   return (
-    <Layout.Container>
-      <Layout.Body>
-        <>
-          <View>
-            <Text.HeaderSubtitle>Active Account:</Text.HeaderSubtitle>
-            <Text.Body style={{ fontSize: 14 }}>{activeAccount ? JSON.stringify(activeAccount) : "No active account."}</Text.Body>
-          </View>
+    <>
+      <Layout.Container>
+        <Layout.Body>
+          <>
+            <View>
+              <Text.HeaderSubtitle>Active Account:</Text.HeaderSubtitle>
+              <Text.Body style={{ fontSize: 14 }}>
+                {activeAccount ? JSON.stringify(activeAccount) : "No active account."}
+              </Text.Body>
+            </View>
 
-          <View>
-            <Button.TouchableOpacity
-              title="Logout"
-              onPress={() => dispatch(logedOut())}
-              style={styles.logout}
-              variant="primary-red"
-            />
-            <Spacer />
-            <Button.TouchableOpacity title="Onboard" onPress={onboard} variant="primary" />
-            <Button.TouchableOpacity
-              title="Delete Account"
-              onPress={onDeleteAccount}
-              style={styles.logout}
-              variant="primary-red"
-            />
-          </View>
-        </>
-      </Layout.Body>
-    </Layout.Container>
+            <View>
+              <Button.TouchableOpacity
+                title="Logout"
+                onPress={() => dispatch(logedOut())}
+                style={styles.logout}
+                variant="primary-red"
+              />
+              <Spacer />
+              <Button.TouchableOpacity title="Onboard" onPress={onboard} variant="primary" />
+              <Button.TouchableOpacity
+                title="Delete Account"
+                onPress={onDeleteAccount}
+                style={styles.logout}
+                variant="primary-red"
+              />
+            </View>
+          </>
+        </Layout.Body>
+      </Layout.Container>
+      <LoadingModal visible={loading} />
+    </>
   );
 }
 

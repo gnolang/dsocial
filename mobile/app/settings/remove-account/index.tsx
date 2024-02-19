@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { router, useNavigation } from "expo-router";
 import { GnoAccount } from "@gno/native_modules/types";
 import { useGno } from "@gno/hooks/use-gno";
-import Loading from "@gno/components/loading";
+import { Loading } from "@gno/components/loading";
 import Layout from "@gno/components/layout";
 import Text from "@gno/components/text";
 import SideMenuAccountList from "@gno/components/list/account/account-list";
