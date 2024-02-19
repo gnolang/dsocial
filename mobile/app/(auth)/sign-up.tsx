@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Button as RNButton } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "expo-router";
 import TextInput from "components/textinput";
 import Button from "components/button";
@@ -12,10 +12,12 @@ import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
 
 export default function Page() {
-  const [name, setName] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [phrase, setPhrase] = React.useState<string>("");
-  const [error, setError] = React.useState<string | undefined>(undefined);
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [phrase, setPhrase] = useState<string>("");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
   const gno = useGno();
@@ -38,7 +40,7 @@ export default function Page() {
   };
 
   const onCreate = async () => {
-    setError(undefined)
+    setError(undefined);
     if (!name || !password) {
       setError("Please fill out all fields");
       return;
@@ -49,7 +51,13 @@ export default function Page() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     try {
+      setLoading(true);
       const response = await gno.createAccount(name, phrase, password);
       if (!response) throw new Error("Failed to create account");
       await gno.selectAccount(name);
@@ -62,6 +70,8 @@ export default function Page() {
     } catch (error) {
       setError("" + error);
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +83,13 @@ export default function Page() {
           <Spacer />
           <TextInput placeholder="Account Name" value={name} onChangeText={setName} autoCapitalize="none" autoCorrect={false} />
           <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} />
+          <TextInput
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry={true}
+            error={error}
+          />
           <Spacer />
         </View>
         <View style={{ minWidth: 200, paddingTop: 8 }}>
@@ -83,9 +100,9 @@ export default function Page() {
           <Spacer />
           <Alert severity="error" message={error} />
           <Spacer space={64} />
-          <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" />
+          <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" loading={loading} />
           <Spacer space={16} />
-          <Button.Link title="Back" href="/landing" />
+          <Button.Link title="Back" href="/landing" disabled={loading} />
         </View>
       </View>
     </View>

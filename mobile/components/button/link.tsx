@@ -9,11 +9,11 @@ interface ButtonProps extends PressableProps {
 }
 
 const LinkButton = (props: ButtonProps) => {
-  const { href, title, variant = "primary" } = props;
+  const { href, title, variant = "primary", ...rest } = props;
 
   return (
     <Link href={href} asChild>
-      <Button title={title} variant={variant} onPress={() => {}} />
+      <Button title={title} variant={variant} onPress={() => {}} disabled={Boolean(rest.disabled)} />
     </Link>
   );
 };
