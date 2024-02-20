@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button as RNButton } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import TextInput from "components/textinput";
 import Button from "components/button";
@@ -9,6 +9,7 @@ import { ModalConfirm } from "components/modal";
 import Alert from "components/alert";
 import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
+import useOnboarding from "@gno/hooks/use-onboarding";
 
 export default function Page() {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");
@@ -20,6 +21,7 @@ export default function Page() {
   const dispatch = useAppDispatch();
 
   const gno = useGno();
+  const onboarding = useOnboarding();
 
   const recoverAccount = async (override: boolean = false) => {
     setError(undefined);
@@ -46,7 +48,9 @@ export default function Page() {
       if (!response) throw new Error("createAccount response is null");
       await gno.selectAccount(name);
       await gno.setPassword(password);
-      console.log("createAccount response: " + JSON.stringify(response));
+      console.log("createAccount response: ", JSON.stringify(response));
+
+      await onboarding.onboard(response.name, response.address);
 
       dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
     } catch (error) {

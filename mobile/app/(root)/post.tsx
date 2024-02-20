@@ -1,18 +1,38 @@
+import { KeyInfo } from "@gno/api/gnonativetypes_pb";
 import { useGno } from "@gno/hooks/use-gno";
 import Alert from "components/alert";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import TextInput from "components/textinput";
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useNavigation } from "expo-router";
+import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Page() {
   const gno = useGno();
+  const navigation = useNavigation();
+
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
+  const [loading, setLoading] = useState(false);
+  const [account, setAccount] = useState<KeyInfo | undefined>(undefined);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      try {
+        const response = await gno.getActiveAccount();
+        if (!response.key) throw new Error("No active account");
+        setAccount(response.key);
+      } catch (error: unknown | Error) {
+        console.log(error);
+      }
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const onPost = async () => {
+    setLoading(true);
+    setError(undefined);
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
@@ -24,13 +44,26 @@ export default function Page() {
     } catch (error) {
       console.log(error);
       setError("" + error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (!account) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.main}>
+          <Text>No active account. Please refresh the app.</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.main}>
-        <Text>What do you want to share?</Text>
+        <Spacer space={16} />
+        <Text>What do you want to share, {account.name}?</Text>
         <View style={{ minWidth: "100%", paddingTop: 8 }}>
           <TextInput
             placeholder="What's happening?"
@@ -40,7 +73,7 @@ export default function Page() {
             style={{ height: 100 }}
           />
           <Spacer />
-          <Button.TouchableOpacity title="Post" variant="primary" onPress={onPost} />
+          <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPost} />
           <Alert severity="error" message={error} />
         </View>
       </View>
