@@ -7,9 +7,9 @@ import Button from "@gno/components/button";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import { KeyInfo } from "@gno/api/gnonativetypes_pb";
 import Layout from "@gno/components/layout";
-import Text from "@gno/components/text";
 import Spacer from "@gno/components/spacer";
 import { LoadingModal } from "@gno/components/loading";
+import { AccountBalance } from "@gno/components/settings";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
@@ -62,12 +62,7 @@ export default function Page() {
       <Layout.Container>
         <Layout.Body>
           <>
-            <View>
-              <Text.HeaderSubtitle>Active Account:</Text.HeaderSubtitle>
-              <Text.Body style={{ fontSize: 14 }}>
-                {activeAccount ? JSON.stringify(activeAccount) : "No active account."}
-              </Text.Body>
-            </View>
+            <AccountBalance activeAccount={activeAccount} />
 
             <View>
               <Button.TouchableOpacity
