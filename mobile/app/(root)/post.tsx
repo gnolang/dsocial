@@ -40,7 +40,8 @@ export default function Page() {
       for await (const response of await gno.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
         console.log("response: ", response);
       }
-      router.push("/home");
+      setPostContent("");
+      router.push("home");
     } catch (error) {
       console.log(error);
       setError("" + error);

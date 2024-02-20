@@ -22,7 +22,7 @@ const Button: React.FC<Props> = ({ title, onPress, loading = false, variant, ...
   );
 };
 
-const TouchableOpacityButton = styled.TouchableOpacity<{ variant: ButtonVariant }>`
+export const TouchableOpacityButton = styled.TouchableOpacity<{ variant: ButtonVariant }>`
   background-color: ${(props) => getStyle(props.variant)};
   width: 100%;
   height: 48px;
@@ -51,7 +51,7 @@ const getStyle = (variant: ButtonVariant) => {
   }
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   buttonText: {
     color: colors.white,
     fontWeight: "bold",

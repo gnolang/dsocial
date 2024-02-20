@@ -1,8 +1,6 @@
 import { colors } from "assets/styles/colors";
 import Spacer from "components/spacer";
-import { Text, View } from "react-native";
 import styled from "styled-components/native";
-// import Exclamation from '../icons/Exclamation';
 
 export interface Props {
   message?: string;

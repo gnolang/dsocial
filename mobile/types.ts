@@ -9,7 +9,11 @@ export type Post = {
   };
   post: string;
   date: string;
+  index: string;
   id: string;
+  n_replies: number;
+  n_replies_all: number;
+  parent_id: string;
 };
 
 export interface User {

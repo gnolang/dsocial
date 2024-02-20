@@ -1,111 +1,117 @@
+import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigation } from "expo-router";
-import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { Feed } from "@gno/components/feed/feed";
-import { useGno } from "@gno/hooks/use-gno";
-import { Post } from "../../types";
-import Text from "@gno/components/text";
+import { useFeed } from "@gno/hooks/use-feed";
+import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
+import { Post } from "@gno/types";
+import { FlatList } from "react-native-gesture-handler";
+import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
+import EmptyFeedList from "@gno/components/feed/empty-feed-list";
+import { Tweet } from "@gno/components/feed/tweet";
 
 export default function Page() {
-  const gno = useGno();
-  const [boardContent, setBoardContent] = React.useState<Post[] | undefined>(undefined);
+  const pageSize = 9;
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(pageSize);
+  const [limit, setLimit] = useState(pageSize + 1);
+  const [data, setData] = useState<Post[]>([]);
+  const [error, setError] = useState<unknown | Error | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEndReached, setIsEndReached] = useState(false);
+
+  const feed = useFeed();
   const navigation = useNavigation();
+  const ref = useRef<FlatList>(null);
+
+  useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      try {
-        const accountResponse = await gno.getActiveAccount();
-        if (!accountResponse.key) throw new Error("No active account");
-
-        const name = accountResponse.key.name;
-        const response = await gno.render("gno.land/r/berty/social", name);
-
-        const feed = convertToPost(response);
-        setBoardContent(feed);
-      } catch (error: unknown | Error) {
-        console.log(error);
-      }
+      fetchData();
     });
     return unsubscribe;
   }, [navigation]);
 
-  /**
-   * Given the following content as an example:
-   *  \- [@jefft0](/r/demo/users:jefft0), [2024-01-30 2:21pm UTC](/r/berty/social:jefft0/1) (0 replies)
-   *
-   * The following regex will match and capture the following:
-   *  \[@([^\]]+)\]: Matches [@jefft0] and captures jefft0 in a group.
-   *  \(([^)]+)\): Matches (/r/berty/social:jefft0/1) and captures /r/berty/social:jefft0/1 in a group.
-   *  \[(\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}[ap]m UTC)\]: Matches [2024-01-30 2:21pm UTC] and captures 2024-01-30 2:21pm UTC in a group.
-   *  \(([^)]+)\): Matches the (0 replies) part and captures 0 replies in a group.
-   */
-  const pattern = /\[@([^)]+)]\(([^)]+)\), \[([^)]+)\]\(([^)]+)\) \((\d+) replies\) \((\d+) reposts\)/g;
-
-  const convertToPost = (content: string | undefined) => {
-    if (!content || content.startsWith("Unknown user")) return [];
-
-    const data = content?.split("----------------------------------------");
-
-    const posts: Post[] = [];
-
-    data?.forEach((element) => {
-      const post = element.split("\n");
-
-      const match = post[2].split(pattern);
-
-      if (match) {
-        console.log("match found.", match);
-        const username = match[1];
-        const userLink = match[2];
-        const date = match[3];
-        const postLink = match[4];
-        const replies = match[5];
-
-        posts.push({
-          user: {
-            user: username,
-            name: username,
-            image: "https://www.gravatar.com/avatar/tmp",
-            followers: 0,
-            url: "string",
-            bio: "string",
-          },
-          post: post[1],
-          id: Math.random().toString(),
-          date,
-        });
-      } else {
-        console.log("No match found.");
-      }
-    });
-
-    return posts.reverse();
+  const handleEndReached = async () => {
+    console.log("end reached", isEndReached);
+    if (!isEndReached) {
+      setIsEndReached(true);
+      fetchData();
+    }
   };
 
-  const hasNoContent = !boardContent || boardContent.length === 0;
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      console.log("fetching data from %d to %d", startIndex, endIndex);
+      const result = await feed.fetchFeed(startIndex, endIndex);
+      setLimit(result.n_threads);
+      setStartIndex(endIndex + 1);
+      setEndIndex(endIndex + pageSize);
 
-  if (hasNoContent) {
+      //join the data
+      console.log("current data length", data.length);
+      console.log("new data length", result.data.length);
+      setData([...data, ...result.data]);
+      console.log("startIndex: %s, limit: %s", startIndex, limit);
+      setIsEndReached(startIndex >= limit);
+    } catch (error: unknown | Error) {
+      setError(error);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderFooter = () => {
+    if (!isLoading) return null;
+    return (
+      <View style={styles.footer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  };
+
+  if (error) {
     return (
       <Layout.Container>
-        <Layout.Body>{hasNoContent ? <Text.Body>No post yet.</Text.Body> : null}</Layout.Body>
+        <Layout.Body>
+          <Alert severity="error" message={JSON.stringify(error)} />
+        </Layout.Body>
       </Layout.Container>
     );
   }
 
-  return <Feed contentInsetAdjustmentBehavior="automatic" data={boardContent} />;
+  return (
+    <View style={styles.container}>
+      <FlatList
+        ref={ref}
+        scrollToOverflowEnabled
+        data={data}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={<EmptyFeedList />}
+        keyExtractor={(item) => `${item.id}`}
+        contentContainerStyle={styles.flatListContent}
+        renderItem={({ item }) => <Tweet item={item} />}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.1}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    padding: 24,
+    justifyContent: "flex-end",
+    alignItems: "stretch",
   },
-  main: {
-    flex: 1,
-    justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
+  flatListContent: {
+    paddingBottom: 60, // Adjust the value to ensure it's above the app menu
+  },
+  footer: {
+    paddingVertical: 20,
+    alignItems: "center",
   },
 });

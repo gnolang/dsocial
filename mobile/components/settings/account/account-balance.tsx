@@ -20,12 +20,15 @@ export function AccountBalance({ activeAccount }: Props) {
     gno.addressToBech32(activeAccount.address).then((address) => {
       setAddress(address);
     });
-    gno.queryAccount(activeAccount.address).then((balance) => {
-      setBalance(balance.accountInfo?.coins.reduce(
-        (acc, coin) => acc + coin.amount.toString() + coin.denom + " ", ""));
-    }).catch((error) => {
-     setBalance(JSON.stringify(error));
-    });
+    gno
+      .queryAccount(activeAccount.address)
+      .then((balance) => {
+        setBalance(balance.accountInfo?.coins.reduce((acc, coin) => acc + coin.amount.toString() + coin.denom + " ", ""));
+      })
+      .catch((error) => {
+        console.log("Error on fetching balance", JSON.stringify(error));
+        setBalance("Error on fetching balance. Please check the logs.");
+      });
   }, [activeAccount]);
 
   if (!activeAccount) {

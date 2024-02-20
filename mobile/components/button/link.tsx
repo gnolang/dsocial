@@ -1,19 +1,24 @@
 import { Link } from "expo-router";
-import { PressableProps } from "react-native";
-import Button, { ButtonVariant } from "./button";
+import { ActivityIndicator, GestureResponderEvent } from "react-native";
+import { ButtonVariant, TouchableOpacityButton, styles } from "./button";
+import Text from "../text";
 
-interface ButtonProps extends PressableProps {
+interface ButtonProps {
   title: string;
   href: string;
   variant?: ButtonVariant;
+  onPress?: ((event: GestureResponderEvent) => void) | undefined;
+  loading?: boolean;
 }
 
 const LinkButton = (props: ButtonProps) => {
-  const { href, title, variant = "primary", ...rest } = props;
+  const { href, title, variant = "primary", onPress, loading } = props;
 
   return (
     <Link href={href} asChild>
-      <Button title={title} variant={variant} onPress={() => {}} disabled={Boolean(rest.disabled)} />
+      <TouchableOpacityButton variant={variant} onPress={onPress}>
+        {loading ? <ActivityIndicator size="small" /> : <Text.Body style={styles.buttonText}>{title}</Text.Body>}
+      </TouchableOpacityButton>
     </Link>
   );
 };

@@ -47,7 +47,7 @@ export default function Page() {
     try {
       await onboarding.onboard(activeAccount?.name, activeAccount?.address);
     } catch (error) {
-      console.log(error);
+      console.log("Error on onboard", JSON.stringify(error));
     } finally {
       setLoading(false);
     }
