@@ -21,7 +21,8 @@ export function AccountBalance({ activeAccount }: Props) {
       setAddress(address);
     });
     gno.queryAccount(activeAccount.address).then((balance) => {
-      setBalance(JSON.stringify(balance.accountInfo?.coins));
+      setBalance(balance.accountInfo?.coins.reduce(
+        (acc, coin) => acc + coin.amount.toString() + coin.denom + " ", ""));
     }).catch((error) => {
      setBalance(JSON.stringify(error));
     });
