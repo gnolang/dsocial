@@ -15,22 +15,36 @@
 @class GnoGnonativeBridgeConfig;
 @protocol GnoGnonativePromiseBlock;
 @class GnoGnonativePromiseBlock;
+@protocol GnoGnonativeServiceClient;
+@class GnoGnonativeServiceClient;
 
 @protocol GnoGnonativePromiseBlock <NSObject>
 - (void)callReject:(NSError* _Nullable)error;
 - (void)callResolve:(NSString* _Nullable)reply;
 @end
 
-@interface GnoGnonativeBridge : NSObject <goSeqRefInterface> {
+@protocol GnoGnonativeServiceClient <NSObject>
+- (void)closeStreamClientWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise id_:(NSString* _Nullable)id_;
+- (void)createStreamClientWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise method:(NSString* _Nullable)method jsonMessage:(NSString* _Nullable)jsonMessage;
+- (void)invokeGrpcMethodWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise method:(NSString* _Nullable)method jsonMessage:(NSString* _Nullable)jsonMessage;
+- (void)streamClientReceiveWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise id_:(NSString* _Nullable)id_;
+@end
+
+@interface GnoGnonativeBridge : NSObject <goSeqRefInterface, GnoGnonativeServiceClient> {
 }
 @property(strong, readonly) _Nonnull id _ref;
 
 - (nonnull instancetype)initWithRef:(_Nonnull id)ref;
 - (nullable instancetype)init:(GnoGnonativeBridgeConfig* _Nullable)config;
+@property (nonatomic) id<GnoGnonativeServiceClient> _Nullable serviceClient;
 - (BOOL)close:(NSError* _Nullable* _Nullable)error;
+- (void)closeStreamClientWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise id_:(NSString* _Nullable)id_;
+- (void)createStreamClientWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise method:(NSString* _Nullable)method jsonMessage:(NSString* _Nullable)jsonMessage;
 - (NSString* _Nonnull)getTcpAddr;
 - (long)getTcpPort;
 - (NSString* _Nonnull)getUDSPath;
+- (void)invokeGrpcMethodWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise method:(NSString* _Nullable)method jsonMessage:(NSString* _Nullable)jsonMessage;
+- (void)streamClientReceiveWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise id_:(NSString* _Nullable)id_;
 @end
 
 @interface GnoGnonativeBridgeConfig : NSObject <goSeqRefInterface> {
@@ -49,7 +63,12 @@ FOUNDATION_EXPORT GnoGnonativeBridge* _Nullable GnoGnonativeNewBridge(GnoGnonati
 
 FOUNDATION_EXPORT GnoGnonativeBridgeConfig* _Nullable GnoGnonativeNewBridgeConfig(void);
 
+// skipped function NewServiceClient with unsupported parameter or return types
+
+
 @class GnoGnonativePromiseBlock;
+
+@class GnoGnonativeServiceClient;
 
 @interface GnoGnonativePromiseBlock : NSObject <goSeqRefInterface, GnoGnonativePromiseBlock> {
 }
@@ -58,6 +77,17 @@ FOUNDATION_EXPORT GnoGnonativeBridgeConfig* _Nullable GnoGnonativeNewBridgeConfi
 - (nonnull instancetype)initWithRef:(_Nonnull id)ref;
 - (void)callReject:(NSError* _Nullable)error;
 - (void)callResolve:(NSString* _Nullable)reply;
+@end
+
+@interface GnoGnonativeServiceClient : NSObject <goSeqRefInterface, GnoGnonativeServiceClient> {
+}
+@property(strong, readonly) _Nonnull id _ref;
+
+- (nonnull instancetype)initWithRef:(_Nonnull id)ref;
+- (void)closeStreamClientWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise id_:(NSString* _Nullable)id_;
+- (void)createStreamClientWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise method:(NSString* _Nullable)method jsonMessage:(NSString* _Nullable)jsonMessage;
+- (void)invokeGrpcMethodWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise method:(NSString* _Nullable)method jsonMessage:(NSString* _Nullable)jsonMessage;
+- (void)streamClientReceiveWithPromiseBlock:(id<GnoGnonativePromiseBlock> _Nullable)promise id_:(NSString* _Nullable)id_;
 @end
 
 #endif
