@@ -25,7 +25,7 @@ func PostMessage(body string) PostID {
 		gUserPostsByAddress.Set(caller.String(), userPosts)
 	}
 
-	thread := userPosts.AddThread(caller, body)
+	thread := userPosts.AddThread(body)
 	return thread.id
 }
 

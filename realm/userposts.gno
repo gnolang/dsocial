@@ -38,10 +38,11 @@ func (userPosts *UserPosts) GetThread(pid PostID) *Post {
 	return postI.(*Post)
 }
 
-func (userPosts *UserPosts) AddThread(creator std.Address, body string) *Post {
+// Add a new top-level thread to the userPosts. Return the new Post.
+func (userPosts *UserPosts) AddThread(body string) *Post {
 	pid := userPosts.incGetPostID()
 	pidkey := postIDKey(pid)
-	thread := newPost(userPosts, pid, creator, body, pid, 0, "")
+	thread := newPost(userPosts, pid, userPosts.userAddr, body, pid, 0, "")
 	userPosts.threads.Set(pidkey, thread)
 	return thread
 }
