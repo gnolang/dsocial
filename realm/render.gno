@@ -42,9 +42,8 @@ func Render(path string) string {
 			return "No posts by: " + path
 		}
 
-		return userPosts.RenderUserPosts()
+		return userPosts.RenderUserPosts(false)
 	} else if len(parts) == 2 {
-		// /r/berty/social:USER_NAME/THREAD_ID
 		name := parts[0]
 		user := users.GetUserByName(name)
 		if user == nil {
@@ -55,15 +54,27 @@ func Render(path string) string {
 			return "No posts by: " + name
 		}
 
-		pid, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return "invalid thread id: " + parts[1]
+		if parts[1] == "home" {
+			// /r/berty/social:USER_NAME/home
+			return userPosts.RenderUserPosts(true)
+		} else if parts[1] == "followers" {
+			// /r/berty/social:USER_NAME/followers
+			return userPosts.RenderFollowers()
+		} else if parts[1] == "following" {
+			// /r/berty/social:USER_NAME/following
+			return userPosts.RenderFollowing()
+		} else {
+			// /r/berty/social:USER_NAME/THREAD_ID
+			pid, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return "invalid thread id: " + parts[1]
+			}
+			thread := userPosts.GetThread(PostID(pid))
+			if thread == nil {
+				return "thread does not exist with id: " + parts[1]
+			}
+			return thread.RenderPost("", 5)
 		}
-		thread := userPosts.GetThread(PostID(pid))
-		if thread == nil {
-			return "thread does not exist with id: " + parts[1]
-		}
-		return thread.RenderPost("", 5)
 	} else if len(parts) == 3 {
 		// /r/berty/social:USER_NAME/THREAD_ID/REPLY_ID
 		name := parts[0]
