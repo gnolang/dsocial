@@ -28,6 +28,7 @@ export default function Page() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      setError(undefined);
       fetchData();
     });
     return unsubscribe;
@@ -56,7 +57,13 @@ export default function Page() {
       setData([...data, ...result.data]);
       console.log("startIndex: %s, limit: %s", startIndex, limit);
       setIsEndReached(startIndex >= limit);
-    } catch (error: unknown | Error) {
+    } catch (error: unknown | Error | any) {
+      // TODO: Check if this is the correct error message to handle and if it's the correct way to handle it
+      // https://github.com/gnolang/gnonative/issues/117
+      if (error.message === "[unknown] invoke bridge method error: unknown: posts for userPostsAddr do not exist") {
+        setData([]);
+        return;
+      }
       setError(error);
       console.log(error);
     } finally {
@@ -77,7 +84,7 @@ export default function Page() {
     return (
       <Layout.Container>
         <Layout.Body>
-          <Alert severity="error" message={JSON.stringify(error)} />
+          <Alert severity="error" message="Error while fetching posts, please, check the logs." />
         </Layout.Body>
       </Layout.Container>
     );

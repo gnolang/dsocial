@@ -24,13 +24,7 @@ export default function Page() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
-        const account = await gno.getActiveAccount();
-        setActiveAccount(account.key);
-
-        const chainId = await gno.getChainID();
-        const remote = await gno.getRemote();
-        console.log("chainId: " + chainId);
-        console.log("remote: " + remote);
+        fetchAccountData();
       } catch (error: unknown | Error) {
         console.log(error);
       }
@@ -46,10 +40,27 @@ export default function Page() {
     setLoading(true);
     try {
       await onboarding.onboard(activeAccount?.name, activeAccount?.address);
+      fetchAccountData();
     } catch (error) {
       console.log("Error on onboard", JSON.stringify(error));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAccountData = async () => {
+    try {
+      const account = await gno.getActiveAccount();
+      const chainId = await gno.getChainID();
+      const remote = await gno.getRemote();
+      setActiveAccount(account.key);
+      setChainID(chainId);
+      setRemote(remote);
+
+      console.log("chainId: " + chainId);
+      console.log("remote: " + remote);
+    } catch (error: unknown | Error) {
+      console.log(error);
     }
   };
 
