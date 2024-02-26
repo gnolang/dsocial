@@ -3,7 +3,9 @@ package social
 import (
 	"std"
 
+	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
+	"gno.land/r/demo/users"
 )
 
 // Post a message to the caller's main user posts.
@@ -93,6 +95,36 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 	}
 	repost := thread.AddRepostTo(caller, comment, dstUserPosts)
 	return repost.id
+}
+
+// Get all users with their address. The response is an avl.Tree where the key is the
+// (sorted) user name and the value is the address.
+func GetUsers() *avl.Tree {
+	allUsers := avl.Tree{}
+	gUserPostsByAddress.Iterate("", "", func(addr string, userPostsI interface{}) bool {
+		if user := users.GetUserByAddress(std.Address(addr)); user != nil {
+			// allUsers will be sorted by the name key.
+			allUsers.Set(user.Name(), addr)
+		}
+		return false
+	})
+
+	return &allUsers
+}
+
+// Get all users with their address (using GetUsers), sorted by name. The response is a JSON string.
+func GetJsonUsers() string {
+	allUsers := GetUsers()
+	usersJson := ""
+	allUsers.Iterate("", "", func(name string, addr interface{}) bool {
+		if usersJson != "" {
+			usersJson += ",\n  "
+		}
+		usersJson += ufmt.Sprintf("{\"name\": \"%s\", \"address\": \"%s\"}", name, addr.(string))
+		return false
+	})
+
+	return ufmt.Sprintf("{\"n_users\": %d, \"users\": [\n  %s]}", allUsers.Size(), usersJson)
 }
 
 // Get posts in a thread for a user. A thread is the sequence of posts without replies.
