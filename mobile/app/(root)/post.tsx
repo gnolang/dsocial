@@ -19,6 +19,7 @@ export default function Page() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      setPostContent("");
       try {
         const response = await gno.getActiveAccount();
         if (!response.key) throw new Error("No active account");
@@ -69,6 +70,7 @@ export default function Page() {
           <TextInput
             placeholder="What's happening?"
             onChangeText={setPostContent}
+            value={postContent}
             multiline
             numberOfLines={4}
             style={{ height: 100 }}
