@@ -48,7 +48,7 @@ export default function Page() {
       console.log("fetching data from %d to %d", startIndex, endIndex);
       const result = await feed.fetchFeed(startIndex, endIndex);
       setLimit(result.n_threads);
-      setStartIndex(endIndex + 1);
+      setStartIndex(endIndex);
       setEndIndex(endIndex + pageSize);
 
       //join the data
