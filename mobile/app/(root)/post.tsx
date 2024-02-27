@@ -19,6 +19,7 @@ export default function Page() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      setPostContent("");
       try {
         const response = await gno.getActiveAccount();
         if (!response.key) throw new Error("No active account");
@@ -40,7 +41,8 @@ export default function Page() {
       for await (const response of await gno.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
         console.log("response: ", response);
       }
-      router.push("/home");
+      setPostContent("");
+      router.push("home");
     } catch (error) {
       console.log(error);
       setError("" + error);
@@ -68,6 +70,7 @@ export default function Page() {
           <TextInput
             placeholder="What's happening?"
             onChangeText={setPostContent}
+            value={postContent}
             multiline
             numberOfLines={4}
             style={{ height: 100 }}
