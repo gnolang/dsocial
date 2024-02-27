@@ -38,6 +38,13 @@ export const colors = {
     700: "#333333",
   },
 
+  text: {
+    primary: "#000000",
+    secondary: "#37474f",
+    tertiary: "#546e7a",
+    placeholder: "#b0bec5",
+  },
+
   red: {
     50: "#FFF5F5",
     100: "#FDE1DF",

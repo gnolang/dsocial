@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { ScrollView } from "react-native";
+import { useRouter, useNavigation } from "expo-router";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import SideMenuAccountList from "@gno/components/list/account/account-list";
@@ -8,8 +11,6 @@ import Text from "@gno/components/text";
 import { useGno } from "@gno/hooks/use-gno";
 import { GnoAccount } from "@gno/native_modules/types";
 import { loggedIn, useAppDispatch } from "@gno/redux";
-import { useRouter, useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
 
 export default function Root() {
   const route = useRouter();
@@ -84,21 +85,23 @@ export default function Root() {
     <>
       <Layout.Container>
         <Layout.BodyAlignedBotton>
-          {accounts && accounts.length > 0 && (
-            <>
-              <Text.Body>Please, select one of the existing accounts to start:</Text.Body>
-              <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
-              <Spacer />
-              <Ruller />
-              <Spacer />
-              <Text.Body>Or use one of these options:</Text.Body>
-            </>
-          )}
+          <ScrollView>
+            {accounts && accounts.length > 0 && (
+              <>
+                <Text.Body>Please, select one of the existing accounts to start:</Text.Body>
+                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
+                <Spacer />
+                <Ruller />
+                <Spacer />
+                <Text.Body>Or use one of these options:</Text.Body>
+              </>
+            )}
 
-          <Spacer />
-          <Button.Link title="Sign up" href="sign-up" />
-          <Spacer />
-          <Button.Link title="Import Account" href="/sign-in" variant="tertiary" />
+            <Spacer />
+            <Button.Link title="Sign up" href="sign-up" />
+            <Spacer />
+            <Button.Link title="Import Account" href="/sign-in" variant="tertiary" />
+          </ScrollView>
         </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (
