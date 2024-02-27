@@ -215,8 +215,8 @@ func (post *Post) MarshalJSON() ([]byte, error) {
 
 	json := new(bytes.Buffer)
 
-	json.WriteString(ufmt.Sprintf(`{"id": %d, "createdAt": %s, "n_replies": %d, "n_replies_all": %d, "parent_id": %d`,
-		uint64(post.id), string(createdAt), post.replies.Size(), post.repliesAll.Size(), uint64(post.parentID)))
+	json.WriteString(ufmt.Sprintf(`{"id": %d, "createdAt": %s, "creator": "%s", "n_replies": %d, "n_replies_all": %d, "parent_id": %d`,
+		uint64(post.id), string(createdAt), post.creator.String(), post.replies.Size(), post.repliesAll.Size(), uint64(post.parentID)))
 	if post.repostUser != "" {
 		json.WriteString(ufmt.Sprintf(`, "repost_user": %s`, strconv.Quote(post.repostUser.String())))
 	}

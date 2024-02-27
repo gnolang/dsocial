@@ -2,6 +2,7 @@ package social
 
 import (
 	"std"
+	"time"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
@@ -130,11 +131,12 @@ func GetJsonUsers() string {
 // Get posts in a thread for a user. A thread is the sequence of posts without replies.
 // While each post has an an arbitrary id, it also has an index within the thread starting from 0.
 // Limit the response to posts from startIndex up to (not including) endIndex within the thread.
+// If you just want the total count, set startIndex and endIndex to 0 and see the response "n_threads".
 // If threadID is 0 then return the user's top-level posts. (Like render args "user".)
 // If threadID is X and replyID is 0, then return the posts (without replies) in that thread. (Like render args "user/2".)
 // If threadID is X and replyID is Y, then return the posts in the thread starting with replyID. (Like render args "user/2/5".)
 // The response includes reposts by this user (only if threadID is 0), but not messages of other
-// users that are being followed. The response is a JSON string.
+// users that are being followed. (See GetHomePosts.) The response is a JSON string.
 func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startIndex int, endIndex int) string {
 	userPosts := getUserPosts(userPostsAddr)
 	if userPosts == nil {
@@ -160,4 +162,104 @@ func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startI
 
 		return getPosts(reply.replies, startIndex, endIndex)
 	}
+}
+
+// Get home posts for a user, which are the user's top-level posts plus all posts of all
+// users being followed.
+// The response is a map of postTime -> []*Post where the post time as a string like
+// "2024-02-26 13:02:46 +0000 UTC m=+1708952566.000000001". (The avl.Tree sorts by the post time.)
+// The value is an array of *Post because there can be multiple posts with the same time.
+func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
+	userPosts := getUserPosts(userPostsAddr)
+	if userPosts == nil {
+		panic("posts for userPostsAddr do not exist")
+	}
+
+	// TODO: This computes all home posts on each call. Can this be more efficient?
+	allPosts := avl.Tree{} // postTime -> []*Post
+	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
+		post := postI.(*Post)
+		posts := []*Post{}
+		createdAtString := post.createdAt.String()
+		postsI, exists := allPosts.Get(createdAtString)
+		if exists {
+			// There are multiple posts with the same time.
+			posts = postsI.([]*Post)
+		}
+		allPosts.Set(createdAtString, append(posts, post))
+		return false
+	})
+	userPosts.addFollowedPosts(&allPosts, time.Time{}, debugNow())
+
+	return &allPosts
+}
+
+// Get home posts for a user (using GetHomePosts), which are the user's top-level posts plus all
+// posts of all users being followed.
+// Limit the response to posts from startIndex up to (not including) endIndex within the home posts.
+// If you just want the total count, set startIndex and endIndex to 0 and see the response "n_posts".
+// The response is a JSON string.
+func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) string {
+	allPosts := GetHomePosts(userPostsAddr)
+	postsJson := ""
+	for i := startIndex; i < endIndex && i < allPosts.Size(); i++ {
+		_, postsI := allPosts.GetByIndex(i)
+		for _, post := range postsI.([]*Post) {
+			if postsJson != "" {
+				postsJson += ",\n  "
+			}
+
+			postJson, err := post.MarshalJSON()
+			if err != nil {
+				panic("can't get post JSON")
+			}
+			// TODO: If postsI has multiple posts (at the same time), the i can be repeated. Also,
+			//   if requested 10 posts from index 0 to 9, then this would return more than 10 posts. Is that a problem?
+			postsJson += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", i, string(postJson))
+		}
+	}
+
+	return ufmt.Sprintf("{\"n_posts\": %d, \"posts\": [\n  %s]}", allPosts.Size(), postsJson)
+}
+
+// Update the caller to follow the user with followedAddr. See UserPosts.Follow.
+func Follow(followedAddr std.Address) {
+	std.AssertOriginCall()
+	caller := std.GetOrigCaller()
+	name := usernameOf(caller)
+	if name == "" {
+		panic("please register")
+	}
+
+	if followedAddr == caller {
+		panic("you can't follow yourself")
+	}
+
+	userPosts := getUserPosts(caller)
+	if userPosts == nil {
+		// A user can follow someone before doing any posts, so create the UserPosts.
+		url := "/r/berty/social:" + name
+		userPosts = newUserPosts(url, caller)
+		gUserPostsByAddress.Set(caller.String(), userPosts)
+	}
+
+	userPosts.Follow(followedAddr)
+}
+
+// Update the caller to unfollow the user with followedAddr. See UserPosts.Unfollow.
+func Unfollow(followedAddr std.Address) {
+	std.AssertOriginCall()
+	caller := std.GetOrigCaller()
+	name := usernameOf(caller)
+	if name == "" {
+		panic("please register")
+	}
+
+	userPosts := getUserPosts(caller)
+	if userPosts == nil {
+		// We don't expect this, but just do nothing.
+		return
+	}
+
+	userPosts.Unfollow(followedAddr)
 }

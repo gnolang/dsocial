@@ -1,20 +1,31 @@
 package social
 
 import (
+	"sort"
 	"std"
+	"strconv"
+	"strings"
+	"time"
 
 	"gno.land/p/demo/avl"
+	"gno.land/r/demo/users"
 )
+
+type FollowingInfo struct {
+	startedFollowingAt time.Time
+}
 
 // UserPosts is similar to boards.Board where each user has their own "board" for
 // posts which come from the user. The list of posts is identified by the user's std.Address .
-// A user's "userPosts" may contain other posts (from followed users, etc.) but this only
-// has the top-level posts from the user (not replies to other posts).
+// A user's "home feed" may contain other posts (from followed users, etc.) but this only
+// has the top-level posts from the user (not replies to other user's posts).
 type UserPosts struct {
-	url      string
-	userAddr std.Address
-	threads  avl.Tree // Post.id -> *Post
-	postsCtr uint64   // increments Post.id
+	url       string
+	userAddr  std.Address
+	threads   avl.Tree // Post.id -> *Post
+	postsCtr  uint64   // increments Post.id
+	followers avl.Tree // std.Address -> ""
+	following avl.Tree // std.Address -> *FollowingInfo
 }
 
 // Create a new userPosts for the user. Panic if there is already a userPosts for the user.
@@ -47,21 +58,120 @@ func (userPosts *UserPosts) AddThread(body string) *Post {
 	return thread
 }
 
+// If there is a UserPosts for followedAddr, then add it to following,
+// and add this user to its followers.
+// If there is no UserPosts for followedAddr, then do nothing. (We don't expect
+// this because this is usually called by clicking on the display page of followedAddr.)
+func (userPosts *UserPosts) Follow(followedAddr std.Address) {
+	followedUserPosts := getUserPosts(followedAddr)
+	if followedUserPosts != nil {
+		userPosts.following.Set(followedAddr.String(), &FollowingInfo{
+			startedFollowingAt: debugNow(),
+		})
+		followedUserPosts.followers.Set(userPosts.userAddr.String(), "")
+	}
+}
+
+// Remove followedAddr from following.
+// If there is a UserPosts for followedAddr, then remove this user from its followers.
+// If there is no UserPosts for followedAddr, then do nothing. (We don't expect this usually.)
+func (userPosts *UserPosts) Unfollow(followedAddr std.Address) {
+	userPosts.following.Remove(followedAddr.String())
+
+	followedUserPosts := getUserPosts(followedAddr)
+	if followedUserPosts != nil {
+		followedUserPosts.followers.Remove(userPosts.userAddr.String())
+	}
+}
+
 // Renders the userPosts for display suitable as plaintext in
 // console.  This is suitable for demonstration or tests,
 // but not for prod.
-func (userPosts *UserPosts) RenderUserPosts() string {
+func (userPosts *UserPosts) RenderUserPosts(includeFollowed bool) string {
 	str := ""
-	str += "\\[[post](" + userPosts.GetPostFormURL() + ")]\n\n"
-	if userPosts.threads.Size() > 0 {
-		userPosts.threads.Iterate("", "", func(key string, value interface{}) bool {
-			if str != "" {
-				str += "----------------------------------------\n"
-			}
-			str += value.(*Post).RenderSummary() + "\n"
-			return false
-		})
+	followers := strconv.Itoa(userPosts.followers.Size()) + " Followers"
+	following := "Following " + strconv.Itoa(userPosts.following.Size())
+	user := users.GetUserByAddress(userPosts.userAddr)
+	if user != nil {
+		followers = "[" + followers + "](/r/berty/social:" + user.Name() + "/followers)"
+		following = "[" + following + "](/r/berty/social:" + user.Name() + "/following)"
 	}
+	str += followers + " &nbsp;" + following + "\n\n"
+
+	str += "\\[[post](" + userPosts.GetPostFormURL() + ")] \\[[follow](" + userPosts.GetFollowFormURL() + ")]\n\n"
+
+	allPosts := avl.Tree{} // postTime -> *Post
+	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
+		post := postI.(*Post)
+		allPosts.Set(post.createdAt.String(), []*Post{post})
+		return false
+	})
+	if includeFollowed {
+		userPosts.addFollowedPosts(&allPosts, time.Time{}, debugNow())
+	}
+
+	allPosts.Iterate("", "", func(key string, postsI interface{}) bool {
+		for _, post := range postsI.([]*Post) {
+			str += "----------------------------------------\n"
+			str += post.RenderSummary() + "\n"
+		}
+		return false
+	})
+
+	return str
+}
+
+func (userPosts *UserPosts) RenderFollowers() string {
+	str := ""
+	user := users.GetUserByAddress(userPosts.userAddr)
+	if user != nil {
+		str += "[@" + user.Name() + "](/r/berty/social:" + user.Name() + ") "
+	}
+	str += "Followers\n\n"
+
+	// List the followers, sorted by name.
+	names := []string{}
+	userPosts.followers.Iterate("", "", func(key string, value interface{}) bool {
+		if user := users.GetUserByAddress(std.Address(key)); user != nil {
+			names = append(names, user.Name())
+		}
+		return false
+	})
+	sort.Strings(names)
+	for _, name := range names {
+		str += " * [@" + name + "](/r/berty/social:" + name + ")" + "\n"
+	}
+
+	return str
+}
+
+func (userPosts *UserPosts) RenderFollowing() string {
+	str := ""
+	user := users.GetUserByAddress(userPosts.userAddr)
+	if user != nil {
+		str += "[@" + user.Name() + "](/r/berty/social:" + user.Name() + ") "
+	}
+	str += "Following\n\n"
+
+	// List the following, sorted by name/addr.
+	nameAddrs := []string{}
+	userPosts.following.Iterate("", "", func(addr string, infoI interface{}) bool {
+		info := infoI.(*FollowingInfo)
+		if user := users.GetUserByAddress(std.Address(addr)); user != nil {
+			nameAddrs = append(nameAddrs, user.Name()+"/"+addr+"/"+info.startedFollowingAt.Format("2006-01-02"))
+		}
+		return false
+	})
+	sort.Strings(nameAddrs)
+	for _, nameAddr := range nameAddrs {
+		parts := strings.Split(nameAddr, "/")
+		name := parts[0]
+		addr := parts[1]
+		since := parts[2]
+		str += " * [@" + name + "](/r/berty/social:" + name + ") since " + since +
+			"  \\[[unfollow](" + userPosts.GetUnfollowFormURL(std.Address(addr)) + ")]\n"
+	}
+
 	return str
 }
 
@@ -81,4 +191,57 @@ func (userPosts *UserPosts) GetURLFromThreadAndReplyID(threadID, replyID PostID)
 func (userPosts *UserPosts) GetPostFormURL() string {
 	return "/r/berty/social?help&__func=PostMessage" +
 		"&body.type=textarea"
+}
+
+func (userPosts *UserPosts) GetFollowFormURL() string {
+	return "/r/berty/social?help&__func=Follow" +
+		"&followedAddr=" + userPosts.userAddr.String()
+}
+
+func (userPosts *UserPosts) GetUnfollowFormURL(followedAddr std.Address) string {
+	return "/r/berty/social?help&__func=Unfollow" +
+		"&followedAddr=" + followedAddr.String()
+}
+
+// Scan userPosts.following and for all posts from all followed users from startTime up to (not including) endTime.
+// if startTime.IsZero(), then use the FollowingInfo startedFollowingAt time.
+// Add the posts to the followedPosts map of postTime -> []*Post where the post time as a string like
+// "2024-02-26 13:02:46 +0000 UTC m=+1708952566.000000001". (The avl.Tree sorts by the post time.)
+// The value is an array of *Post because there can be multiple posts with the same time.
+func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime time.Time, endTime time.Time) {
+	userPosts.following.Iterate("", "", func(followedAddr string, infoI interface{}) bool {
+		followedUserPosts := getUserPosts(std.Address(followedAddr))
+		if followedUserPosts == nil {
+			return false
+		}
+
+		info := infoI.(*FollowingInfo)
+		if startTime.IsZero() {
+			startTime = info.startedFollowingAt
+		}
+
+		// TODO: This scans all threads. Is it possible to begin at startTime?
+		followedUserPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
+			post := postI.(*Post)
+			if post.createdAt.Before(startTime) {
+				// Keep scanning.
+				return false
+			} else if !post.createdAt.Before(endTime) {
+				// Finished.
+				return true
+			}
+
+			posts := []*Post{}
+			createdAtString := post.createdAt.String()
+			postsI, exists := followedPosts.Get(createdAtString)
+			if exists {
+				// There are multiple posts with the same time.
+				posts = postsI.([]*Post)
+			}
+			followedPosts.Set(createdAtString, append(posts, post))
+			return false
+		})
+
+		return false
+	})
 }

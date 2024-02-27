@@ -23,7 +23,7 @@ func Render(path string) string {
 		})
 		sort.Strings(names)
 		for _, name := range names {
-			str += " * [" + name + "](/r/berty/social:" + name + ")" + "\n"
+			str += " * [@" + name + "](/r/berty/social:" + name + ")" + "\n"
 		}
 
 		return str
@@ -39,31 +39,42 @@ func Render(path string) string {
 
 		userPosts := getUserPosts(user.Address())
 		if userPosts == nil {
-			return "No messages for: " + path
+			return "No posts by: " + path
 		}
 
-		return userPosts.RenderUserPosts()
+		return userPosts.RenderUserPosts(false)
 	} else if len(parts) == 2 {
-		// /r/berty/social:USER_NAME/THREAD_ID
 		name := parts[0]
 		user := users.GetUserByName(name)
 		if user == nil {
 			return "Unknown user: " + name
 		}
-		userPostsI, exists := gUserPostsByAddress.Get(user.Address().String())
-		if !exists {
-			return "No messages for: " + name
+		userPosts := getUserPosts(user.Address())
+		if userPosts == nil {
+			return "No posts by: " + name
 		}
-		pid, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return "invalid thread id: " + parts[1]
+
+		if parts[1] == "home" {
+			// /r/berty/social:USER_NAME/home
+			return userPosts.RenderUserPosts(true)
+		} else if parts[1] == "followers" {
+			// /r/berty/social:USER_NAME/followers
+			return userPosts.RenderFollowers()
+		} else if parts[1] == "following" {
+			// /r/berty/social:USER_NAME/following
+			return userPosts.RenderFollowing()
+		} else {
+			// /r/berty/social:USER_NAME/THREAD_ID
+			pid, err := strconv.Atoi(parts[1])
+			if err != nil {
+				return "invalid thread id: " + parts[1]
+			}
+			thread := userPosts.GetThread(PostID(pid))
+			if thread == nil {
+				return "thread does not exist with id: " + parts[1]
+			}
+			return thread.RenderPost("", 5)
 		}
-		userPosts := userPostsI.(*UserPosts)
-		thread := userPosts.GetThread(PostID(pid))
-		if thread == nil {
-			return "thread does not exist with id: " + parts[1]
-		}
-		return thread.RenderPost("", 5)
 	} else if len(parts) == 3 {
 		// /r/berty/social:USER_NAME/THREAD_ID/REPLY_ID
 		name := parts[0]
@@ -71,15 +82,14 @@ func Render(path string) string {
 		if user == nil {
 			return "Unknown user: " + name
 		}
-		userPostsI, exists := gUserPostsByAddress.Get(user.Address().String())
-		if !exists {
-			return "No messages for: " + name
+		userPosts := getUserPosts(user.Address())
+		if userPosts == nil {
+			return "No posts by: " + name
 		}
 		pid, err := strconv.Atoi(parts[1])
 		if err != nil {
 			return "invalid thread id: " + parts[1]
 		}
-		userPosts := userPostsI.(*UserPosts)
 		thread := userPosts.GetThread(PostID(pid))
 		if thread == nil {
 			return "thread does not exist with id: " + parts[1]
