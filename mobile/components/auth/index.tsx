@@ -3,6 +3,7 @@ import React from "react";
 import { User } from "@gno/types";
 import { useAppSelector } from "redux/store";
 import { selectAccount } from "redux/features/accountSlice";
+import { SharedSegment } from "app/(root)/_layout";
 
 interface PropsWithChildren {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ interface PropsWithChildren {
 function useProtectedRoute(user: User | undefined) {
   const segments = useSegments();
   const router = useRouter();
+  const [segment] = useSegments() as [SharedSegment];
 
   React.useEffect(() => {
     const inAuthGroup = segments[0] === "(auth)";
@@ -25,7 +27,7 @@ function useProtectedRoute(user: User | undefined) {
       router.replace("/landing");
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in page.
-      router.replace("/home");
+      router.replace("/index");
     }
   }, [user, segments]);
 }

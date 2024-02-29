@@ -1,6 +1,6 @@
 import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigation } from "expo-router";
+import { Stack, useNavigation, useRouter, useSegments } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
 import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
@@ -9,6 +9,8 @@ import { FlatList } from "react-native-gesture-handler";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import EmptyFeedList from "@gno/components/feed/empty-feed-list";
 import { Tweet } from "@gno/components/feed/tweet";
+import Button from "@gno/components/button";
+import { SharedSegment } from "../_layout";
 
 export default function Page() {
   const pageSize = 9;
@@ -21,7 +23,9 @@ export default function Page() {
   const [isEndReached, setIsEndReached] = useState(false);
 
   const feed = useFeed();
+  const [segment] = useSegments() as [SharedSegment];
   const navigation = useNavigation();
+  const router = useRouter();
   const ref = useRef<FlatList>(null);
 
   useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
@@ -91,20 +95,31 @@ export default function Page() {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        ref={ref}
-        scrollToOverflowEnabled
-        data={data}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={<EmptyFeedList />}
-        keyExtractor={(item) => `${item.id}`}
-        contentContainerStyle={styles.flatListContent}
-        renderItem={({ item }) => <Tweet item={item} />}
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.1}
-      />
-    </View>
+    <>
+      <Stack.Screen options={{ title: "Home" }} />
+      <View style={styles.container}>
+        <FlatList
+          ref={ref}
+          scrollToOverflowEnabled
+          data={data}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={<EmptyFeedList />}
+          keyExtractor={(item) => `${item.id}`}
+          contentContainerStyle={styles.flatListContent}
+          renderItem={({ item }) => <Tweet item={item} />}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.1}
+        />
+        <Button.TouchableOpacity
+          title="Post"
+          onPress={() => {
+            console.log("segment", segment);
+            router.push(`/${segment}/post`);
+          }}
+          variant="primary"
+        />
+      </View>
+    </>
   );
 }
 
