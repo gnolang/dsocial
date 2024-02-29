@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { router, useNavigation } from "expo-router";
+import { Stack, router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useGno } from "@gno/hooks/use-gno";
 import { logedOut, useAppDispatch } from "@gno/redux";
@@ -70,6 +70,7 @@ export default function Page() {
 
   return (
     <>
+      <Stack.Screen options={{ title: "Settings" }} />
       <Layout.Container>
         <Layout.Body>
           <>
