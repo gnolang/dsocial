@@ -23,7 +23,6 @@ type UserPosts struct {
 	url       string
 	userAddr  std.Address
 	threads   avl.Tree // Post.id -> *Post
-	postsCtr  uint64   // increments Post.id
 	followers avl.Tree // std.Address -> ""
 	following avl.Tree // std.Address -> *FollowingInfo
 }
@@ -176,8 +175,8 @@ func (userPosts *UserPosts) RenderFollowing() string {
 }
 
 func (userPosts *UserPosts) incGetPostID() PostID {
-	userPosts.postsCtr++
-	return PostID(userPosts.postsCtr)
+	postsCtr++
+	return PostID(postsCtr)
 }
 
 func (userPosts *UserPosts) GetURLFromThreadAndReplyID(threadID, replyID PostID) string {
