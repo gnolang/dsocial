@@ -102,18 +102,16 @@ func (userPosts *UserPosts) RenderUserPosts(includeFollowed bool) string {
 	allPosts := avl.Tree{} // postTime -> *Post
 	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
 		post := postI.(*Post)
-		allPosts.Set(post.createdAt.String(), []*Post{post})
+		allPosts.Set(post.createdAt.String(), post)
 		return false
 	})
 	if includeFollowed {
 		userPosts.addFollowedPosts(&allPosts, time.Time{}, debugNow())
 	}
 
-	allPosts.Iterate("", "", func(key string, postsI interface{}) bool {
-		for _, post := range postsI.([]*Post) {
-			str += "----------------------------------------\n"
-			str += post.RenderSummary() + "\n"
-		}
+	allPosts.Iterate("", "", func(key string, postI interface{}) bool {
+		str += "----------------------------------------\n"
+		str += postI.(*Post).RenderSummary() + "\n"
 		return false
 	})
 
@@ -204,9 +202,9 @@ func (userPosts *UserPosts) GetUnfollowFormURL(followedAddr std.Address) string 
 
 // Scan userPosts.following and for all posts from all followed users from startTime up to (not including) endTime.
 // if startTime.IsZero(), then use the FollowingInfo startedFollowingAt time.
-// Add the posts to the followedPosts map of postTime -> []*Post where the post time as a string like
-// "2024-02-26 13:02:46 +0000 UTC m=+1708952566.000000001". (The avl.Tree sorts by the post time.)
-// The value is an array of *Post because there can be multiple posts with the same time.
+// Add the posts to the followedPosts map of postTime/postID -> *Post where the post time as a string like
+// "2024-02-26 13:02:46 +0000 UTC m=+1708952566.000000001". The key includes the postID because
+// there may be multiple posts with the same timestamp. (The avl.Tree sorts by the post time.)
 func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime time.Time, endTime time.Time) {
 	userPosts.following.Iterate("", "", func(followedAddr string, infoI interface{}) bool {
 		followedUserPosts := getUserPosts(std.Address(followedAddr))
@@ -230,14 +228,8 @@ func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime 
 				return true
 			}
 
-			posts := []*Post{}
 			createdAtString := post.createdAt.String()
-			postsI, exists := followedPosts.Get(createdAtString)
-			if exists {
-				// There are multiple posts with the same time.
-				posts = postsI.([]*Post)
-			}
-			followedPosts.Set(createdAtString, append(posts, post))
+			followedPosts.Set(createdAtString+"/"+id, post)
 			return false
 		})
 
