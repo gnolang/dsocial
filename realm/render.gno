@@ -17,7 +17,7 @@ func Render(path string) string {
 		names := []string{}
 		gUserPostsByAddress.Iterate("", "", func(key string, value interface{}) bool {
 			if user := users.GetUserByAddress(std.Address(key)); user != nil {
-				names = append(names, user.Name())
+				names = append(names, user.Name)
 			}
 			return false
 		})
@@ -37,7 +37,7 @@ func Render(path string) string {
 			return "Unknown user: " + path
 		}
 
-		userPosts := getUserPosts(user.Address())
+		userPosts := getUserPosts(user.Address)
 		if userPosts == nil {
 			return "No posts by: " + path
 		}
@@ -49,7 +49,7 @@ func Render(path string) string {
 		if user == nil {
 			return "Unknown user: " + name
 		}
-		userPosts := getUserPosts(user.Address())
+		userPosts := getUserPosts(user.Address)
 		if userPosts == nil {
 			return "No posts by: " + name
 		}
@@ -82,7 +82,7 @@ func Render(path string) string {
 		if user == nil {
 			return "Unknown user: " + name
 		}
-		userPosts := getUserPosts(user.Address())
+		userPosts := getUserPosts(user.Address)
 		if userPosts == nil {
 			return "No posts by: " + name
 		}

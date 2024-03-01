@@ -105,7 +105,7 @@ func GetUsers() *avl.Tree {
 	gUserPostsByAddress.Iterate("", "", func(addr string, userPostsI interface{}) bool {
 		if user := users.GetUserByAddress(std.Address(addr)); user != nil {
 			// allUsers will be sorted by the name key.
-			allUsers.Set(user.Name(), addr)
+			allUsers.Set(user.Name, addr)
 		}
 		return false
 	})
