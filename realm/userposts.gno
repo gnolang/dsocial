@@ -102,7 +102,7 @@ func (userPosts *UserPosts) RenderUserPosts(includeFollowed bool) string {
 	allPosts := avl.Tree{} // postTime -> *Post
 	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
 		post := postI.(*Post)
-		allPosts.Set(post.createdAt.String(), post)
+		allPosts.Set(id, post)
 		return false
 	})
 	if includeFollowed {
@@ -202,9 +202,8 @@ func (userPosts *UserPosts) GetUnfollowFormURL(followedAddr std.Address) string 
 
 // Scan userPosts.following and for all posts from all followed users from startTime up to (not including) endTime.
 // if startTime.IsZero(), then use the FollowingInfo startedFollowingAt time.
-// Add the posts to the followedPosts map of postTime/postID -> *Post where the post time as a string like
-// "2024-02-26 13:02:46 +0000 UTC m=+1708952566.000000001". The key includes the postID because
-// there may be multiple posts with the same timestamp. (The avl.Tree sorts by the post time.)
+// Add the posts to the followedPosts map of postID -> *Post. The avl.Tree sorts by the post ID which is
+// unique for every post and increases in time.
 func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime time.Time, endTime time.Time) {
 	userPosts.following.Iterate("", "", func(followedAddr string, infoI interface{}) bool {
 		followedUserPosts := getUserPosts(std.Address(followedAddr))
@@ -228,8 +227,7 @@ func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime 
 				return true
 			}
 
-			createdAtString := post.createdAt.String()
-			followedPosts.Set(createdAtString+"/"+id, post)
+			followedPosts.Set(id, post)
 			return false
 		})
 
