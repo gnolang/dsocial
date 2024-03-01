@@ -166,9 +166,8 @@ func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startI
 
 // Get home posts for a user, which are the user's top-level posts plus all posts of all
 // users being followed.
-// The response is a map of postTime -> []*Post where the post time as a string like
-// "2024-02-26 13:02:46 +0000 UTC m=+1708952566.000000001". (The avl.Tree sorts by the post time.)
-// The value is an array of *Post because there can be multiple posts with the same time.
+// The response is a map of postID -> *Post. The avl.Tree sorts by the post ID which is
+// unique for every post and increases in time.
 func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
 	userPosts := getUserPosts(userPostsAddr)
 	if userPosts == nil {
@@ -176,17 +175,10 @@ func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
 	}
 
 	// TODO: This computes all home posts on each call. Can this be more efficient?
-	allPosts := avl.Tree{} // postTime -> []*Post
+	allPosts := avl.Tree{} // postID -> *Post
 	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
 		post := postI.(*Post)
-		posts := []*Post{}
-		createdAtString := post.createdAt.String()
-		postsI, exists := allPosts.Get(createdAtString)
-		if exists {
-			// There are multiple posts with the same time.
-			posts = postsI.([]*Post)
-		}
-		allPosts.Set(createdAtString, append(posts, post))
+		allPosts.Set(id, post)
 		return false
 	})
 	userPosts.addFollowedPosts(&allPosts, time.Time{}, debugNow())
@@ -203,20 +195,16 @@ func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) s
 	allPosts := GetHomePosts(userPostsAddr)
 	postsJson := ""
 	for i := startIndex; i < endIndex && i < allPosts.Size(); i++ {
-		_, postsI := allPosts.GetByIndex(i)
-		for _, post := range postsI.([]*Post) {
-			if postsJson != "" {
-				postsJson += ",\n  "
-			}
-
-			postJson, err := post.MarshalJSON()
-			if err != nil {
-				panic("can't get post JSON")
-			}
-			// TODO: If postsI has multiple posts (at the same time), the i can be repeated. Also,
-			//   if requested 10 posts from index 0 to 9, then this would return more than 10 posts. Is that a problem?
-			postsJson += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", i, string(postJson))
+		_, postI := allPosts.GetByIndex(i)
+		if postsJson != "" {
+			postsJson += ",\n  "
 		}
+
+		postJson, err := postI.(*Post).MarshalJSON()
+		if err != nil {
+			panic("can't get post JSON")
+		}
+		postsJson += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", i, string(postJson))
 	}
 
 	return ufmt.Sprintf("{\"n_posts\": %d, \"posts\": [\n  %s]}", allPosts.Size(), postsJson)
