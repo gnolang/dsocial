@@ -49,7 +49,7 @@ export default function Page() {
     try {
       console.log("fetching data from %d to %d", startIndex, endIndex);
       const result = await feed.fetchFeed(startIndex, endIndex);
-      setLimit(result.n_threads);
+      setLimit(result.n_posts);
       setStartIndex(endIndex);
       setEndIndex(endIndex + pageSize);
 

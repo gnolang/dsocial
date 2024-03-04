@@ -4,11 +4,11 @@ import { useGno } from "./use-gno";
 export const useFeed = () => {
   const gno = useGno();
 
-  async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_threads: number }> {
+  async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
     const currentAccount = await gno.getActiveAccount();
     if (!currentAccount.key) throw new Error("No active account");
     const bech32 = await gno.addressToBech32(currentAccount.key.address);
-    const result = await gno.qEval("gno.land/r/berty/social", `GetThreadPosts("${bech32}" , 0, 0, ${startIndex}, ${endIndex})`);
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonHomePosts("${bech32}", ${startIndex}, ${endIndex})`);
     const json = convertToPosts(result, currentAccount.key.name);
     return json;
   }
@@ -20,10 +20,10 @@ export const useFeed = () => {
     const jsonPosts = JSON.parse(json);
     console.log(jsonPosts);
 
-    if (!jsonPosts.n_threads || jsonPosts.n_threads === 0)
+    if (!jsonPosts.n_posts || jsonPosts.n_posts === 0)
       return {
         data: [],
-        n_threads: 0,
+        n_posts: 0,
       };
 
     const posts: Post[] = [];
@@ -49,8 +49,8 @@ export const useFeed = () => {
     });
 
     return {
-      data: posts,
-      n_threads: jsonPosts.n_threads,
+      data: posts.reverse(),
+      n_posts: jsonPosts.n_posts,
     };
   }
 
