@@ -1,8 +1,16 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
+import { Feed } from "@/components/feed";
+import { posts } from "@/data";
+
 export default function Search() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ q?: string }>();
+  // const params = useLocalSearchParams<{ q?: string }>();
+  // const filteredPosts = !params.q
+  //   ? posts
+  //   : posts.filter((post) =>
+  //       post.post.toLowerCase().includes(params.q.toLowerCase())
+  //     );
   return (
     <>
       <Stack.Screen
@@ -18,6 +26,7 @@ export default function Search() {
           },
         }}
       />
+      {/* <Feed data={filteredPosts} contentInsetAdjustmentBehavior="automatic" /> */}
     </>
   );
 }
