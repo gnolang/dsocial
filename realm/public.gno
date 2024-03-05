@@ -2,6 +2,7 @@ package social
 
 import (
 	"std"
+	"strconv"
 	"time"
 
 	"gno.land/p/demo/avl"
@@ -250,4 +251,17 @@ func Unfollow(followedAddr std.Address) {
 	}
 
 	userPosts.Unfollow(followedAddr)
+}
+
+// Call users.GetUserByAddress and return the result as JSON, or "" if not found.
+// (This is a temporary utility until gno.land supports returning structured data directly.)
+func GetJsonUserByAddress(addr std.Address) string {
+	user := users.GetUserByAddress(addr)
+	if user == nil {
+		return ""
+	}
+
+	return ufmt.Sprintf(
+		"{\"address\": \"%s\", \"name\": \"%s\", \"profile\": %s, \"number\": %d, \"invites\": %d, \"inviter\": \"%s\"}",
+		user.Address.String(), user.Name, strconv.Quote(user.Profile), user.Number, user.Invites, user.Inviter.String())
 }
