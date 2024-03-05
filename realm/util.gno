@@ -64,7 +64,7 @@ func displayAddressMD(addr std.Address) string {
 	if user == nil {
 		return "[" + addr.String() + "](/r/demo/users:" + addr.String() + ")"
 	} else {
-		return "[@" + user.Name() + "](/r/berty/social:" + user.Name() + ")"
+		return "[@" + user.Name + "](/r/berty/social:" + user.Name + ")"
 	}
 }
 
@@ -73,6 +73,6 @@ func usernameOf(addr std.Address) string {
 	if user == nil {
 		return ""
 	} else {
-		return user.Name()
+		return user.Name
 	}
 }

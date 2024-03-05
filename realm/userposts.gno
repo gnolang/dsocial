@@ -92,8 +92,8 @@ func (userPosts *UserPosts) RenderUserPosts(includeFollowed bool) string {
 	following := "Following " + strconv.Itoa(userPosts.following.Size())
 	user := users.GetUserByAddress(userPosts.userAddr)
 	if user != nil {
-		followers = "[" + followers + "](/r/berty/social:" + user.Name() + "/followers)"
-		following = "[" + following + "](/r/berty/social:" + user.Name() + "/following)"
+		followers = "[" + followers + "](/r/berty/social:" + user.Name + "/followers)"
+		following = "[" + following + "](/r/berty/social:" + user.Name + "/following)"
 	}
 	str += followers + " &nbsp;" + following + "\n\n"
 
@@ -122,7 +122,7 @@ func (userPosts *UserPosts) RenderFollowers() string {
 	str := ""
 	user := users.GetUserByAddress(userPosts.userAddr)
 	if user != nil {
-		str += "[@" + user.Name() + "](/r/berty/social:" + user.Name() + ") "
+		str += "[@" + user.Name + "](/r/berty/social:" + user.Name + ") "
 	}
 	str += "Followers\n\n"
 
@@ -130,7 +130,7 @@ func (userPosts *UserPosts) RenderFollowers() string {
 	names := []string{}
 	userPosts.followers.Iterate("", "", func(key string, value interface{}) bool {
 		if user := users.GetUserByAddress(std.Address(key)); user != nil {
-			names = append(names, user.Name())
+			names = append(names, user.Name)
 		}
 		return false
 	})
@@ -146,7 +146,7 @@ func (userPosts *UserPosts) RenderFollowing() string {
 	str := ""
 	user := users.GetUserByAddress(userPosts.userAddr)
 	if user != nil {
-		str += "[@" + user.Name() + "](/r/berty/social:" + user.Name() + ") "
+		str += "[@" + user.Name + "](/r/berty/social:" + user.Name + ") "
 	}
 	str += "Following\n\n"
 
@@ -155,7 +155,7 @@ func (userPosts *UserPosts) RenderFollowing() string {
 	userPosts.following.Iterate("", "", func(addr string, infoI interface{}) bool {
 		info := infoI.(*FollowingInfo)
 		if user := users.GetUserByAddress(std.Address(addr)); user != nil {
-			nameAddrs = append(nameAddrs, user.Name()+"/"+addr+"/"+info.startedFollowingAt.Format("2006-01-02"))
+			nameAddrs = append(nameAddrs, user.Name+"/"+addr+"/"+info.startedFollowingAt.Format("2006-01-02"))
 		}
 		return false
 	})
