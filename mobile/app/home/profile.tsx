@@ -81,23 +81,23 @@ export default function Page() {
             <Text.Body>{chainID}</Text.Body>
             <Text.Subheadline>Remote:</Text.Subheadline>
             <Text.Body>{remote}</Text.Body>
-            <View>
-              <Button.TouchableOpacity
-                title="Logout"
-                onPress={() => dispatch(logedOut())}
-                style={styles.logout}
-                variant="primary-red"
-              />
-              <Spacer />
-              <Button.TouchableOpacity title="Onboard" onPress={onboard} variant="primary" />
-              <Button.TouchableOpacity
-                title="Delete Account"
-                onPress={onDeleteAccount}
-                style={styles.logout}
-                variant="primary-red"
-              />
-            </View>
+            <View></View>
           </>
+          <Layout.Footer>
+            <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
+            <Button.TouchableOpacity
+              title="Logout"
+              onPress={() => dispatch(logedOut())}
+              style={styles.logout}
+              variant="primary-red"
+            />
+            <Button.TouchableOpacity
+              title="Delete Account"
+              onPress={onDeleteAccount}
+              style={styles.logout}
+              variant="primary-red"
+            />
+          </Layout.Footer>
         </Layout.Body>
       </Layout.Container>
       <LoadingModal visible={loading} />

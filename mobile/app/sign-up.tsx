@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button as RNButton } from "react-native";
+import { StyleSheet, Text, View, Button as RNButton, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router, useNavigation } from "expo-router";
 import TextInput from "components/textinput";
@@ -10,6 +10,7 @@ import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
+import Layout from "@gno/components/layout";
 
 export default function Page() {
   const [name, setName] = useState("");
@@ -78,36 +79,46 @@ export default function Page() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Text style={styles.title}>Create your account</Text>
-        <View style={{ minWidth: 200, paddingTop: 8 }}>
-          <Spacer />
-          <TextInput placeholder="Account Name" value={name} onChangeText={setName} autoCapitalize="none" autoCorrect={false} />
-          <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} />
-          <TextInput
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry={true}
-            error={error}
-          />
-          <Spacer />
-        </View>
-        <View style={{ minWidth: 200, paddingTop: 8 }}>
-          <Text>Your seed phrase:</Text>
-          <Spacer />
-          <Text>{phrase}</Text>
-          <RNButton title="copy" onPress={copyToClipboard} />
-          <Spacer />
-          <Alert severity="error" message={error} />
-          <Spacer space={64} />
-          <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" loading={loading} />
-          <Spacer space={16} />
-          <Button.Link title="Back" href="/" disabled={loading} />
-        </View>
-      </View>
-    </View>
+    <Layout.Container>
+      <Layout.Body>
+        <ScrollView>
+          <View style={styles.main}>
+            <Text style={styles.title}>Create your account</Text>
+            <View style={{ minWidth: 200, paddingTop: 8 }}>
+              <Spacer />
+              <TextInput
+                placeholder="Account Name"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} />
+              <TextInput
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={true}
+                error={error}
+              />
+              <Spacer />
+            </View>
+            <View style={{ minWidth: 200, paddingTop: 8 }}>
+              <Text>Your seed phrase:</Text>
+              <Spacer />
+              <Text>{phrase}</Text>
+              <RNButton title="copy" onPress={copyToClipboard} />
+              <Spacer />
+              <Alert severity="error" message={error} />
+              <Spacer space={64} />
+              <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" loading={loading} />
+              <Spacer space={16} />
+              <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" disabled={loading} />
+            </View>
+          </View>
+        </ScrollView>
+      </Layout.Body>
+    </Layout.Container>
   );
 }
 

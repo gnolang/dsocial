@@ -33,12 +33,6 @@ export default function AppLayout() {
           tabBarIcon: ({ focused }) => <Icons.Profile color={focused ? colors.icon.focus : colors.icon.default} />,
         }}
       />
-      <Tabs.Screen
-        name="post"
-        options={{
-          href: null,
-        }}
-      />
     </Tabs>
   );
 }

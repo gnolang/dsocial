@@ -70,7 +70,7 @@ export default function Root() {
   return (
     <>
       <Layout.Container>
-        <Layout.Body>
+        <Layout.BodyAlignedBotton>
           {accounts && accounts.length > 0 && (
             <>
               <Text.Body>Please, select one of the existing accounts to start:</Text.Body>
@@ -86,7 +86,7 @@ export default function Root() {
           <Button.Link title="Sign up" href="sign-up" />
           <Spacer />
           <Button.Link title="Import Account" href="/sign-in" variant="tertiary" />
-        </Layout.Body>
+        </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (
         <ReenterPassword visible={Boolean(reenterPassword)} accountName={reenterPassword.name} onClose={onCloseReenterPassword} />

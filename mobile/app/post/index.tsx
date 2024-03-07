@@ -8,7 +8,7 @@ import TextInput from "@gno/components/textinput";
 import { useGno } from "@gno/hooks/use-gno";
 import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -62,25 +62,23 @@ export default function Search() {
         }}
       />
       <Layout.Container>
-        <Layout.Body>
-          <View style={styles.centerScreen}>
-            <Text.Title>Let's post a message on the Gno Blockchain!</Text.Title>
-            <Spacer space={24} />
-            <TextInput
-              placeholder="What's happening?"
-              onChangeText={setPostContent}
-              value={postContent}
-              multiline
-              numberOfLines={4}
-              style={{ height: 200 }}
-            />
-            <Spacer space={24} />
-            <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPost} />
-            <Spacer space={24} />
-            <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
-            <Alert severity="error" message={error} />
-          </View>
-        </Layout.Body>
+        <Layout.BodyAlignedBotton>
+          <Text.Title>Let's post a message on the Gno Blockchain!</Text.Title>
+          <Spacer space={24} />
+          <TextInput
+            placeholder="What's happening?"
+            onChangeText={setPostContent}
+            value={postContent}
+            multiline
+            numberOfLines={4}
+            style={{ height: 200 }}
+          />
+          <Spacer space={24} />
+          <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPost} />
+          <Spacer space={24} />
+          <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
+          <Alert severity="error" message={error} />
+        </Layout.BodyAlignedBotton>
       </Layout.Container>
     </>
   );
