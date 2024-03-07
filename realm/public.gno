@@ -22,13 +22,7 @@ func PostMessage(body string) PostID {
 		panic("please register")
 	}
 
-	userPosts := getUserPosts(caller)
-	if userPosts == nil {
-		url := "/r/berty/social:" + name
-		userPosts = newUserPosts(url, caller)
-		gUserPostsByAddress.Set(caller.String(), userPosts)
-	}
-
+	userPosts := getOrCreateUserPosts(caller, name)
 	thread := userPosts.AddThread(body)
 	return thread.id
 }
@@ -77,12 +71,7 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 	if name == "" {
 		panic("please register")
 	}
-	dstUserPosts := getUserPosts(caller)
-	if dstUserPosts == nil {
-		url := "/r/berty/social:" + name
-		dstUserPosts = newUserPosts(url, caller)
-		gUserPostsByAddress.Set(caller.String(), dstUserPosts)
-	}
+	dstUserPosts := getOrCreateUserPosts(caller, name)
 
 	if userPostsAddr == caller {
 		panic("Cannot repost a user's own message")
@@ -224,14 +213,8 @@ func Follow(followedAddr std.Address) {
 		panic("you can't follow yourself")
 	}
 
-	userPosts := getUserPosts(caller)
-	if userPosts == nil {
-		// A user can follow someone before doing any posts, so create the UserPosts.
-		url := "/r/berty/social:" + name
-		userPosts = newUserPosts(url, caller)
-		gUserPostsByAddress.Set(caller.String(), userPosts)
-	}
-
+	// A user can follow someone before doing any posts, so create the UserPosts if needed.
+	userPosts := getOrCreateUserPosts(caller, name)
 	userPosts.Follow(followedAddr)
 }
 
