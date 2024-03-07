@@ -10,6 +10,7 @@ import Alert from "components/alert";
 import { loggedIn } from "redux/features/accountSlice";
 import { useAppDispatch } from "@gno/redux";
 import useOnboarding from "@gno/hooks/use-onboarding";
+import { router } from "expo-router";
 
 export default function Page() {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");
@@ -53,6 +54,8 @@ export default function Page() {
       await onboarding.onboard(response.name, response.address);
 
       dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
+
+      router.push("/home");
     } catch (error) {
       setError("" + error);
       console.log(JSON.stringify(error));

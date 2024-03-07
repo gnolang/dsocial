@@ -68,15 +68,6 @@ export default function Root() {
   };
 
   return (
-    // <SafeAreaView>
-    //   {/* <Text>Root screen {navigation.getState().routes} </Text> */}
-    //   <Link href="/home/search">
-    //     <Text>Navigate to nested route</Text>
-    //   </Link>
-    //   <View style={{ padding: 20 }} />
-    //   <Button title="Navigate to nested route" onPress={() => route.push("/home/search")} />
-    // </SafeAreaView>
-
     <>
       <Layout.Container>
         <Layout.Body>
@@ -95,8 +86,6 @@ export default function Root() {
           <Button.Link title="Sign up" href="sign-up" />
           <Spacer />
           <Button.Link title="Import Account" href="/sign-in" variant="tertiary" />
-          <Button.Link title="raiz" href="/" variant="tertiary" />
-          <Button.Link title="Home" href="/home" variant="tertiary" />
         </Layout.Body>
       </Layout.Container>
       {reenterPassword ? (

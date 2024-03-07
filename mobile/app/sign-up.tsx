@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Button as RNButton } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
@@ -67,6 +67,8 @@ export default function Page() {
       await gno.setPassword(password);
       await onboarding.onboard(response.name, response.address);
       dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
+
+      router.push("/home");
     } catch (error) {
       setError("" + error);
       console.log(error);
