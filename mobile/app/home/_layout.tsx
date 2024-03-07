@@ -17,6 +17,12 @@ export default function AppLayout() {
           // tabBarIcon: makeIcon("home", "home-active"),
         }}
       />
+      <Tabs.Screen
+        name="post"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
