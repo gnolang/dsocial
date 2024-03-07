@@ -11,7 +11,7 @@ import (
 //----------------------------------------
 // private utility methods
 
-// Get the userPosts for the user.
+// Get the UserPosts for the user.
 func getUserPosts(userAddr std.Address) *UserPosts {
 	userPosts, exists := gUserPostsByAddress.Get(userAddr.String())
 	if !exists {
@@ -19,6 +19,30 @@ func getUserPosts(userAddr std.Address) *UserPosts {
 	}
 
 	return userPosts.(*UserPosts)
+}
+
+// Get the UserPosts for the userAddr. If not found, add a new UserPosts to
+// gUserPostsByAddress and update gUserAddressByName with the username.
+// (The caller usually has already called usernameOf to get the username, but if
+// it is "" then this will get it.)
+func getOrCreateUserPosts(userAddr std.Address, username string) *UserPosts {
+	userPosts := getUserPosts(userAddr)
+	if userPosts != nil {
+		return userPosts
+	}
+
+	if username == "" {
+		username := usernameOf(userAddr)
+		if username == "" {
+			panic("no username for address " + userAddr.String())
+		}
+	}
+
+	userPosts = newUserPosts("/r/berty/social:"+username, userAddr)
+	gUserPostsByAddress.Set(userAddr.String(), userPosts)
+	gUserAddressByName.Set(username, userAddr)
+
+	return userPosts
 }
 
 func padZero(u64 uint64, length int) string {

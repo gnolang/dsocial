@@ -22,13 +22,7 @@ func PostMessage(body string) PostID {
 		panic("please register")
 	}
 
-	userPosts := getUserPosts(caller)
-	if userPosts == nil {
-		url := "/r/berty/social:" + name
-		userPosts = newUserPosts(url, caller)
-		gUserPostsByAddress.Set(caller.String(), userPosts)
-	}
-
+	userPosts := getOrCreateUserPosts(caller, name)
 	thread := userPosts.AddThread(body)
 	return thread.id
 }
@@ -77,12 +71,7 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 	if name == "" {
 		panic("please register")
 	}
-	dstUserPosts := getUserPosts(caller)
-	if dstUserPosts == nil {
-		url := "/r/berty/social:" + name
-		dstUserPosts = newUserPosts(url, caller)
-		gUserPostsByAddress.Set(caller.String(), dstUserPosts)
-	}
+	dstUserPosts := getOrCreateUserPosts(caller, name)
 
 	if userPostsAddr == caller {
 		panic("Cannot repost a user's own message")
@@ -97,36 +86,6 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 	}
 	repost := thread.AddRepostTo(caller, comment, dstUserPosts)
 	return repost.id
-}
-
-// Get all users with their address. The response is an avl.Tree where the key is the
-// (sorted) user name and the value is the address.
-func GetUsers() *avl.Tree {
-	allUsers := avl.Tree{}
-	gUserPostsByAddress.Iterate("", "", func(addr string, userPostsI interface{}) bool {
-		if user := users.GetUserByAddress(std.Address(addr)); user != nil {
-			// allUsers will be sorted by the name key.
-			allUsers.Set(user.Name, addr)
-		}
-		return false
-	})
-
-	return &allUsers
-}
-
-// Get all users with their address (using GetUsers), sorted by name. The response is a JSON string.
-func GetJsonUsers() string {
-	allUsers := GetUsers()
-	usersJson := ""
-	allUsers.Iterate("", "", func(name string, addr interface{}) bool {
-		if usersJson != "" {
-			usersJson += ",\n  "
-		}
-		usersJson += ufmt.Sprintf("{\"name\": \"%s\", \"address\": \"%s\"}", name, addr.(string))
-		return false
-	})
-
-	return ufmt.Sprintf("{\"n_users\": %d, \"users\": [\n  %s]}", allUsers.Size(), usersJson)
 }
 
 // Get posts in a thread for a user. A thread is the sequence of posts without replies.
@@ -224,14 +183,8 @@ func Follow(followedAddr std.Address) {
 		panic("you can't follow yourself")
 	}
 
-	userPosts := getUserPosts(caller)
-	if userPosts == nil {
-		// A user can follow someone before doing any posts, so create the UserPosts.
-		url := "/r/berty/social:" + name
-		userPosts = newUserPosts(url, caller)
-		gUserPostsByAddress.Set(caller.String(), userPosts)
-	}
-
+	// A user can follow someone before doing any posts, so create the UserPosts if needed.
+	userPosts := getOrCreateUserPosts(caller, name)
 	userPosts.Follow(followedAddr)
 }
 
@@ -264,4 +217,53 @@ func GetJsonUserByAddress(addr std.Address) string {
 	return ufmt.Sprintf(
 		"{\"address\": \"%s\", \"name\": \"%s\", \"profile\": %s, \"number\": %d, \"invites\": %d, \"inviter\": \"%s\"}",
 		user.Address.String(), user.Name, strconv.Quote(user.Profile), user.Number, user.Invites, user.Inviter.String())
+}
+
+// TODO: This is a temporary copy. Remove this when they merge https://github.com/gnolang/gno/pull/1708.
+func listKeysByPrefix(tree avl.Tree, prefix string, maxResults int) []string {
+	end := ""
+	n := len(prefix)
+	// To make the end of the search, increment the final character ASCII by one.
+	for n > 0 {
+		if ascii := int(prefix[n-1]); ascii < 0xff {
+			end = prefix[0:n-1] + string(ascii+1)
+			break
+		}
+
+		// The last character is 0xff. Try the previous character.
+		n--
+	}
+
+	result := []string{}
+	tree.Iterate(prefix, end, func(key string, value interface{}) bool {
+		result = append(result, key)
+		if len(result) >= maxResults {
+			return true
+		}
+		return false
+	})
+	return result
+}
+
+// Get a list of user names starting from the given prefix. Limit the
+// number of results to maxResults.
+func ListUsersByPrefix(prefix string, maxResults int) []string {
+	return listKeysByPrefix(gUserAddressByName, prefix, maxResults)
+}
+
+// Get a list of user names starting from the given prefix. Limit the
+// number of results to maxResults.
+// The response is a JSON string.
+func ListJsonUsersByPrefix(prefix string, maxResults int) string {
+	names := ListUsersByPrefix(prefix, maxResults)
+
+	json := "["
+	for i, name := range names {
+		if i > 0 {
+			json += ", "
+		}
+		json += strconv.Quote(name)
+	}
+	json += "]"
+	return json
 }

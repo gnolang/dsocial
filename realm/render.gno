@@ -1,8 +1,6 @@
 package social
 
 import (
-	"sort"
-	"std"
 	"strconv"
 	"strings"
 
@@ -13,18 +11,11 @@ func Render(path string) string {
 	if path == "" {
 		str := "Welcome to GnoSocial!\n\n"
 
-		// List the users who have posted, sorted by name.
-		names := []string{}
-		gUserPostsByAddress.Iterate("", "", func(key string, value interface{}) bool {
-			if user := users.GetUserByAddress(std.Address(key)); user != nil {
-				names = append(names, user.Name)
-			}
+		// List the users who have posted. gUserAddressByName is already sorted by name.
+		gUserAddressByName.Iterate("", "", func(name string, value interface{}) bool {
+			str += " * [@" + name + "](/r/berty/social:" + name + ")" + "\n"
 			return false
 		})
-		sort.Strings(names)
-		for _, name := range names {
-			str += " * [@" + name + "](/r/berty/social:" + name + ")" + "\n"
-		}
 
 		return str
 	}
