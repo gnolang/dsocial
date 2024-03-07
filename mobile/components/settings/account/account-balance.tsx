@@ -42,7 +42,7 @@ export function AccountBalance({ activeAccount }: Props) {
 
   return (
     <>
-      <Text.HeaderSubtitle>Active Account</Text.HeaderSubtitle>
+      <Text.Subheadline>Active Account:</Text.Subheadline>
       <Text.Body>{activeAccount.name}</Text.Body>
       <Text.Subheadline>Address:</Text.Subheadline>
       <Text.Body>{address}</Text.Body>
