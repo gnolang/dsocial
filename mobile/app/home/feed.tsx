@@ -47,17 +47,17 @@ export default function Page() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      console.log("fetching data from %d to %d", startIndex, endIndex);
+      // console.log("fetching data from %d to %d", startIndex, endIndex);
       const result = await feed.fetchFeed(startIndex, endIndex);
-      setLimit(result.n_threads);
+      setLimit(result.n_posts);
       setStartIndex(endIndex);
       setEndIndex(endIndex + pageSize);
 
       //join the data
-      console.log("current data length", data.length);
-      console.log("new data length", result.data.length);
+      // console.log("current data length", data.length);
+      // console.log("new data length", result.data.length);
       setData([...data, ...result.data]);
-      console.log("startIndex: %s, limit: %s", startIndex, limit);
+      // console.log("startIndex: %s, limit: %s", startIndex, limit);
       setIsEndReached(startIndex >= limit);
     } catch (error: unknown | Error | any) {
       // TODO: Check if this is the correct error message to handle and if it's the correct way to handle it
