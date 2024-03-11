@@ -217,6 +217,17 @@ func GetJsonUserByAddress(addr std.Address) string {
 	return marshalJsonUser(user)
 }
 
+// Call users.GetUserByName and return the result as JSON, or "" if not found.
+// (This is a temporary utility until gno.land supports returning structured data directly.)
+func GetJsonUserByName(name string) string {
+	user := users.GetUserByName(name)
+	if user == nil {
+		return ""
+	}
+
+	return marshalJsonUser(user)
+}
+
 // TODO: This is a temporary copy. Remove this when they merge https://github.com/gnolang/gno/pull/1708.
 func listKeysByPrefix(tree avl.Tree, prefix string, maxResults int) []string {
 	end := ""
