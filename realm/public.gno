@@ -214,9 +214,7 @@ func GetJsonUserByAddress(addr std.Address) string {
 		return ""
 	}
 
-	return ufmt.Sprintf(
-		"{\"address\": \"%s\", \"name\": \"%s\", \"profile\": %s, \"number\": %d, \"invites\": %d, \"inviter\": \"%s\"}",
-		user.Address.String(), user.Name, strconv.Quote(user.Profile), user.Number, user.Invites, user.Inviter.String())
+	return marshalJsonUser(user)
 }
 
 // TODO: This is a temporary copy. Remove this when they merge https://github.com/gnolang/gno/pull/1708.
