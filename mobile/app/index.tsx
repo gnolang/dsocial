@@ -1,25 +1,19 @@
-// order matters here
-import "react-native-polyfill-globals/auto";
-
-// Polyfill async.Iterator. For some reason, the Babel presets and plugins are not doing the trick.
-// Code from here: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#caveats
-(Symbol as any).asyncIterator = Symbol.asyncIterator || Symbol.for("Symbol.asyncIterator");
-
-import React, { useEffect, useState } from "react";
-import Button from "components/button";
-import { useGno } from "@gno/hooks/use-gno";
-import { useNavigation } from "expo-router";
-import { GnoAccount } from "@gno/native_modules/types";
-import SideMenuAccountList from "@gno/components/list/account/account-list";
+import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
-import Ruller from "@gno/components/row/Ruller";
-import { Spacer } from "@gno/components/row";
+import SideMenuAccountList from "@gno/components/list/account/account-list";
 import ReenterPassword from "@gno/components/modal/reenter-password";
+import { Spacer } from "@gno/components/row";
+import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
-import { loggedIn } from "redux/features/accountSlice";
-import { useAppDispatch } from "@gno/redux";
+import { useGno } from "@gno/hooks/use-gno";
+import { GnoAccount } from "@gno/native_modules/types";
+import { loggedIn, useAppDispatch } from "@gno/redux";
+import { useRouter, useNavigation } from "expo-router";
+import { useEffect, useState } from "react";
 
-export default function Page() {
+export default function Root() {
+  const route = useRouter();
+
   const [accounts, setAccounts] = useState<GnoAccount[]>([]);
   const [loading, setLoading] = useState<string | undefined>(undefined);
   const [reenterPassword, setReenterPassword] = useState<GnoAccount | undefined>(undefined);
@@ -32,9 +26,6 @@ export default function Page() {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
         const response = await gno.listKeyInfo();
-
-        console.log("response response:", response);
-
         setAccounts(response);
       } catch (error: unknown | Error) {
         console.log(error);
@@ -54,6 +45,7 @@ export default function Page() {
       }
 
       dispatch(loggedIn({ name: value.name, password: "", pubKey: value.pubKey.toString(), address: value.address.toString() }));
+      route.push("/home");
     } catch (error: unknown | Error) {
       setLoading(error?.toString());
       console.log(error);
@@ -63,8 +55,14 @@ export default function Page() {
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
       dispatch(
-        loggedIn({ name: reenterPassword.name, password: "", pubKey: reenterPassword.pubKey.toString(), address: reenterPassword.address.toString() })
+        loggedIn({
+          name: reenterPassword.name,
+          password: "",
+          pubKey: reenterPassword.pubKey.toString(),
+          address: reenterPassword.address.toString(),
+        })
       );
+      route.push("/home");
     }
     setReenterPassword(undefined);
   };
@@ -72,7 +70,7 @@ export default function Page() {
   return (
     <>
       <Layout.Container>
-        <Layout.Body>
+        <Layout.BodyAlignedBotton>
           {accounts && accounts.length > 0 && (
             <>
               <Text.Body>Please, select one of the existing accounts to start:</Text.Body>
@@ -85,10 +83,10 @@ export default function Page() {
           )}
 
           <Spacer />
-          <Button.Link title="Sign up" href="/sign-up" />
+          <Button.Link title="Sign up" href="sign-up" />
           <Spacer />
-          <Button.Link title="Import Account" href="/import-account" variant="tertiary" />
-        </Layout.Body>
+          <Button.Link title="Import Account" href="/sign-in" variant="tertiary" />
+        </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (
         <ReenterPassword visible={Boolean(reenterPassword)} accountName={reenterPassword.name} onClose={onCloseReenterPassword} />

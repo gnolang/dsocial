@@ -1,21 +1,24 @@
 import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import Alert from "@gno/components/alert";
+import Button from "@gno/components/button";
+import Layout from "@gno/components/layout";
+import Spacer from "@gno/components/spacer";
+import Text from "@gno/components/text";
+import TextInput from "@gno/components/textinput";
 import { useGno } from "@gno/hooks/use-gno";
-import Alert from "components/alert";
-import Button from "components/button";
-import Spacer from "components/spacer";
-import TextInput from "components/textinput";
-import { router, useNavigation } from "expo-router";
+import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-export default function Page() {
-  const gno = useGno();
-  const navigation = useNavigation();
-
+export default function Search() {
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [account, setAccount] = useState<KeyInfo | undefined>(undefined);
+
+  const gno = useGno();
+  const navigation = useNavigation();
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -51,49 +54,40 @@ export default function Page() {
     }
   };
 
-  if (!account) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.main}>
-          <Text>No active account. Please refresh the app.</Text>
-        </View>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <View style={styles.main}>
-        <Spacer space={16} />
-        <Text>What do you want to share, {account.name}?</Text>
-        <View style={{ minWidth: "100%", paddingTop: 8 }}>
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Layout.Container>
+        <Layout.BodyAlignedBotton>
+          <Text.Title>Let's post a message on the Gno Blockchain!</Text.Title>
+          <Spacer space={24} />
           <TextInput
             placeholder="What's happening?"
             onChangeText={setPostContent}
             value={postContent}
             multiline
             numberOfLines={4}
-            style={{ height: 100 }}
+            style={{ height: 200 }}
           />
-          <Spacer />
+          <Spacer space={24} />
           <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPost} />
+          <Spacer space={24} />
+          <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
           <Alert severity="error" message={error} />
-        </View>
-      </View>
-    </View>
+        </Layout.BodyAlignedBotton>
+      </Layout.Container>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 24,
-  },
-  main: {
-    flex: 1,
+  centerScreen: {
+    height: "100%",
     justifyContent: "center",
-    maxWidth: 960,
-    marginHorizontal: "auto",
+    alignItems: "center",
   },
 });

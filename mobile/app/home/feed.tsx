@@ -1,6 +1,6 @@
 import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
 import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
@@ -9,6 +9,7 @@ import { FlatList } from "react-native-gesture-handler";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import EmptyFeedList from "@gno/components/feed/empty-feed-list";
 import { Tweet } from "@gno/components/feed/tweet";
+import Button from "@gno/components/button";
 
 export default function Page() {
   const pageSize = 9;
@@ -20,6 +21,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEndReached, setIsEndReached] = useState(false);
 
+  const router = useRouter();
   const feed = useFeed();
   const navigation = useNavigation();
   const ref = useRef<FlatList>(null);
@@ -71,6 +73,10 @@ export default function Page() {
     }
   };
 
+  const onPressPost = () => {
+    router.push("/post");
+  };
+
   const renderFooter = () => {
     if (!isLoading) return null;
     return (
@@ -91,20 +97,23 @@ export default function Page() {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        ref={ref}
-        scrollToOverflowEnabled
-        data={data}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={<EmptyFeedList />}
-        keyExtractor={(item) => `${item.id}`}
-        contentContainerStyle={styles.flatListContent}
-        renderItem={({ item }) => <Tweet item={item} />}
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.1}
-      />
-    </View>
+    <Layout.Container>
+      <View style={styles.container}>
+        <FlatList
+          ref={ref}
+          scrollToOverflowEnabled
+          data={data}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={<EmptyFeedList />}
+          keyExtractor={(item) => `${item.id}`}
+          contentContainerStyle={styles.flatListContent}
+          renderItem={({ item }) => <Tweet item={item} />}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.1}
+        />
+        <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
+      </View>
+    </Layout.Container>
   );
 }
 
@@ -120,5 +129,12 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: 20,
     alignItems: "center",
+  },
+  post: {
+    position: "absolute",
+    width: 60,
+    height: 60,
+    bottom: 40,
+    right: 20,
   },
 });

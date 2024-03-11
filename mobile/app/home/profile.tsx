@@ -10,10 +10,13 @@ import Layout from "@gno/components/layout";
 import Spacer from "@gno/components/spacer";
 import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
+import Text from "@gno/components/text";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [chainID, setChainID] = useState("");
+  const [remote, setRemote] = useState("");
 
   const gno = useGno();
   const navigation = useNavigation();
@@ -74,24 +77,27 @@ export default function Page() {
         <Layout.Body>
           <>
             <AccountBalance activeAccount={activeAccount} />
-
-            <View>
-              <Button.TouchableOpacity
-                title="Logout"
-                onPress={() => dispatch(logedOut())}
-                style={styles.logout}
-                variant="primary-red"
-              />
-              <Spacer />
-              <Button.TouchableOpacity title="Onboard" onPress={onboard} variant="primary" />
-              <Button.TouchableOpacity
-                title="Delete Account"
-                onPress={onDeleteAccount}
-                style={styles.logout}
-                variant="primary-red"
-              />
-            </View>
+            <Text.Subheadline>Chain ID:</Text.Subheadline>
+            <Text.Body>{chainID}</Text.Body>
+            <Text.Subheadline>Remote:</Text.Subheadline>
+            <Text.Body>{remote}</Text.Body>
+            <View></View>
           </>
+          <Layout.Footer>
+            <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
+            <Button.TouchableOpacity
+              title="Logout"
+              onPress={() => dispatch(logedOut())}
+              style={styles.logout}
+              variant="primary-red"
+            />
+            <Button.TouchableOpacity
+              title="Delete Account"
+              onPress={onDeleteAccount}
+              style={styles.logout}
+              variant="primary-red"
+            />
+          </Layout.Footer>
         </Layout.Body>
       </Layout.Container>
       <LoadingModal visible={loading} />
