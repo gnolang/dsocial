@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"strings"
 
+	"gno.land/p/demo/ufmt"
+	p_users "gno.land/p/demo/users"
 	"gno.land/r/demo/users"
 )
 
@@ -99,4 +101,12 @@ func usernameOf(addr std.Address) string {
 	} else {
 		return user.Name
 	}
+}
+
+// Return the User info as a JSON string.
+// (This is a temporary utility until gno.land supports returning structured data directly.)
+func marshalJsonUser(user *p_users.User) string {
+	return ufmt.Sprintf(
+		"{\"address\": \"%s\", \"name\": \"%s\", \"profile\": %s, \"number\": %d, \"invites\": %d, \"inviter\": \"%s\"}",
+		user.Address.String(), user.Name, strconv.Quote(user.Profile), user.Number, user.Invites, user.Inviter.String())
 }
