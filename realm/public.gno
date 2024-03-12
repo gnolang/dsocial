@@ -124,10 +124,17 @@ func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startI
 	}
 }
 
+// Get the number of posts which GetHomePosts or GetJsonHomePosts will return.
+// The result is something like "(12 int)".
+func GetHomePostsCount(userPostsAddr std.Address) int {
+	return GetHomePosts(userPostsAddr).Size()
+}
+
 // Get home posts for a user, which are the user's top-level posts plus all posts of all
 // users being followed.
 // The response is a map of postID -> *Post. The avl.Tree sorts by the post ID which is
 // unique for every post and increases in time.
+// If you just want the total count, use GetHomePostsCount.
 func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
 	userPosts := getUserPosts(userPostsAddr)
 	if userPosts == nil {
@@ -149,7 +156,7 @@ func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
 // Get home posts for a user (using GetHomePosts), which are the user's top-level posts plus all
 // posts of all users being followed.
 // Limit the response to posts from startIndex up to (not including) endIndex within the home posts.
-// If you just want the total count, set startIndex and endIndex to 0 and see the response "n_posts".
+// If you just want the total count, use GetHomePostsCount.
 // The response is a JSON string.
 func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) string {
 	allPosts := GetHomePosts(userPostsAddr)
