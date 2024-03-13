@@ -1,6 +1,6 @@
 import { useGno } from "./use-gno";
 
-const MAX_RESULT = 100;
+const MAX_RESULT = 10;
 
 export const useSearch = () => {
   const gno = useGno();
