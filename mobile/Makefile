@@ -16,3 +16,18 @@ android: node_modules
 start: node_modules
 	yarn start
 .PHONY: start
+
+# - asdf
+
+asdf.add_plugins:
+	$(call check-program, asdf)
+	@echo "Installing asdf plugins..."
+	@set -e; \
+	for PLUGIN in $$(cut -d' ' -f1 .tool-versions | grep "^[^\#]"); do \
+		asdf plugin add $$PLUGIN || [ $$?==2 ] || exit 1; \
+	done
+
+asdf.install_tools: asdf.add_plugins
+	$(call check-program, asdf)
+	@echo "Installing asdf tools..."
+	@asdf install
