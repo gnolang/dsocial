@@ -67,15 +67,16 @@ func PostReply(userPostsAddr std.Address, threadid, postid PostID, body string) 
 func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) PostID {
 	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
+	if userPostsAddr == caller {
+		panic("Cannot repost a user's own message")
+	}
+
 	name := usernameOf(caller)
 	if name == "" {
 		panic("please register")
 	}
 	dstUserPosts := getOrCreateUserPosts(caller, name)
 
-	if userPostsAddr == caller {
-		panic("Cannot repost a user's own message")
-	}
 	userPosts := getUserPosts(userPostsAddr)
 	if userPosts == nil {
 		panic("posts for userPostsAddr do not exist")

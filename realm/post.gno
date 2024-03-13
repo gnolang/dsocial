@@ -91,9 +91,9 @@ func (post *Post) AddRepostTo(creator std.Address, comment string, dst *UserPost
 	return repost
 }
 
-func (thread *Post) GetReply(pid PostID) *Post {
+func (post *Post) GetReply(pid PostID) *Post {
 	pidkey := postIDKey(pid)
-	replyI, ok := thread.repliesAll.Get(pidkey)
+	replyI, ok := post.repliesAll.Get(pidkey)
 	if !ok {
 		return nil
 	} else {
