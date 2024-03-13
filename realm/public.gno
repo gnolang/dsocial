@@ -236,6 +236,76 @@ func GetJsonUserByName(name string) string {
 	return marshalJsonUser(user)
 }
 
+// Get the UserPosts info for the user with the given address, including
+// url, n_threads, n_followers and n_following. If the user address is not
+// found, return "". The name of this function has "Info" because it just returns
+// the number of items, not the items themselves. To get the items, see
+// GetJsonFollowers, etc.
+// The response is a JSON string.
+func GetJsonUserPostsInfo(address std.Address) string {
+	userPosts := getUserPosts(address)
+	if userPosts == nil {
+		return ""
+	}
+
+	json, err := userPosts.MarshalJSON()
+	if err != nil {
+		panic("can't get UserPosts JSON")
+	}
+
+	return string(json)
+}
+
+// Get the UserPosts for the user with the given address, and return
+// the list of followers. If the user address is not found, return "".
+// The response is a JSON string.
+func GetJsonFollowers(address std.Address) string {
+	userPosts := getUserPosts(address)
+	if userPosts == nil {
+		return ""
+	}
+
+	json := "[\n  "
+	userPosts.followers.Iterate("", "", func(addr string, value interface{}) bool {
+		if len(json) > 4 {
+			json += ",\n  "
+		}
+		json += ufmt.Sprintf(`{"address": "%s"}`, addr)
+		return false
+	})
+	json += "]"
+
+	return json
+}
+
+// Get the UserPosts for the user with the given address, and return
+// the list of other users that this user is following.
+// If the user address is not found, return "".
+// The response is a JSON string.
+func GetJsonFollowing(address std.Address) string {
+	userPosts := getUserPosts(address)
+	if userPosts == nil {
+		return ""
+	}
+
+	json := "[\n  "
+	userPosts.following.Iterate("", "", func(addr string, infoI interface{}) bool {
+		if len(json) > 4 {
+			json += ",\n  "
+		}
+		startedAt, err := infoI.(*FollowingInfo).startedFollowingAt.MarshalJSON()
+		if err != nil {
+			panic("can't get startedFollowingAt JSON")
+		}
+		json += ufmt.Sprintf(`{"address": "%s", "started_following_at": %s}`,
+			addr, string(startedAt))
+		return false
+	})
+	json += "]"
+
+	return json
+}
+
 // TODO: This is a temporary copy. Remove this when they merge https://github.com/gnolang/gno/pull/1708.
 func listKeysByPrefix(tree avl.Tree, prefix string, maxResults int) []string {
 	end := ""
