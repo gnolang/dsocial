@@ -1,6 +1,7 @@
 package social
 
 import (
+	"bytes"
 	"sort"
 	"std"
 	"strconv"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"gno.land/p/demo/avl"
+	"gno.land/p/demo/ufmt"
 	"gno.land/r/demo/users"
 )
 
@@ -235,4 +237,14 @@ func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime 
 
 		return false
 	})
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (userPosts *UserPosts) MarshalJSON() ([]byte, error) {
+	json := new(bytes.Buffer)
+	json.WriteString(ufmt.Sprintf(`{"address": "%s", "url": %s, "n_threads": %d, "n_followers": %d, "n_following": %d}`,
+		userPosts.userAddr.String(), strconv.Quote(userPosts.url), userPosts.threads.Size(),
+		userPosts.followers.Size(), userPosts.following.Size()))
+
+	return json.Bytes(), nil
 }
