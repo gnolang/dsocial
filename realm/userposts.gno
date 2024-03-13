@@ -33,9 +33,11 @@ func newUserPosts(url string, userAddr std.Address) *UserPosts {
 		panic("userPosts already exists")
 	}
 	return &UserPosts{
-		url:      url,
-		userAddr: userAddr,
-		threads:  avl.Tree{},
+		url:       url,
+		userAddr:  userAddr,
+		threads:   avl.Tree{},
+		followers: avl.Tree{},
+		following: avl.Tree{},
 	}
 }
 
