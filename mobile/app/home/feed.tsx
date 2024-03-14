@@ -1,11 +1,10 @@
-import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, Platform, StyleSheet, View } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
 import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
 import { Post } from "@gno/types";
-import { FlatList } from "react-native-gesture-handler";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import EmptyFeedList from "@gno/components/feed/empty-feed-list";
 import { Tweet } from "@gno/components/feed/tweet";
