@@ -1,5 +1,4 @@
-import { Image, StyleSheet, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Text from "@gno/components/text";
 
 type Props = {
