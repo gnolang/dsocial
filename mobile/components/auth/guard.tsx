@@ -16,7 +16,7 @@ function useProtectedRoute(user: User | undefined) {
   const [segment] = useSegments() as [SharedSegment];
 
   React.useEffect(() => {
-    const inAuthGroup = segments[0] === "sign-up" || segments[0] == "sign-in";
+    const inAuthGroup = segments.length == 0 || segments[0] === "sign-up" || segments[0] == "sign-in";
 
     // If the user is not signed in and the initial segment is not anything in the auth group.
     if (!user && !inAuthGroup) {

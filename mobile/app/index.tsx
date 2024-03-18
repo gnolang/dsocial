@@ -25,10 +25,13 @@ export default function Root() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
+        setLoading("Loading accounts...");
         const response = await gno.listKeyInfo();
         setAccounts(response);
       } catch (error: unknown | Error) {
         console.log(error);
+      } finally {
+        setLoading(undefined);
       }
     });
     return unsubscribe;
@@ -66,6 +69,16 @@ export default function Root() {
     }
     setReenterPassword(undefined);
   };
+
+  if (loading) {
+    return (
+      <Layout.Container>
+        <Layout.Body>
+          <Text.Title>{loading}</Text.Title>
+        </Layout.Body>
+      </Layout.Container>
+    );
+  }
 
   return (
     <>
