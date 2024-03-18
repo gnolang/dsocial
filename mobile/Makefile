@@ -31,3 +31,32 @@ asdf.install_tools: asdf.add_plugins
 	$(call check-program, asdf)
 	@echo "Installing asdf tools..."
 	@asdf install
+
+clean:
+	$(call check-program, yarn)
+
+	# React-Native cmd
+	yarn cache clean -f
+
+# React-Native files
+	rm -rf .tmp
+	rm -rf node_modules
+	rm -rf /tmp/react-native-packager-cache-*
+	rm -rf /tmp/metro-bundler-cache-*
+	rm -rf .eslintcache
+
+	# Android files
+	rm -rf android/.gradle
+	rm -rf android/build
+	rm -rf android/app/build
+	rm -f android/libs/gobridge.aar
+
+	# iOS files
+	rm -rf ios/build
+	rm -rf ios/Pods
+
+.PHONY: clean
+
+clean_install: clean node_modules
+	cd ios && pod install
+.PHONY: clean_install
