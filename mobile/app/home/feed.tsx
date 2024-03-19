@@ -6,19 +6,13 @@ import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
 import { Post } from "@gno/types";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
-import EmptyFeedList from "@gno/components/feed/empty-feed-list";
-import { Tweet } from "@gno/components/feed/tweet";
 import Button from "@gno/components/button";
+import FeedView from "@gno/components/view/feed";
 
 export default function Page() {
-  const pageSize = 9;
-  const [startIndex, setStartIndex] = useState(0);
-  const [endIndex, setEndIndex] = useState(pageSize);
-  const [limit, setLimit] = useState(pageSize + 1);
-  const [data, setData] = useState<Post[]>([]);
+  const [totalPosts, setTotalPosts] = useState(0);
   const [error, setError] = useState<unknown | Error | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isEndReached, setIsEndReached] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
   const feed = useFeed();
@@ -30,62 +24,31 @@ export default function Page() {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       setError(undefined);
-      fetchData();
+      setIsLoading(true);
+      try {
+        const total = await feed.fetchCount();
+        setTotalPosts(total);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
     });
     return unsubscribe;
   }, [navigation]);
-
-  const handleEndReached = async () => {
-    console.log("end reached", isEndReached);
-    if (!isEndReached) {
-      setIsEndReached(true);
-      fetchData();
-    }
-  };
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      console.log("fetching data from %d to %d", startIndex, endIndex);
-      const result = await feed.fetchFeed(startIndex, endIndex);
-      setLimit(result.n_posts);
-      setStartIndex(endIndex);
-      setEndIndex(endIndex + pageSize);
-
-      //join the data
-      console.log("current data length", data.length);
-      console.log("new data length", result.data.length);
-      setData([...data, ...result.data]);
-      console.log("startIndex: %s, limit: %s", startIndex, limit);
-      setIsEndReached(startIndex >= limit);
-    } catch (error: unknown | Error | any) {
-      // TODO: Check if this is the correct error message to handle and if it's the correct way to handle it
-      // https://github.com/gnolang/gnonative/issues/117
-      if (error.message === "[unknown] invoke bridge method error: unknown: posts for userPostsAddr do not exist") {
-        setData([]);
-        return;
-      }
-      setError(error);
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const onPressPost = () => {
     router.push("/post");
   };
 
-  const renderFooter = () => {
-    if (!isLoading) return null;
+  if (isLoading)
     return (
       <View style={styles.footer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
-  };
 
-  if (error) {
+  if (error)
     return (
       <Layout.Container>
         <Layout.Body>
@@ -93,23 +56,11 @@ export default function Page() {
         </Layout.Body>
       </Layout.Container>
     );
-  }
 
   return (
     <Layout.Container>
       <View style={styles.container}>
-        <FlatList
-          ref={ref}
-          scrollToOverflowEnabled
-          data={data}
-          ListFooterComponent={renderFooter}
-          ListEmptyComponent={<EmptyFeedList />}
-          keyExtractor={(item) => `${item.id}`}
-          contentContainerStyle={styles.flatListContent}
-          renderItem={({ item }) => <Tweet item={item} />}
-          onEndReached={handleEndReached}
-          onEndReachedThreshold={0.1}
-        />
+        <FeedView totalPosts={totalPosts} />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
     </Layout.Container>

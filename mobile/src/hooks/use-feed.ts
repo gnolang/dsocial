@@ -49,7 +49,7 @@ export const useFeed = () => {
     }
 
     return {
-      data: posts,
+      data: posts.reverse(),
       n_posts: jsonPosts.n_posts,
     };
   }
@@ -79,5 +79,17 @@ export const useFeed = () => {
     return user;
   }
 
-  return { fetchFeed };
+  async function fetchCount() {
+    const currentAccount = await gno.getActiveAccount();
+    if (!currentAccount.key) throw new Error("No active account");
+
+    const bech32 = await gno.addressToBech32(currentAccount.key.address);
+    const result = await gno.qEval("gno.land/r/berty/social", `GetHomePostsCount("${bech32}")`);
+
+    const data = result.substring(1, result.length - " int)".length);
+
+    return parseInt(data);
+  }
+
+  return { fetchFeed, fetchCount };
 };
