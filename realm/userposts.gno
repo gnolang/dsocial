@@ -24,7 +24,7 @@ type FollowingInfo struct {
 type UserPosts struct {
 	url       string
 	userAddr  std.Address
-	threads   avl.Tree // Post.id -> *Post
+	threads   avl.Tree // PostID -> *Post
 	followers avl.Tree // std.Address -> ""
 	following avl.Tree // std.Address -> *FollowingInfo
 }
