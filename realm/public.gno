@@ -3,7 +3,6 @@ package social
 import (
 	"std"
 	"strconv"
-	"time"
 
 	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
@@ -125,8 +124,23 @@ func GetThreadPosts(userPostsAddr std.Address, threadID int, replyID int, startI
 	}
 }
 
+// Update the home posts by scanning all posts from all followed users and adding the
+// followed posts since the last call to RefreshHomePosts (or since started following the user).
+// Return the new count of home posts. The result is something like "(12 int)".
+func RefreshHomePosts(userPostsAddr std.Address) int {
+	userPosts := getUserPosts(userPostsAddr)
+	if userPosts == nil {
+		panic("posts for userPostsAddr do not exist")
+	}
+	userPosts.refreshHomePosts()
+
+	return userPosts.homePosts.Size()
+}
+
 // Get the number of posts which GetHomePosts or GetJsonHomePosts will return.
 // The result is something like "(12 int)".
+// This returns the current count of the home posts (without need to pay gas). To include the
+// latest followed posts, call RefreshHomePosts.
 func GetHomePostsCount(userPostsAddr std.Address) int {
 	return GetHomePosts(userPostsAddr).Size()
 }
@@ -136,22 +150,14 @@ func GetHomePostsCount(userPostsAddr std.Address) int {
 // The response is a map of postID -> *Post. The avl.Tree sorts by the post ID which is
 // unique for every post and increases in time.
 // If you just want the total count, use GetHomePostsCount.
+// This returns the current state of the home posts (without need to pay gas). To include the
+// latest followed posts, call RefreshHomePosts.
 func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
 	userPosts := getUserPosts(userPostsAddr)
 	if userPosts == nil {
 		panic("posts for userPostsAddr do not exist")
 	}
-
-	// TODO: This computes all home posts on each call. Can this be more efficient?
-	allPosts := avl.Tree{} // postID -> *Post
-	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
-		post := postI.(*Post)
-		allPosts.Set(id, post)
-		return false
-	})
-	userPosts.addFollowedPosts(&allPosts, time.Time{}, debugNow())
-
-	return &allPosts
+	return &userPosts.homePosts
 }
 
 // Get home posts for a user (using GetHomePosts), which are the user's top-level posts plus all
@@ -159,6 +165,8 @@ func GetHomePosts(userPostsAddr std.Address) *avl.Tree {
 // Limit the response to posts from startIndex up to (not including) endIndex within the home posts.
 // If you just want the total count, use GetHomePostsCount.
 // The response is a JSON string.
+// This returns the current state of the home posts (without need to pay gas). To include the
+// latest posts, call RefreshHomePosts.
 func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) string {
 	allPosts := GetHomePosts(userPostsAddr)
 	postsJson := ""

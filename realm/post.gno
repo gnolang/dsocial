@@ -87,6 +87,8 @@ func (post *Post) AddRepostTo(creator std.Address, comment string, dst *UserPost
 	pidkey := postIDKey(pid)
 	repost := newPost(dst, pid, creator, comment, pid, post.id, post.userPosts.userAddr)
 	dst.threads.Set(pidkey, repost)
+	// Also add to the home posts.
+	dst.homePosts.Set(pidkey, repost)
 	post.reposts.Set(creator.String(), pid)
 	return repost
 }

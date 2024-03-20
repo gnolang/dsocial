@@ -15,6 +15,7 @@ import (
 
 type FollowingInfo struct {
 	startedFollowingAt time.Time
+	startedPostsCtr    PostID
 }
 
 // UserPosts is similar to boards.Board where each user has their own "board" for
@@ -22,11 +23,13 @@ type FollowingInfo struct {
 // A user's "home feed" may contain other posts (from followed users, etc.) but this only
 // has the top-level posts from the user (not replies to other user's posts).
 type UserPosts struct {
-	url       string
-	userAddr  std.Address
-	threads   avl.Tree // PostID -> *Post
-	followers avl.Tree // std.Address -> ""
-	following avl.Tree // std.Address -> *FollowingInfo
+	url           string
+	userAddr      std.Address
+	threads       avl.Tree // PostID -> *Post
+	homePosts     avl.Tree // PostID -> *Post. Includes this user's threads posts plus posts of users being followed.
+	lastRefreshId PostID   // Updated by refreshHomePosts
+	followers     avl.Tree // std.Address -> ""
+	following     avl.Tree // std.Address -> *FollowingInfo
 }
 
 // Create a new userPosts for the user. Panic if there is already a userPosts for the user.
@@ -35,11 +38,13 @@ func newUserPosts(url string, userAddr std.Address) *UserPosts {
 		panic("userPosts already exists")
 	}
 	return &UserPosts{
-		url:       url,
-		userAddr:  userAddr,
-		threads:   avl.Tree{},
-		followers: avl.Tree{},
-		following: avl.Tree{},
+		url:           url,
+		userAddr:      userAddr,
+		threads:       avl.Tree{},
+		homePosts:     avl.Tree{},
+		lastRefreshId: PostID(postsCtr), // Ignore past messages of followed users.
+		followers:     avl.Tree{},
+		following:     avl.Tree{},
 	}
 }
 
@@ -58,6 +63,8 @@ func (userPosts *UserPosts) AddThread(body string) *Post {
 	pidkey := postIDKey(pid)
 	thread := newPost(userPosts, pid, userPosts.userAddr, body, pid, 0, "")
 	userPosts.threads.Set(pidkey, thread)
+	// Also add to the home posts.
+	userPosts.homePosts.Set(pidkey, thread)
 	return thread
 }
 
@@ -70,6 +77,7 @@ func (userPosts *UserPosts) Follow(followedAddr std.Address) {
 	if followedUserPosts != nil {
 		userPosts.following.Set(followedAddr.String(), &FollowingInfo{
 			startedFollowingAt: debugNow(),
+			startedPostsCtr:    PostID(postsCtr), // Ignore past messages.
 		})
 		followedUserPosts.followers.Set(userPosts.userAddr.String(), "")
 	}
@@ -101,19 +109,19 @@ func (userPosts *UserPosts) RenderUserPosts(includeFollowed bool) string {
 	}
 	str += followers + " &nbsp;" + following + "\n\n"
 
-	str += "\\[[post](" + userPosts.GetPostFormURL() + ")] \\[[follow](" + userPosts.GetFollowFormURL() + ")]\n\n"
-
-	allPosts := avl.Tree{} // postTime -> *Post
-	userPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
-		post := postI.(*Post)
-		allPosts.Set(id, post)
-		return false
-	})
+	str += "\\[[post](" + userPosts.GetPostFormURL() + ")] \\[[follow](" + userPosts.GetFollowFormURL() + ")]"
 	if includeFollowed {
-		userPosts.addFollowedPosts(&allPosts, time.Time{}, debugNow())
+		str += " \\[[refresh](" + userPosts.GetRefreshFormURL() + ")]"
 	}
+	str += "\n\n"
 
-	allPosts.Iterate("", "", func(key string, postI interface{}) bool {
+	var posts *avl.Tree
+	if includeFollowed {
+		posts = &userPosts.homePosts
+	} else {
+		posts = &userPosts.threads
+	}
+	posts.Iterate("", "", func(key string, postI interface{}) bool {
 		str += "----------------------------------------\n"
 		str += postI.(*Post).RenderSummary() + "\n"
 		return false
@@ -204,11 +212,17 @@ func (userPosts *UserPosts) GetUnfollowFormURL(followedAddr std.Address) string 
 		"&followedAddr=" + followedAddr.String()
 }
 
-// Scan userPosts.following and for all posts from all followed users from startTime up to (not including) endTime.
-// if startTime.IsZero(), then use the FollowingInfo startedFollowingAt time.
-// Add the posts to the followedPosts map of postID -> *Post. The avl.Tree sorts by the post ID which is
-// unique for every post and increases in time.
-func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime time.Time, endTime time.Time) {
+func (userPosts *UserPosts) GetRefreshFormURL() string {
+	return "/r/berty/social?help&__func=RefreshHomePosts" +
+		"&userPostsAddr=" + userPosts.userAddr.String()
+}
+
+// Scan userPosts.following for all posts from all followed users starting from lastRefreshId+1 .
+// Add the posts to the homePosts avl.Tree, which is sorted by the post ID which is unique for every post and
+// increases in time. When finished, update lastRefreshId.
+func (userPosts *UserPosts) refreshHomePosts() {
+	minStartKey := postIDKey(userPosts.lastRefreshId + 1)
+
 	userPosts.following.Iterate("", "", func(followedAddr string, infoI interface{}) bool {
 		followedUserPosts := getUserPosts(std.Address(followedAddr))
 		if followedUserPosts == nil {
@@ -216,27 +230,21 @@ func (userPosts *UserPosts) addFollowedPosts(followedPosts *avl.Tree, startTime 
 		}
 
 		info := infoI.(*FollowingInfo)
-		if startTime.IsZero() {
-			startTime = info.startedFollowingAt
+		startKey := minStartKey
+		if info.startedPostsCtr > userPosts.lastRefreshId {
+			// Started following after the last refresh. Ignore messages before started following.
+			startKey := postIDKey(info.startedPostsCtr + 1)
 		}
 
-		// TODO: This scans all threads. Is it possible to begin at startTime?
-		followedUserPosts.threads.Iterate("", "", func(id string, postI interface{}) bool {
-			post := postI.(*Post)
-			if post.createdAt.Before(startTime) {
-				// Keep scanning.
-				return false
-			} else if !post.createdAt.Before(endTime) {
-				// Finished.
-				return true
-			}
-
-			followedPosts.Set(id, post)
+		followedUserPosts.threads.Iterate(startKey, "", func(id string, postI interface{}) bool {
+			userPosts.homePosts.Set(id, postI.(*Post))
 			return false
 		})
 
 		return false
 	})
+
+	userPosts.lastRefreshId = PostID(postsCtr)
 }
 
 // MarshalJSON implements the json.Marshaler interface.
