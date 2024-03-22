@@ -75,6 +75,8 @@ export default function Page() {
       await gno.setPassword(password);
       await onboarding.onboard(response.name, response.address);
 
+      dispatch(loggedIn(response));
+
       await dispatch(loggedIn(response));
       router.push("/home");
     } catch (error) {
