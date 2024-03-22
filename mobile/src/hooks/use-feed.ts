@@ -1,16 +1,20 @@
 import { Post, User } from "@gno/types";
 import { useGno } from "./use-gno";
+import { useUserCache } from "./use-user-cache";
 
 export const useFeed = () => {
   const gno = useGno();
-  const usersCache = new Map<string, User>();
+  const cache = useUserCache();
 
   async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
-    const currentAccount = await gno.getActiveAccount();
-    if (!currentAccount.key) throw new Error("No active account");
-    const bech32 = await gno.addressToBech32(currentAccount.key.address);
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonHomePosts("${bech32}", ${startIndex}, ${endIndex})`);
-    const json = await convertToPosts(result, currentAccount.key.name);
+    const account = await checkActiveAccount();
+
+    const result = await gno.qEval(
+      "gno.land/r/berty/social",
+      `GetJsonHomePosts("${account.address}", ${startIndex}, ${endIndex})`
+    );
+
+    const json = await convertToPosts(result, account.name);
     return json;
   }
 
@@ -31,7 +35,7 @@ export const useFeed = () => {
     for (const post of jsonPosts.posts) {
       posts.push({
         user: {
-          user: (await getUserByAddress(post.post.creator)).name,
+          user: (await cache.getUser(post.post.creator)).name,
           name: username,
           image: "https://www.gravatar.com/avatar/tmp",
           followers: 0,
@@ -54,41 +58,25 @@ export const useFeed = () => {
     };
   }
 
-  async function getUserByAddress(bech32: string): Promise<User> {
-    if (usersCache.has(bech32)) {
-      // Cached user
-      return usersCache.get(bech32) as User;
-    }
-
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonUserByAddress("${bech32}")`);
-    if (!result || !(result.startsWith("(") && result.endsWith(" string)")))
-      throw new Error("Malformed GetJsonUserByAddress response");
-    const quoted = result.substring(1, result.length - " string)".length);
-    const json = JSON.parse(quoted);
-    const jsonPosts = JSON.parse(json);
-
-    const user = {
-      name: jsonPosts.name,
-      password: "",
-      pubKey: "",
-      address: json.address,
-    };
-
-    usersCache.set(bech32, user);
-
-    return user;
-  }
-
   async function fetchCount() {
-    const currentAccount = await gno.getActiveAccount();
-    if (!currentAccount.key) throw new Error("No active account");
+    const account = await checkActiveAccount();
 
-    const bech32 = await gno.addressToBech32(currentAccount.key.address);
-    const result = await gno.qEval("gno.land/r/berty/social", `GetHomePostsCount("${bech32}")`);
+    const result = await gno.qEval("gno.land/r/berty/social", `GetHomePostsCount("${account.address}")`);
 
     const data = result.substring(1, result.length - " int)".length);
 
     return parseInt(data);
+  }
+
+  async function checkActiveAccount() {
+    const currentAccount = await gno.getActiveAccount();
+    if (!currentAccount.key) throw new Error("No active account");
+
+    const bech32 = await gno.addressToBech32(currentAccount.key.address);
+
+    const user: User = { address: bech32, name: currentAccount.key.name };
+
+    return user;
   }
 
   return { fetchFeed, fetchCount };

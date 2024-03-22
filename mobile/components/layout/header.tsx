@@ -1,17 +1,18 @@
-import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import Icons from '../icons';
-import { useNavigation } from '@react-navigation/native';
-import styled from 'styled-components/native';
+import React from "react";
+import { TouchableOpacity, View } from "react-native";
+import Icons from "../icons";
+import { useNavigation } from "@react-navigation/native";
+import styled from "styled-components/native";
 
 type Props = {
-  iconType?: 'close' | 'back';
+  iconType?: "close" | "back";
   onCloseHandler?: () => void;
   title?: string;
   subtitle?: string;
+  style: any;
 };
 
-const Header: React.FC<Props> = ({ iconType = 'close', onCloseHandler, title = '', subtitle = '' }) => {
+const Header: React.FC<Props> = ({ iconType = "close", onCloseHandler, title = "", subtitle = "", style }) => {
   const navigate = useNavigation();
 
   if (!onCloseHandler) {
@@ -21,8 +22,8 @@ const Header: React.FC<Props> = ({ iconType = 'close', onCloseHandler, title = '
   }
 
   return (
-    <Wrapper>
-      <TouchableOpacity onPress={onCloseHandler}>{iconType === 'close' ? <Icons.Close /> : <Icons.ArrowLeft />}</TouchableOpacity>
+    <Wrapper style={style}>
+      <TouchableOpacity onPress={onCloseHandler}>{iconType === "close" ? <Icons.Close /> : <Icons.ArrowLeft />}</TouchableOpacity>
       <View>
         <TitleText>{title}</TitleText>
         <SubtitleText>{subtitle}</SubtitleText>

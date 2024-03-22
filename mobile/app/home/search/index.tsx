@@ -11,18 +11,18 @@ export default function Search() {
   const [data, setData] = useState<string[]>([]);
 
   useEffect(() => {
-    if (params.q) {
-      search.searchUser(params.q).then((result) => {
+    (async function () {
+      if (params.q) {
+        const result = await search.searchUser(params.q);
         setData(result);
-      });
-    } else {
-      setData([]);
-    }
+      } else {
+        setData([]);
+      }
+    })();
   }, [params.q]);
 
-  const onPress = (item: string) => {
-    // TODO: navigate to profile
-    // router.push("profile", { user: item });
+  const onPress = (accountName: string) => {
+    router.navigate({ pathname: "account", params: { accountName } });
   };
 
   return (
