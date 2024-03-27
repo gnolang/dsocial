@@ -68,11 +68,17 @@ func (userPosts *UserPosts) AddThread(body string) *Post {
 	return thread
 }
 
+// If already following followedAddr, then do nothing.
 // If there is a UserPosts for followedAddr, then add it to following,
 // and add this user to its followers.
 // If there is no UserPosts for followedAddr, then do nothing. (We don't expect
 // this because this is usually called by clicking on the display page of followedAddr.)
 func (userPosts *UserPosts) Follow(followedAddr std.Address) {
+	if userPosts.following.Has(followedAddr.String()) {
+		// Already following.
+		return
+	}
+
 	followedUserPosts := getUserPosts(followedAddr)
 	if followedUserPosts != nil {
 		userPosts.following.Set(followedAddr.String(), &FollowingInfo{
