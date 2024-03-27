@@ -30,11 +30,11 @@ type Post struct {
 	id         PostID
 	creator    std.Address
 	body       string
-	replies    avl.Tree    // Post.id -> *Post
-	repliesAll avl.Tree    // Post.id -> *Post (all replies, for top-level posts)
-	reposts    avl.Tree    // UserPosts user std.Address -> Post.id
-	threadID   PostID      // original Post.id
-	parentID   PostID      // parent Post.id (if reply or repost)
+	replies    avl.Tree    // PostID -> *Post
+	repliesAll avl.Tree    // PostID -> *Post (all replies, for top-level posts)
+	reposts    avl.Tree    // UserPosts user std.Address -> PostID
+	threadID   PostID      // original PostID
+	parentID   PostID      // parent PostID (if reply or repost)
 	repostUser std.Address // UserPosts user std.Address of original post (if repost)
 	createdAt  time.Time
 }
@@ -87,6 +87,8 @@ func (post *Post) AddRepostTo(creator std.Address, comment string, dst *UserPost
 	pidkey := postIDKey(pid)
 	repost := newPost(dst, pid, creator, comment, pid, post.id, post.userPosts.userAddr)
 	dst.threads.Set(pidkey, repost)
+	// Also add to the home posts.
+	dst.homePosts.Set(pidkey, repost)
 	post.reposts.Set(creator.String(), pid)
 	return repost
 }
