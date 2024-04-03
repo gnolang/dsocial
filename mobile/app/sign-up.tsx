@@ -64,15 +64,16 @@ export default function Page() {
       setLoading(true);
       const response = await gno.createAccount(name, phrase, password);
       if (!response) throw new Error("Failed to create account");
+      console.log("createAccount response: " + JSON.stringify(response));
+
       await gno.selectAccount(name);
       await gno.setPassword(password);
-      console.log("createAccount response: " + JSON.stringify(response));
+
       await gno.selectAccount(name);
       await gno.setPassword(password);
       await onboarding.onboard(response.name, response.address);
 
-      dispatch(loggedIn(response));
-
+      await dispatch(loggedIn(response));
       router.push("/home");
     } catch (error) {
       setError("" + error);
