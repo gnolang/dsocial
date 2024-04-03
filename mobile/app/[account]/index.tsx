@@ -43,7 +43,7 @@ export default function Page() {
       const following = await search.GetJsonFollowing(response.address);
       setFollowing(following);
 
-      dispatch(setFollows({ followers, following, accountName }));
+      dispatch(setFollows({ followers, following }));
     } catch (error: unknown | Error) {
       console.log(error);
     } finally {

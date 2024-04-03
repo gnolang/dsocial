@@ -53,7 +53,7 @@ export default function Page() {
 
       await onboarding.onboard(response.name, response.address);
 
-      dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
+      dispatch(loggedIn(response));
 
       router.push("/home");
     } catch (error) {
