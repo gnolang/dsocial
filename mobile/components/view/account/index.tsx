@@ -62,15 +62,6 @@ function AccountView(props: Props) {
             </TouchableOpacity>
           </View>
         </View>
-
-        {/* <View style={{ marginTop: 16, width: "100%" }}>
-          <View>
-            <Text.Title>Posts</Text.Title>
-          </View>
-          <View style={{ width: "100%", height: "100%" }}>
-            <Text.Title>...</Text.Title>
-          </View>
-        </View> */}
       </View>
     </Layout.Container>
   );
