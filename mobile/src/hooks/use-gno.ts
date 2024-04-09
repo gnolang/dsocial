@@ -100,10 +100,10 @@ export const useGno = (): GnoResponse => {
     console.log("Creating GRPC client instance... done.");
 
     // Set the initial configuration where it's different from the default.
-    // await clientInstance.setRemote(new SetRemoteRequest({ remote: "localhost:36657" }));
-    // await clientInstance.setChainID(new SetChainIDRequest({ chainId: "dev" }));
-    await clientInstance.setRemote(new SetRemoteRequest({ remote: "testnet.gno.berty.io:36657" }));
+    await clientInstance.setRemote(new SetRemoteRequest({ remote: "localhost:36657" }));
     await clientInstance.setChainID(new SetChainIDRequest({ chainId: "dev" }));
+    // await clientInstance.setRemote(new SetRemoteRequest({ remote: "testnet.gno.berty.io:36657" }));
+    // await clientInstance.setChainID(new SetChainIDRequest({ chainId: "dev" }));
 
     return clientInstance;
   };

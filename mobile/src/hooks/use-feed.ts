@@ -1,10 +1,21 @@
 import { Post, User } from "@gno/types";
 import { useGno } from "./use-gno";
 import { useUserCache } from "./use-user-cache";
+import useGnoJsonParser from "./use-gno-json-parser";
 
 export const useFeed = () => {
   const gno = useGno();
   const cache = useUserCache();
+  const parser = useGnoJsonParser();
+
+  async function fetchThread(address: string, postId: number): Promise<{ data: Post[]; n_posts: number }> {
+    await checkActiveAccount();
+
+    const result = await gno.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",${postId},0, 0, 100)`);
+    const json = await enrichData(result);
+
+    return json;
+  }
 
   async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
     const account = await checkActiveAccount();
@@ -14,36 +25,32 @@ export const useFeed = () => {
       `GetJsonHomePosts("${account.address}", ${startIndex}, ${endIndex})`
     );
 
-    const json = await convertToPosts(result, account.name);
+    const json = await enrichData(result);
     return json;
   }
 
-  async function convertToPosts(result: string | undefined, username: string) {
-    if (!result || !(result.startsWith("(") && result.endsWith(" string)"))) throw new Error("Malformed GetThreadPosts response");
-    const quoted = result.substring(1, result.length - " string)".length);
-    const json = JSON.parse(quoted);
-    const jsonPosts = JSON.parse(json);
+  async function enrichData(result: string | undefined) {
+    const jsonPosts = parser.toJson(result);
 
-    if (!jsonPosts.n_posts || jsonPosts.n_posts === 0)
-      return {
-        data: [],
-        n_posts: 0,
-      };
+    const isThread = "n_threads" in jsonPosts;
+    const n_posts = isThread ? jsonPosts.n_threads : jsonPosts.n_posts;
 
     const posts: Post[] = [];
 
     for (const post of jsonPosts.posts) {
+      const creator = await cache.getUser(post.post.creator);
+
       posts.push({
         user: {
-          user: (await cache.getUser(post.post.creator)).name,
-          name: username,
+          name: creator.name,
+          address: creator.address,
           image: "https://www.gravatar.com/avatar/tmp",
           followers: 0,
           url: "string",
           bio: "string",
         },
         index: post.index,
-        id: Math.random().toString(),
+        id: post.post.id,
         post: post.post.body,
         date: post.post.createdAt,
         n_replies: post.post.n_replies,
@@ -53,8 +60,8 @@ export const useFeed = () => {
     }
 
     return {
-      data: posts.reverse(),
-      n_posts: jsonPosts.n_posts,
+      data: isThread ? posts : posts.reverse(),
+      n_posts,
     };
   }
 
@@ -79,5 +86,5 @@ export const useFeed = () => {
     return user;
   }
 
-  return { fetchFeed, fetchCount };
+  return { fetchFeed, fetchCount, fetchThread };
 };

@@ -5,7 +5,7 @@ import { Loading } from "@gno/components/loading";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, User } from "@gno/types";
-import { useAppSelector } from "redux/store";
+import { useAppSelector } from "@gno/redux";
 import { selectAccount } from "redux/features/accountSlice";
 import { setFollows } from "redux/features/profileSlice";
 

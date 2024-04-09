@@ -1,5 +1,5 @@
 import { selectFollowers } from "redux/features/profileSlice";
-import { useAppSelector } from "redux/store";
+import { useAppSelector } from "@gno/redux";
 import { Following } from "@gno/types";
 import FollowModalContent from "@gno/components/view/follow";
 

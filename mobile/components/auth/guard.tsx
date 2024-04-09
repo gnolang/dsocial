@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter, useSegments } from "expo-router";
-import { useAppSelector } from "redux/store";
+import { useAppSelector } from "@gno/redux";
 import { User } from "@gno/types";
 import { selectAccount } from "redux/features/accountSlice";
 import { SharedSegment } from "app/home/_layout";

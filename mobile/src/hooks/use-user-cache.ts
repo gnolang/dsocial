@@ -9,7 +9,6 @@ export const useUserCache = () => {
   async function getUser(bech32: string): Promise<User> {
     if (usersCache.has(bech32)) {
       // Cached user
-      console.log("cached user!!!");
       return usersCache.get(bech32) as User;
     }
 
@@ -17,14 +16,14 @@ export const useUserCache = () => {
     if (!result || !(result.startsWith("(") && result.endsWith(" string)")))
       throw new Error("Malformed GetJsonUserByAddress response");
     const quoted = result.substring(1, result.length - " string)".length);
-    const json = JSON.parse(quoted);
-    const jsonPosts = JSON.parse(json);
+    const jsonString = JSON.parse(quoted);
+    const userJson = JSON.parse(jsonString);
 
     const user = {
-      name: jsonPosts.name,
+      name: userJson.name,
       password: "",
       pubKey: "",
-      address: json.address,
+      address: userJson.address,
     };
 
     usersCache.set(bech32, user);

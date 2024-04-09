@@ -4,7 +4,8 @@ export default function DynamicLayout() {
   return (
     <Stack
       screenOptions={{
-        headerLargeTitle: true,
+        headerLargeTitle: false,
+        headerShown: false,
       }}
     />
   );

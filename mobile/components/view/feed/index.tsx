@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, Platform, StyleSheet, View, RefreshControl } from "react-native";
 import { useFeed } from "@gno/hooks/use-feed";
 import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
@@ -10,11 +10,12 @@ import { Tweet } from "@gno/components/feed/tweet";
 
 type Props = {
   totalPosts: number;
+  onPress: (item: Post) => void;
 };
 
 const subtractOrZero = (a: number, b: number) => Math.max(0, a - b);
 
-export default function FeedView({ totalPosts }: Props) {
+export default function FeedView({ totalPosts, onPress }: Props) {
   const pageSize = 9;
   const [startIndex, setStartIndex] = useState(subtractOrZero(totalPosts, pageSize));
   const [endIndex, setEndIndex] = useState(totalPosts);
@@ -28,6 +29,16 @@ export default function FeedView({ totalPosts }: Props) {
   const ref = useRef<FlatList>(null);
 
   useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+
+    await fetchData();
+
+    setRefreshing(false);
+  }, []);
 
   const handleEndReached = async () => {
     console.log("end reached", isEndReached);
@@ -48,6 +59,9 @@ export default function FeedView({ totalPosts }: Props) {
       setData([...data, ...result.data]);
       console.log("startIndex: %s, limit: %s", startIndex, limit);
       setIsEndReached(endIndex <= 0);
+      if (endIndex <= 0) {
+        // console.log("data", data);
+      }
     } catch (error: unknown | Error | any) {
       // TODO: Check if this is the correct error message to handle and if it's the correct way to handle it
       // https://github.com/gnolang/gnonative/issues/117
@@ -86,11 +100,12 @@ export default function FeedView({ totalPosts }: Props) {
       ref={ref}
       scrollToOverflowEnabled
       data={data}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={<EmptyFeedList />}
       keyExtractor={(item) => `${item.id}`}
       contentContainerStyle={styles.flatListContent}
-      renderItem={({ item }) => <Tweet item={item} />}
+      renderItem={({ item }) => <Tweet post={item} onPress={onPress} />}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.1}
     />

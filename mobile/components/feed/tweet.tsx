@@ -1,54 +1,66 @@
 import React from "react";
-import { Image, Pressable, View } from "react-native";
-import { useRouter, useSegments } from "expo-router";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import { Post } from "../../types";
 import Text from "@gno/components/text";
+import RepliesLabel from "./replies-label";
+import TimeStampLabel from "./timestamp.label";
 
-type Group<T extends string> = `(${T})`;
+interface FeedProps {
+  post: Post;
+  onPress?: (post: Post) => void;
+  highlighted?: boolean;
+}
 
-type SharedSegment = Group<"index"> | Group<"search"> | Group<"profile">;
-
-export function Tweet({ item }: { item: Post }) {
-  const [segment] = useSegments() as [SharedSegment];
-  const router = useRouter();
+export function Tweet({ post, onPress = () => {}, highlighted }: FeedProps) {
   return (
-    <Pressable>
-      {({ hovered, pressed }) => (
-        <View
-          style={[
-            {
-              flexDirection: "row",
-              padding: 16,
-              gap: 16,
-              borderBottomColor: "#ccc",
-              borderBottomWidth: 1,
-              transitionDuration: "200ms",
-            },
-            hovered && {
-              backgroundColor: "#ddd",
-            },
-            pressed && {
-              backgroundColor: "#ccc",
-            },
-          ]}
-        >
-          <Image source={{ uri: item.user.image }} style={{ width: 48, height: 48, borderRadius: 24 }} />
-          <View style={{ gap: 4, flex: 1, alignItems: "flex-start" }}>
-            <Pressable style={{ alignItems: "flex-start" }}>
-              {({ hovered }) => (
-                <Text.Body style={[{ fontWeight: "bold", fontSize: 16 }, hovered && { textDecorationLine: "underline" }]}>
-                  @{item.user.user}
-                </Text.Body>
-              )}
-            </Pressable>
+    <Pressable onPress={() => onPress(post)} style={styles.container}>
+      <View style={styles.body}>
+        <Image source={{ uri: post.user.image }} style={styles.image} />
+        <View style={styles.content}>
+          <Pressable style={{ alignItems: "flex-start" }}>
+            <Text.Body style={[{ fontWeight: "bold", fontSize: 16 }]}>@{post.user.name}</Text.Body>
+          </Pressable>
 
-            <Text.Body selectable>{item.post}</Text.Body>
-            <View >
-              <Text.Caption1 selectable>{item.date}</Text.Caption1>
-            </View>
-          </View>
+          <Text.Body selectable>{post.post}</Text.Body>
         </View>
-      )}
+      </View>
+      <View style={[styles.footer, highlighted ? styles.footerHighlighted : null]}>
+        <TimeStampLabel timestamp={post.date} />
+        <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
+      </View>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+  },
+  body: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  image: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  content: {
+    gap: 4,
+    flex: 1,
+  },
+  footer: {
+    flexDirection: "row",
+    paddingTop: 12,
+    paddingLeft: 64,
+    gap: 16,
+  },
+  footerHighlighted: {
+    marginTop: 16,
+    borderTopColor: "#ccc",
+    borderTopWidth: 1,
+  },
+  reply: { paddingLeft: 16 },
+});

@@ -1,9 +1,7 @@
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
-
 export type Post = {
   user: {
-    user: string;
     name: string;
+    address: string;
     image: string;
     followers: number;
     url: string;
