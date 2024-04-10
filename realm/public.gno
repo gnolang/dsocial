@@ -266,22 +266,24 @@ func GetJsonUserPostsInfo(address std.Address) string {
 
 // Get the UserPosts for the user with the given address, and return
 // the list of followers. If the user address is not found, return "".
+// Limit the response to entries from startIndex up to (not including) endIndex.
 // The response is a JSON string.
-func GetJsonFollowers(address std.Address) string {
+func GetJsonFollowers(address std.Address, startIndex int, endIndex int) string {
 	userPosts := getUserPosts(address)
 	if userPosts == nil {
 		return ""
 	}
 
-	json := "[\n  "
-	userPosts.followers.Iterate("", "", func(addr string, value interface{}) bool {
-		if len(json) > 4 {
+	json := ufmt.Sprintf("{\"n_followers\": %d, \"followers\": [\n  ", userPosts.followers.Size())
+	for i := startIndex; i < endIndex && i < userPosts.followers.Size(); i++ {
+		addr, _ := userPosts.followers.GetByIndex(i)
+
+		if i > startIndex {
 			json += ",\n  "
 		}
 		json += ufmt.Sprintf(`{"address": "%s"}`, addr)
-		return false
-	})
-	json += "]"
+	}
+	json += "]}"
 
 	return json
 }
@@ -289,16 +291,19 @@ func GetJsonFollowers(address std.Address) string {
 // Get the UserPosts for the user with the given address, and return
 // the list of other users that this user is following.
 // If the user address is not found, return "".
+// Limit the response to entries from startIndex up to (not including) endIndex.
 // The response is a JSON string.
-func GetJsonFollowing(address std.Address) string {
+func GetJsonFollowing(address std.Address, startIndex int, endIndex int) string {
 	userPosts := getUserPosts(address)
 	if userPosts == nil {
 		return ""
 	}
 
-	json := "[\n  "
-	userPosts.following.Iterate("", "", func(addr string, infoI interface{}) bool {
-		if len(json) > 4 {
+	json := ufmt.Sprintf("{\"n_following\": %d, \"following\": [\n  ", userPosts.following.Size())
+	for i := startIndex; i < endIndex && i < userPosts.following.Size(); i++ {
+		addr, infoI := userPosts.following.GetByIndex(i)
+
+		if i > startIndex {
 			json += ",\n  "
 		}
 		startedAt, err := infoI.(*FollowingInfo).startedFollowingAt.MarshalJSON()
@@ -307,9 +312,8 @@ func GetJsonFollowing(address std.Address) string {
 		}
 		json += ufmt.Sprintf(`{"address": "%s", "started_following_at": %s}`,
 			addr, string(startedAt))
-		return false
-	})
-	json += "]"
+	}
+	json += "]}"
 
 	return json
 }
