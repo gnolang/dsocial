@@ -1,7 +1,7 @@
-import { useRouter, useSegments } from "expo-router";
 import React from "react";
-import { User } from "@gno/types";
+import { useRouter, useSegments } from "expo-router";
 import { useAppSelector } from "redux/store";
+import { User } from "@gno/types";
 import { selectAccount } from "redux/features/accountSlice";
 import { SharedSegment } from "app/home/_layout";
 
@@ -20,7 +20,7 @@ function useProtectedRoute(user: User | undefined) {
 
     // If the user is not signed in and the initial segment is not anything in the auth group.
     if (!user && !inAuthGroup) {
-      router.push("/");
+      router.replace("/");
     }
   }, [user, segments]);
 }

@@ -27,6 +27,9 @@ export default function Page() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      setName("");
+      setPassword("");
+      setConfirmPassword("");
       try {
         setPhrase(await gno.generateRecoveryPhrase());
       } catch (error) {
@@ -61,14 +64,16 @@ export default function Page() {
       setLoading(true);
       const response = await gno.createAccount(name, phrase, password);
       if (!response) throw new Error("Failed to create account");
+      console.log("createAccount response: " + JSON.stringify(response));
+
       await gno.selectAccount(name);
       await gno.setPassword(password);
-      console.log("createAccount response: " + JSON.stringify(response));
+
       await gno.selectAccount(name);
       await gno.setPassword(password);
       await onboarding.onboard(response.name, response.address);
-      dispatch(loggedIn({ name, password, pubKey: response.pubKey.toString(), address: response.address.toString() }));
 
+      await dispatch(loggedIn(response));
       router.push("/home");
     } catch (error) {
       setError("" + error);

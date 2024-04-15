@@ -9,15 +9,15 @@ import { Spacer } from "@gno/components/row";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
 import { useGno } from "@gno/hooks/use-gno";
-import { GnoAccount } from "@gno/native_modules/types";
 import { loggedIn, useAppDispatch } from "@gno/redux";
+import { KeyInfo } from "@gno/api/gnonativetypes_pb";
 
 export default function Root() {
   const route = useRouter();
 
-  const [accounts, setAccounts] = useState<GnoAccount[]>([]);
+  const [accounts, setAccounts] = useState<KeyInfo[]>([]);
   const [loading, setLoading] = useState<string | undefined>(undefined);
-  const [reenterPassword, setReenterPassword] = useState<GnoAccount | undefined>(undefined);
+  const [reenterPassword, setReenterPassword] = useState<KeyInfo | undefined>(undefined);
 
   const gno = useGno();
   const navigation = useNavigation();
@@ -27,10 +27,11 @@ export default function Root() {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
         setLoading("Loading accounts...");
+
         const response = await gno.listKeyInfo();
         setAccounts(response);
       } catch (error: unknown | Error) {
-        console.log(error);
+        console.error(error);
       } finally {
         setLoading(undefined);
       }
@@ -38,18 +39,20 @@ export default function Root() {
     return unsubscribe;
   }, [navigation]);
 
-  const onChangeAccountHandler = async (value: GnoAccount) => {
+  const onChangeAccountHandler = async (keyInfo: KeyInfo) => {
     try {
       setLoading("Changing account...");
-      const response = await gno.selectAccount(value.name);
+      const response = await gno.selectAccount(keyInfo.name);
+
       setLoading(undefined);
+
       if (!response.hasPassword) {
-        setReenterPassword(value);
+        setReenterPassword(keyInfo);
         return;
       }
 
-      dispatch(loggedIn({ name: value.name, password: "", pubKey: value.pubKey.toString(), address: value.address.toString() }));
-      route.push("/home");
+      dispatch(loggedIn(keyInfo));
+      setTimeout(() => route.replace("/home"), 500);
     } catch (error: unknown | Error) {
       setLoading(error?.toString());
       console.log(error);
@@ -58,15 +61,8 @@ export default function Root() {
 
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
-      dispatch(
-        loggedIn({
-          name: reenterPassword.name,
-          password: "",
-          pubKey: reenterPassword.pubKey.toString(),
-          address: reenterPassword.address.toString(),
-        })
-      );
-      route.push("/home");
+      dispatch(loggedIn(reenterPassword));
+      setTimeout(() => route.replace("/home"), 500);
     }
     setReenterPassword(undefined);
   };

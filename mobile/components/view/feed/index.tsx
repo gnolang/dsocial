@@ -51,14 +51,12 @@ export default function FeedView({ totalPosts }: Props) {
     } catch (error: unknown | Error | any) {
       // TODO: Check if this is the correct error message to handle and if it's the correct way to handle it
       // https://github.com/gnolang/gnonative/issues/117
-      console.log("xxxxx", error.message);
-
       if (error.message === "[unknown] invoke bridge method error: unknown: posts for userPostsAddr do not exist") {
         setData([]);
         return;
+      } else {
+        console.error(error);
       }
-      setError(error);
-      console.log(error);
     } finally {
       setIsLoading(false);
     }

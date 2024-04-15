@@ -1,3 +1,5 @@
+import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+
 export type Post = {
   user: {
     user: string;
@@ -17,8 +19,12 @@ export type Post = {
 };
 
 export interface User {
+  address: string;
   name: string;
-  password: string;
-  pubKey: string | Uint8Array;
-  address: string | Uint8Array;
+}
+
+export interface Following {
+  name: string;
+  address: string;
+  started_following_at: string;
 }

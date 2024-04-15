@@ -51,7 +51,7 @@ export default function useScrollToTop(ref: React.RefObject<ScrollableWrapper>, 
     // If the screen is nested inside multiple tab navigators, we should scroll to top for any of them
     // So we need to find all the parent tab navigators and add the listeners there
     while (currentNavigation) {
-      if (currentNavigation.getState().type === "tab") {
+      if (currentNavigation.getState()?.type === "tab") {
         tabNavigations.push(currentNavigation);
       }
 

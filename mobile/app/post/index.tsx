@@ -42,12 +42,12 @@ export default function Search() {
       const gasWanted = 10000000;
       const args: Array<string> = [postContent];
       for await (const response of await gno.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
-        console.log("response: ", response);
+        console.log("response ono post screen: ", response);
       }
       setPostContent("");
       router.push("home");
     } catch (error) {
-      console.log(error);
+      console.error("on post screen", error);
       setError("" + error);
     } finally {
       setLoading(false);

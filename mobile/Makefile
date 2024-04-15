@@ -13,6 +13,12 @@ android: node_modules
 	yarn android
 .PHONY: android
 
+android.reverse:
+	adb reverse tcp:8081 tcp:8081
+	adb reverse tcp:36657 tcp:36657
+	adb reverse tcp:8545 tcp:8545
+.PHONY: android.reverse
+
 start: node_modules
 	yarn start
 .PHONY: start

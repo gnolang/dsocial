@@ -7,7 +7,6 @@ import Button from "@gno/components/button";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import { KeyInfo } from "@gno/api/gnonativetypes_pb";
 import Layout from "@gno/components/layout";
-import Spacer from "@gno/components/spacer";
 import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
 import Text from "@gno/components/text";
@@ -56,6 +55,7 @@ export default function Page() {
       const account = await gno.getActiveAccount();
       const chainId = await gno.getChainID();
       const remote = await gno.getRemote();
+
       setActiveAccount(account.key);
       setChainID(chainId);
       setRemote(remote);
@@ -69,6 +69,10 @@ export default function Page() {
 
   const onDeleteAccount = async () => {
     router.push("settings/remove-account");
+  };
+
+  const onPressLogout = async () => {
+    dispatch(logedOut());
   };
 
   return (
@@ -85,12 +89,7 @@ export default function Page() {
           </>
           <Layout.Footer>
             <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
-            <Button.TouchableOpacity
-              title="Logout"
-              onPress={() => dispatch(logedOut())}
-              style={styles.logout}
-              variant="primary-red"
-            />
+            <Button.TouchableOpacity title="Logout" onPress={onPressLogout} style={styles.logout} variant="primary-red" />
             <Button.TouchableOpacity
               title="Delete Account"
               onPress={onDeleteAccount}

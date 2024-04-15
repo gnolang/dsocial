@@ -14,7 +14,7 @@ export const colors = {
   blue: "#2196f3",
 
   background: {
-    default: "#ffffff",
+    default: "#fdfdfd",
   },
 
   modal: {
@@ -34,6 +34,7 @@ export const colors = {
   },
 
   grayscale: {
+    100: "#dbdbdb",
     200: "#A8A8A8",
     700: "#333333",
   },

@@ -12,6 +12,7 @@ const useOnboarding = () => {
 
       if (hasBalance) {
         console.log("user %s already has a balance", name);
+        await registerAccount(name);
         return;
       }
 
@@ -19,7 +20,7 @@ const useOnboarding = () => {
 
       await registerAccount(name);
     } catch (error) {
-      console.log("onboard error:", error);
+      console.error("onboard error", error);
     }
   };
 
@@ -34,7 +35,7 @@ const useOnboarding = () => {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
-      console.log("error registering account: ", error);
+      console.error("error registering account", error);
     }
   };
 
@@ -51,10 +52,9 @@ const useOnboarding = () => {
 
       return hasBalance;
     } catch (error: any) {
-      console.log("error on hasBalance", JSON.stringify(error));
+      console.error("error on hasBalance", error["rawMessage"]);
       if (error["rawMessage"] === "invoke bridge method error: unknown: ErrUnknownAddress(#206)") return false;
-      console.log("error on hasBalance", JSON.stringify(error));
-      throw error;
+      return false;
     }
   };
 

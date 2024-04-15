@@ -1,3 +1,4 @@
+import { Following, User } from "@gno/types";
 import { useGno } from "./use-gno";
 
 const MAX_RESULT = 10;
@@ -5,15 +6,75 @@ const MAX_RESULT = 10;
 export const useSearch = () => {
   const gno = useGno();
 
-  async function searchUser(q: string) {
-    const currentAccount = await gno.getActiveAccount();
-    if (!currentAccount.key) throw new Error("No active account");
-    const result = await gno.qEval("gno.land/r/berty/social", `ListJsonUsersByPrefix("${q}", ${MAX_RESULT})`);
-    const json = await convertToPosts(result, currentAccount.key.name);
+  async function Follow(address: string) {
+    checkActiveAccount();
+
+    try {
+      const gasFee = "1000000ugnot";
+      const gasWanted = 2000000;
+      const send = "200000000ugnot";
+      const args: Array<string> = [address];
+      for await (const response of await gno.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted, send)) {
+        console.log("response: ", JSON.stringify(response));
+      }
+    } catch (error) {
+      console.error("error registering account", error);
+    }
+  }
+
+  async function Unfollow(address: string) {
+    checkActiveAccount();
+
+    try {
+      const gasFee = "1000000ugnot";
+      const gasWanted = 2000000;
+      const send = "200000000ugnot";
+      const args: Array<string> = [address];
+      for await (const response of await gno.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted, send)) {
+        console.log("response: ", JSON.stringify(response));
+      }
+    } catch (error) {
+      console.error("error registering account", error);
+    }
+  }
+
+  async function GetJsonFollowers(address: string | Uint8Array) {
+    checkActiveAccount();
+
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}")`);
+    const json = (await convertToJson(result)) as Following[];
+
     return json;
   }
 
-  async function convertToPosts(result: string | undefined, username: string) {
+  async function GetJsonFollowing(address: string | Uint8Array) {
+    checkActiveAccount();
+
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}")`);
+    const json = (await convertToJson(result)) as Following[];
+
+    return json;
+  }
+
+  async function getJsonUserByName(username: string) {
+    checkActiveAccount();
+
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonUserByName("${username}")`);
+    const json = (await convertToJson(result)) as User;
+
+    return json;
+  }
+
+  async function searchUser(q: string) {
+    checkActiveAccount();
+
+    const result = await gno.qEval("gno.land/r/berty/social", `ListJsonUsersByPrefix("${q}", ${MAX_RESULT})`);
+    const json = await convertToJson(result);
+
+    return json;
+  }
+
+  async function convertToJson(result: string | undefined) {
     if (!result || !(result.startsWith("(") && result.endsWith(" string)"))) throw new Error("Malformed GetThreadPosts response");
     const quoted = result.substring(1, result.length - " string)".length);
     const json = JSON.parse(quoted);
@@ -22,7 +83,17 @@ export const useSearch = () => {
     return jsonPosts;
   }
 
+  async function checkActiveAccount() {
+    const currentAccount = await gno.getActiveAccount();
+    if (!currentAccount.key) throw new Error("No active account");
+  }
+
   return {
     searchUser,
+    getJsonUserByName,
+    GetJsonFollowing,
+    GetJsonFollowers,
+    Follow,
+    Unfollow,
   };
 };

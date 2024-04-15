@@ -4,7 +4,6 @@ import { useNavigation, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
 import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
-import { Post } from "@gno/types";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import Button from "@gno/components/button";
 import FeedView from "@gno/components/view/feed";
@@ -29,7 +28,7 @@ export default function Page() {
         const total = await feed.fetchCount();
         setTotalPosts(total);
       } catch (error) {
-        setError(error);
+        console.error(error);
       } finally {
         setIsLoading(false);
       }
