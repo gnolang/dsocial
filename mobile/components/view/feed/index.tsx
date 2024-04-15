@@ -59,9 +59,6 @@ export default function FeedView({ totalPosts, onPress }: Props) {
       setData([...data, ...result.data]);
       console.log("startIndex: %s, limit: %s", startIndex, limit);
       setIsEndReached(endIndex <= 0);
-      if (endIndex <= 0) {
-        // console.log("data", data);
-      }
     } catch (error: unknown | Error | any) {
       // TODO: Check if this is the correct error message to handle and if it's the correct way to handle it
       // https://github.com/gnolang/gnonative/issues/117

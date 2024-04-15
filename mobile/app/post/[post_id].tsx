@@ -32,7 +32,6 @@ function Page() {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
 
-      console.log("xxxxxxxxxxxx", post);
       const args: Array<string> = [post.user.address, String(post.id), String(post.id), postContent];
       for await (const response of await gno.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
         console.log("response ono post screen: ", response);
