@@ -42,18 +42,18 @@ func main() {
 		return
 	}
 
-	var filter struct {
-		Filter struct {
-			Message struct {
-				VmParam struct {
-					Exec struct {
-						Func    string `graphql:"func: \"Follow\""`
-						PkgPath string `graphql:"pkg_path: \"gno.land/r/berty/social\""`
-					} `graphql:"exec"`
-				} `graphql:"vm_param"`
-			} `graphql:"message"`
-		} `graphql:"filter"`
-	}
+	// var filter struct {
+	// 	Filter struct {
+	// 		Message struct {
+	// 			VmParam struct {
+	// 				Exec struct {
+	// 					Func    string `graphql:"func: \"Follow\""`
+	// 					PkgPath string `graphql:"pkg_path: \"gno.land/r/berty/social\""`
+	// 				} `graphql:"exec"`
+	// 			} `graphql:"vm_param"`
+	// 		} `graphql:"message"`
+	// 	} `graphql:"filter"`
+	// }
 
 	var transactions struct {
 		Transactions struct {
@@ -72,7 +72,7 @@ func main() {
 
 	// Create a new RPC client.
 	iClient := graphql.NewClient(remote, nil)
-	err := iClient.Query(context.Background(), &transactions, variables)
+	err = iClient.Query(context.Background(), &transactions, variables)
 	if err != nil {
 		fmt.Println(err)
 		return
