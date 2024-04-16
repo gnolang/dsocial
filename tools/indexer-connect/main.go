@@ -56,18 +56,21 @@ func main() {
 	// }
 
 	var transactions struct {
-		Transactions struct {
-			Hash string `graphql:"hash"`
-		} `graphql:"transactions(filter: $filter)"`
+		Transactions []struct {
+			Block_Height int
+			Messages     []struct {
+				Value struct {
+					MsgCall struct {
+						Args []string
+					} `graphql:"... on MsgCall"`
+				}
+			}
+		} `graphql:"transactions(filter:{message:{vm_param:{exec:{pkg_path: \"gno.land/r/berty/social\", func: \"Follow\", caller: $caller}}}})"`
 	}
 
-	var filter struct {
-		Filter struct {
-		} `graphql:"filter"`
-	}
-
+	caller := "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5"
 	variables := map[string]interface{}{
-		"filter": filter,
+		"caller": graphql.String(caller),
 	}
 
 	// Create a new RPC client.
