@@ -37,10 +37,10 @@ export default function Page() {
       const response = await search.getJsonUserByName(accountName);
       setUser(response);
 
-      const followers = await search.GetJsonFollowers(response.address);
+      const { followers } = await search.GetJsonFollowers(response.address);
       setFollowers(followers);
 
-      const following = await search.GetJsonFollowing(response.address);
+      const { following } = await search.GetJsonFollowing(response.address);
       setFollowing(following);
 
       dispatch(setFollows({ followers, following }));

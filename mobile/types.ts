@@ -26,3 +26,13 @@ export interface Following {
   address: string;
   started_following_at: string;
 }
+
+export interface GetJsonFollowersResult {
+  followers: Following[];
+  n_followers: number;
+
+}
+export interface GetJsonFollowingResult {
+  following: Following[];
+  n_following: number;
+}
