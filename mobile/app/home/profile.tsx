@@ -67,8 +67,8 @@ export default function Page() {
     }
   };
 
-  const onDeleteAccount = async () => {
-    router.push("settings/remove-account");
+  const onRemoveAccount = async () => {
+		router.navigate({ pathname: "account/remove" });
   };
 
   const onPressLogout = async () => {
@@ -91,8 +91,8 @@ export default function Page() {
             <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
             <Button.TouchableOpacity title="Logout" onPress={onPressLogout} style={styles.logout} variant="primary-red" />
             <Button.TouchableOpacity
-              title="Delete Account"
-              onPress={onDeleteAccount}
+              title="Remove Account"
+              onPress={onRemoveAccount}
               style={styles.logout}
               variant="primary-red"
             />

@@ -22,6 +22,12 @@ export default function DynamicLayout() {
           presentation: "modal",
         }}
       />
+			<Stack.Screen
+				name="remove"
+				options={{
+					presentation: "modal",
+				}}
+			/>
     </Stack>
   );
 }
