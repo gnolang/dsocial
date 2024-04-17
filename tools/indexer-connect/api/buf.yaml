@@ -1,0 +1,8 @@
+version: v1
+name: buf.build/gnolang/gnosocial
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
