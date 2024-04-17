@@ -5,8 +5,7 @@ export interface Props {
 }
 
 const TextInput = styled.TextInput.attrs<Props>({
-  multiline: true,
-  numberOfLines: 4,
+  multiline: false,
 })`
   height: 48px;
   margin-top: 4px;
