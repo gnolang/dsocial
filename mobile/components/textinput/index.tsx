@@ -1,10 +1,13 @@
-import styled from 'styled-components/native';
+import styled from "styled-components/native";
 
 export interface Props {
   error?: boolean | string;
 }
 
-export const TextInput = styled.TextInput<Props>`
+const TextInput = styled.TextInput.attrs<Props>({
+  multiline: true,
+  numberOfLines: 4,
+})`
   height: 48px;
   margin-top: 4px;
   margin-bottom: 4px;
@@ -12,7 +15,7 @@ export const TextInput = styled.TextInput<Props>`
   padding: 10px;
   border-radius: 5px;
   width: 100%;
-  border-color: ${(props) => (props.error ? 'red' : 'black')};
+  border-color: ${(props) => (props.error ? "red" : "black")};
 `;
 
 export default TextInput;
