@@ -9,5 +9,5 @@ schema.graphql:
 generate: ../generated.go
 .PHONY: generate
 
-../generated.go: schema.graphql
+../generated.go: schema.graphql genqlient.graphql
 	go run github.com/Khan/genqlient
