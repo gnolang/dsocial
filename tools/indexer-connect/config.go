@@ -1,14 +1,18 @@
 package main
 
-import "go.uber.org/zap"
+import (
+	"net/url"
 
-const DEFAULT_TCP_ADDR = ":26659"
+	"go.uber.org/zap"
+)
+
+const DEFAULT_LISTEN_ADDR = ":26660"
 const DEFAULT_REMOTE_ADDR = "127.0.0.1:8546"
 
 type Config struct {
 	Logger     *zap.Logger
-	RemoteAddr string
-	TcpAddr    string
+	RemoteAddr *url.URL
+	Listen     *url.URL
 }
 
 type ServiceOption func(cfg *Config) error
@@ -71,19 +75,21 @@ var WithFallbackLogger ServiceOption = func(cfg *Config) error {
 // WithRemoteAddr sets the given remote tx-indexer address.
 var WithRemoteAddr = func(remote string) ServiceOption {
 	return func(cfg *Config) error {
-		cfg.RemoteAddr = remote
-		return nil
+		var err error
+		cfg.RemoteAddr, err = url.Parse(remote)
+		return err
 	}
 }
 
 // WithDefaultRemoteAddr inits a default remote tx-indexer address.
 var WithDefaultRemoteAddr ServiceOption = func(cfg *Config) error {
-	cfg.RemoteAddr = DEFAULT_REMOTE_ADDR
-	return nil
+	var err error
+	cfg.RemoteAddr, err = url.Parse(DEFAULT_REMOTE_ADDR)
+	return err
 }
 
 var fallbackRemoteAddr = FallBackOption{
-	fallback: func(cfg *Config) bool { return cfg.RemoteAddr == "" },
+	fallback: func(cfg *Config) bool { return cfg.RemoteAddr == nil },
 	opt:      WithDefaultRemoteAddr,
 }
 
@@ -95,34 +101,35 @@ var WithFallbacRemoteAddr ServiceOption = func(cfg *Config) error {
 	return nil
 }
 
-// --- WithTcpAddr options ---
+// --- WithListen options ---
 
-// WithTcpAddr sets the given TCP address to serve the gRPC server.
+// WithListen sets the given TCP address to serve the gRPC server.
 // If no TCP address is defined, a default will be used.
 // If the TCP port is set to 0, a random port number will be chosen.
-var WithTcpAddr = func(addr string) ServiceOption {
+var WithListen = func(addr string) ServiceOption {
 	return func(cfg *Config) error {
-		cfg.TcpAddr = addr
-		return nil
+		var err error
+		cfg.Listen, err = url.Parse(addr)
+		return err
 	}
 }
 
-// WithDefaultTcpAddr sets a default TCP addr to listen to.
-var WithDefaultTcpAddr ServiceOption = func(cfg *Config) error {
-	cfg.TcpAddr = DEFAULT_TCP_ADDR
-
-	return nil
+// WithDefaultListen sets a default TCP addr to listen to.
+var WithDefaultListen ServiceOption = func(cfg *Config) error {
+	var err error
+	cfg.Listen, err = url.Parse(DEFAULT_LISTEN_ADDR)
+	return err
 }
 
-var fallbackTcpAddr = FallBackOption{
-	fallback: func(cfg *Config) bool { return cfg.TcpAddr == "" },
-	opt:      WithDefaultTcpAddr,
+var fallbackListen = FallBackOption{
+	fallback: func(cfg *Config) bool { return cfg.Listen == nil },
+	opt:      WithDefaultListen,
 }
 
-// WithDefaultTcpAddr sets a default TCP addr to listen to if no address is set.
-var WithFallbackTcpAddr ServiceOption = func(cfg *Config) error {
-	if fallbackTcpAddr.fallback(cfg) {
-		return fallbackTcpAddr.opt(cfg)
+// WithDefaultListen sets a default TCP addr to listen to if no address is set.
+var WithFallbackListen ServiceOption = func(cfg *Config) error {
+	if fallbackListen.fallback(cfg) {
+		return fallbackListen.opt(cfg)
 	}
 	return nil
 }
@@ -130,7 +137,7 @@ var WithFallbackTcpAddr ServiceOption = func(cfg *Config) error {
 var defaults = []FallBackOption{
 	fallbackLogger,
 	fallbackRemoteAddr,
-	fallbackTcpAddr,
+	fallbackListen,
 }
 
 // WithFallbackDefaults sets the default options if no option is set.

@@ -2,21 +2,19 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
-	"net/http"
-	"time"
+	"log"
+	"os"
+	"os/signal"
+	"strings"
 
-	"github.com/Khan/genqlient/graphql"
 	"github.com/gnolang/gnonative/api/gen/go/_goconnect"
-	"github.com/gorilla/websocket"
+	"github.com/peterbourgon/ff/v3/ffcli"
+	"github.com/pkg/errors"
 )
 
-var remote = "testnet.gno.berty.io:8546/graphql/query"
-
-type IndexerClient struct {
-	gnoNativeClient _goconnect.GnoNativeServiceClient // Gno Native Kit gRPC client
-	iClient         graphql.WebSocketClient
-}
+var remote string
 
 func main() {
 	// Start the Gno Native Kit gRPC service where the remote is gnoland.
@@ -42,67 +40,75 @@ func main() {
 	// 	return
 	// }
 
-	ctx := context.Background()
+	err := runMain(os.Args[1:])
 
-	// Create a new RPC client.
-	iClient := graphql.NewClient("http://"+remote, http.DefaultClient)
-	resp, err := getTransactions(ctx, iClient, "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(resp)
-
-	wsClient := graphql.NewClientUsingWebSocket(
-		"ws://"+remote,
-		&MyDialer{Dialer: websocket.DefaultDialer},
-		nil,
-	)
-
-	errChan, err := wsClient.StartWebSocket(ctx)
-	if err != nil {
-		return
+	switch {
+	case err == nil:
+		// noop
+	case err == flag.ErrHelp || strings.Contains(err.Error(), flag.ErrHelp.Error()):
+		os.Exit(2)
+	default:
+		fmt.Fprintf(os.Stderr, "error: %+v\n", err)
+		os.Exit(1)
 	}
 
-	dataChan, subscriptionID, err := subscribeBlocks(ctx, wsClient)
-	if err != nil {
-		return
+}
+
+func runMain(args []string) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// setup flags
+	var fs *flag.FlagSet
+	{
+		fs = flag.NewFlagSet("indexerService", flag.ContinueOnError)
 	}
 
-	defer wsClient.CloseWebSocket()
-	for loop := true; loop; {
-		select {
-		case msg, more := <-dataChan:
-			if !more {
-				loop = false
-				break
-			}
-			if msg.Data != nil {
-				fmt.Println(msg.Data.Blocks.Height)
-			}
-			if msg.Errors != nil {
-				fmt.Println("error:", msg.Errors)
-				loop = false
-			}
-		case err = <-errChan:
-			return
-		case <-time.After(time.Minute):
-			err = wsClient.Unsubscribe(subscriptionID)
-			loop = false
+	fs.StringVar(&remote, "remote", "http://testnet.gno.berty.io:8546/graphql/query", "address of the GraphQL tx-indexer")
+
+	var root *ffcli.Command
+	{
+		root = &ffcli.Command{
+			ShortUsage: "indexer-connect [flag]",
+			ShortHelp:  "start an indexer service",
+			FlagSet:    fs,
+			Exec: func(ctx context.Context, args []string) error {
+				service, err := startService()
+				if err != nil {
+					return errors.Wrap(err, "unable to start service")
+				}
+				c := make(chan os.Signal, 1)
+				signal.Notify(c, os.Interrupt)
+				<-c
+
+				service.Close()
+
+				return nil
+			},
 		}
 	}
 
+	if err := root.ParseAndRun(ctx, args); err != nil {
+		log.Fatal(err)
+	}
+
+	return nil
+}
+
+func startService() (IndexerService, error) {
+	options := []ServiceOption{
+		WithRemoteAddr(remote),
+		WithListen("localhost:26660"),
+	}
+
+	service, err := NewIndexerService(options...)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to create bridge service")
+	}
+
+	return service, nil
 }
 
 func run(client _goconnect.GnoNativeServiceClient) error {
 	return nil
-}
-
-type MyDialer struct {
-	*websocket.Dialer
-}
-
-func (md *MyDialer) DialContext(ctx context.Context, urlStr string, requestHeader http.Header) (graphql.WSConn, error) {
-	conn, _, err := md.Dialer.DialContext(ctx, urlStr, requestHeader)
-	return graphql.WSConn(conn), err
 }
