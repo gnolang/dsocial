@@ -17,10 +17,10 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
-	const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
+  const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
 
   const gno = useGno();
-	const search = useSearch();
+  const search = useSearch();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
@@ -54,27 +54,25 @@ export default function Page() {
   };
 
   const fetchAccountData = async () => {
-		const account = await gno.getActiveAccount();
-		const chainId = await gno.getChainID();
-		const remote = await gno.getRemote();
-		setActiveAccount(account.key);
-		setChainID(chainId);
-		setRemote(remote);
+    const account = await gno.getActiveAccount();
+    const chainId = await gno.getChainID();
+    const remote = await gno.getRemote();
+
+    setActiveAccount(account.key);
+    setChainID(chainId);
+    setRemote(remote);
 
     try {
-			const address = await gno.addressToBech32(account?.key?.address!);
-			const followersCount = await search.GetJsonFollowersCount(address);
-
-			setFollowersCount(followersCount);
-
-      console.log("remote: %s chainId %s " + remote, chainId);
+      const address = await gno.addressToBech32(account?.key?.address!);
+      const followersCount = await search.GetJsonFollowersCount(address);
+      setFollowersCount(followersCount);
     } catch (error: unknown | Error) {
       console.log(error);
     }
   };
 
   const onRemoveAccount = async () => {
-		router.navigate({ pathname: "account/remove" });
+    router.navigate({ pathname: "account/remove" });
   };
 
   const onPressLogout = async () => {
@@ -91,10 +89,10 @@ export default function Page() {
             <Text.Body>{chainID}</Text.Body>
             <Text.Subheadline>Remote:</Text.Subheadline>
             <Text.Body>{remote}</Text.Body>
-						<Text.Subheadline>Followers:</Text.Subheadline>
-						<Text.Body>{followersCount.n_followers}</Text.Body>
-						<Text.Subheadline>Following:</Text.Subheadline>
-						<Text.Body>{followersCount.n_following}</Text.Body>
+            <Text.Subheadline>Followers:</Text.Subheadline>
+            <Text.Body>{followersCount.n_followers}</Text.Body>
+            <Text.Subheadline>Following:</Text.Subheadline>
+            <Text.Body>{followersCount.n_following}</Text.Body>
             <View></View>
           </>
           <Layout.Footer>

@@ -21,9 +21,8 @@ export function AccountBalance({ activeAccount }: Props) {
         return;
       }
 
-      gno.addressToBech32(activeAccount.address).then((address) => {
-        setAddress(address);
-      });
+      gno.addressToBech32(activeAccount.address).then((add) => setAddress(add));
+
       gno
         .queryAccount(activeAccount.address)
         .then((balance) => {
@@ -31,7 +30,7 @@ export function AccountBalance({ activeAccount }: Props) {
         })
         .catch((error) => {
           console.log("Error on fetching balance", JSON.stringify(error));
-          setBalance("Error on fetching balance. Please check the logs.");
+          setBalance("Error on fetching balance. Is this account registered?");
         });
     })();
   }, [activeAccount]);
