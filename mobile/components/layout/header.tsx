@@ -1,15 +1,14 @@
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import Icons from "../icons";
 import { useNavigation } from "@react-navigation/native";
-import styled from "styled-components/native";
 
 type Props = {
   iconType?: "close" | "back";
   onCloseHandler?: () => void;
   title?: string;
   subtitle?: string;
-  style: any;
+  style?: any;
 };
 
 const Header: React.FC<Props> = ({ iconType = "close", onCloseHandler, title = "", subtitle = "", style }) => {
@@ -22,32 +21,37 @@ const Header: React.FC<Props> = ({ iconType = "close", onCloseHandler, title = "
   }
 
   return (
-    <Wrapper style={style}>
-      <TouchableOpacity onPress={onCloseHandler}>{iconType === "close" ? <Icons.Close /> : <Icons.ArrowLeft />}</TouchableOpacity>
-      <View>
-        <TitleText>{title}</TitleText>
-        <SubtitleText>{subtitle}</SubtitleText>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.closeButton} onPress={onCloseHandler}>
+        {iconType === "close" ? <Icons.Close /> : <Icons.ArrowLeft />}
+      </TouchableOpacity>
+      <View style={styles.contentArea}>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.subtitle}>{subtitle}</Text>
       </View>
-    </Wrapper>
+    </View>
   );
 };
 
-const SubtitleText = styled.Text`
-  font-size: 12px;
-  color: #000000;
-`;
-
-const TitleText = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: #000000;
-`;
-
-const Wrapper = styled.View`
-  width: 100%;
-  height: 64px;
-  padding-left: 2px;
-  padding-top: 10px;
-`;
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  closeButton: {
+    paddingLeft: 16,
+  },
+  contentArea: { flex: 1, alignItems: "center", paddingRight: 36 },
+	title: {
+		fontSize: 16,
+		fontWeight: "bold",
+		color: "#000000",
+	},
+	subtitle: {
+		fontSize: 12,
+		color: "#000000",
+	},
+});
 
 export default Header;

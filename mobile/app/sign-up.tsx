@@ -6,8 +6,7 @@ import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
 import { useGno } from "@gno/hooks/use-gno";
-import { loggedIn } from "redux/features/accountSlice";
-import { useAppDispatch } from "@gno/redux";
+import { useAppDispatch, loggedIn } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
@@ -74,6 +73,8 @@ export default function Page() {
       await gno.selectAccount(name);
       await gno.setPassword(password);
       await onboarding.onboard(response.name, response.address);
+
+      dispatch(loggedIn(response));
 
       await dispatch(loggedIn(response));
       router.push("/home");

@@ -1,9 +1,7 @@
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
-
 export type Post = {
   user: {
-    user: string;
     name: string;
+    address: string;
     image: string;
     followers: number;
     url: string;
@@ -27,4 +25,14 @@ export interface Following {
   name: string;
   address: string;
   started_following_at: string;
+}
+
+export interface GetJsonFollowersResult {
+  followers: Following[];
+  n_followers: number;
+
+}
+export interface GetJsonFollowingResult {
+  following: Following[];
+  n_following: number;
 }

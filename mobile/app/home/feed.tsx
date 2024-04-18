@@ -7,6 +7,8 @@ import Layout from "@gno/components/layout";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import Button from "@gno/components/button";
 import FeedView from "@gno/components/view/feed";
+import { Post } from "@gno/types";
+import { setPostToReply, useAppDispatch } from "@gno/redux";
 
 export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
@@ -17,6 +19,7 @@ export default function Page() {
   const feed = useFeed();
   const navigation = useNavigation();
   const ref = useRef<FlatList>(null);
+  const dispatch = useAppDispatch();
 
   useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
 
@@ -40,6 +43,11 @@ export default function Page() {
     router.push("/post");
   };
 
+  const onPress = (item: Post) => {
+    dispatch(setPostToReply(item));
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id } });
+  };
+
   if (isLoading)
     return (
       <View style={styles.footer}>
@@ -59,7 +67,7 @@ export default function Page() {
   return (
     <Layout.Container>
       <View style={styles.container}>
-        <FeedView totalPosts={totalPosts} />
+        <FeedView totalPosts={totalPosts} onPress={onPress} />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
     </Layout.Container>

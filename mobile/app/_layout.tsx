@@ -9,7 +9,7 @@ import { useColorScheme } from "react-native";
 import { Stack } from "expo-router";
 import { Provider } from "react-redux";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { store } from "redux/store";
+import { store } from "@gno/redux";
 import { Guard } from "@gno/components/auth/guard";
 
 export default function AppLayout() {

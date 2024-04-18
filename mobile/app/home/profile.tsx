@@ -10,14 +10,17 @@ import Layout from "@gno/components/layout";
 import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
 import Text from "@gno/components/text";
+import { useSearch } from "@gno/hooks/use-search";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
+	const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
 
   const gno = useGno();
+	const search = useSearch();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
@@ -55,10 +58,13 @@ export default function Page() {
       const account = await gno.getActiveAccount();
       const chainId = await gno.getChainID();
       const remote = await gno.getRemote();
+			const address = await gno.addressToBech32(account?.key?.address!);
+			const followersCount = await search.GetJsonFollowersCount(address);
 
       setActiveAccount(account.key);
       setChainID(chainId);
       setRemote(remote);
+			setFollowersCount(followersCount);
 
       console.log("chainId: " + chainId);
       console.log("remote: " + remote);
@@ -85,6 +91,10 @@ export default function Page() {
             <Text.Body>{chainID}</Text.Body>
             <Text.Subheadline>Remote:</Text.Subheadline>
             <Text.Body>{remote}</Text.Body>
+						<Text.Subheadline>Followers:</Text.Subheadline>
+						<Text.Body>{followersCount.n_followers}</Text.Body>
+						<Text.Subheadline>Following:</Text.Subheadline>
+						<Text.Body>{followersCount.n_following}</Text.Body>
             <View></View>
           </>
           <Layout.Footer>

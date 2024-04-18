@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { KeyInfo } from "@gno/api/gnonativetypes_pb";
 import Text from "@gno/components/text";
 import { useGno } from "@gno/hooks/use-gno";
+import { useSearch } from "@gno/hooks/use-search";
 
 interface Props {
   activeAccount: KeyInfo | undefined;
@@ -12,23 +13,32 @@ export function AccountBalance({ activeAccount }: Props) {
   const [balance, setBalance] = useState<string | undefined>(undefined);
 
   const gno = useGno();
+  const account = useSearch();
 
   useEffect(() => {
-    if (!activeAccount) {
-      return;
-    }
-    gno.addressToBech32(activeAccount.address).then((address) => {
-      setAddress(address);
-    });
-    gno
-      .queryAccount(activeAccount.address)
-      .then((balance) => {
-        setBalance(balance.accountInfo?.coins.reduce((acc, coin) => acc + coin.amount.toString() + coin.denom + " ", ""));
-      })
-      .catch((error) => {
-        console.log("Error on fetching balance", JSON.stringify(error));
-        setBalance("Error on fetching balance. Please check the logs.");
+    (async () => {
+      if (!activeAccount) {
+        return;
+      }
+
+      const acc = await account.getJsonUserByName(activeAccount.name);
+
+      const acc22 = await gno.addressFromBech32(acc.address);
+      const acc2 = await gno.addressToBech32(acc22);
+
+      gno.addressToBech32(activeAccount.address).then((address) => {
+        setAddress(address);
       });
+      gno
+        .queryAccount(activeAccount.address)
+        .then((balance) => {
+          setBalance(balance.accountInfo?.coins.reduce((acc, coin) => acc + coin.amount.toString() + coin.denom + " ", ""));
+        })
+        .catch((error) => {
+          console.log("Error on fetching balance", JSON.stringify(error));
+          setBalance("Error on fetching balance. Please check the logs.");
+        });
+    })();
   }, [activeAccount]);
 
   if (!activeAccount) {

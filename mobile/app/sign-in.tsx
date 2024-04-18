@@ -68,6 +68,11 @@ export default function Page() {
 
       dispatch(loggedIn(response));
 
+      setRecoveryPhrase("");
+      setName("");
+      setPassword("");
+      setConfirmPassword("");
+
       router.push("/home");
     } catch (error) {
       setError("" + error);

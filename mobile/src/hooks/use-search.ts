@@ -1,4 +1,4 @@
-import { Following, User } from "@gno/types";
+import { Following, GetJsonFollowersResult, GetJsonFollowingResult, User } from "@gno/types";
 import { useGno } from "./use-gno";
 
 const MAX_RESULT = 10;
@@ -38,11 +38,20 @@ export const useSearch = () => {
     }
   }
 
+  async function GetJsonFollowersCount(address: string | Uint8Array) {
+    checkActiveAccount();
+
+    const { n_followers } = await GetJsonFollowers(address);
+    const { n_following } = await GetJsonFollowing(address);
+
+    return { n_followers, n_following };
+  }
+
   async function GetJsonFollowers(address: string | Uint8Array) {
     checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}")`);
-    const json = (await convertToJson(result)) as Following[];
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}", 0, 1000)`);
+    const json = (await convertToJson(result)) as GetJsonFollowersResult;
 
     return json;
   }
@@ -50,8 +59,8 @@ export const useSearch = () => {
   async function GetJsonFollowing(address: string | Uint8Array) {
     checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}")`);
-    const json = (await convertToJson(result)) as Following[];
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}", 0, 1000)`);
+    const json = (await convertToJson(result)) as GetJsonFollowingResult;
 
     return json;
   }
@@ -91,6 +100,7 @@ export const useSearch = () => {
   return {
     searchUser,
     getJsonUserByName,
+		GetJsonFollowersCount,
     GetJsonFollowing,
     GetJsonFollowers,
     Follow,

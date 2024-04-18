@@ -180,7 +180,7 @@ func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) s
 		if err != nil {
 			panic("can't get post JSON")
 		}
-		postsJson += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", i, string(postJson))
+		postsJson += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", int(i), string(postJson))
 	}
 
 	return ufmt.Sprintf("{\"n_posts\": %d, \"posts\": [\n  %s]}", allPosts.Size(), postsJson)

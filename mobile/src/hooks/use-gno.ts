@@ -97,13 +97,14 @@ export const useGno = (): GnoResponse => {
     const port = await GoBridge.getTcpPort();
     clientInstance = Grpc.createClient(port);
 
-    console.log("Creating GRPC client instance... done.");
+    const remote = process.env.EXPO_PUBLIC_GNO_REMOTE;
+    const chainId = process.env.EXPO_PUBLIC_GNO_CHAIN_ID;
+    console.log(`Creating GRPC client
+Default Remote Address: ${remote}
+Chain ID: ${chainId}`);
 
-    // Set the initial configuration where it's different from the default.
-    // await clientInstance.setRemote(new SetRemoteRequest({ remote: "localhost:36657" }));
-    // await clientInstance.setChainID(new SetChainIDRequest({ chainId: "dev" }));
-    await clientInstance.setRemote(new SetRemoteRequest({ remote: "testnet.gno.berty.io:36657" }));
-    await clientInstance.setChainID(new SetChainIDRequest({ chainId: "dev" }));
+    await clientInstance.setRemote(new SetRemoteRequest({ remote }));
+    await clientInstance.setChainID(new SetChainIDRequest({ chainId }));
 
     return clientInstance;
   };
