@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Button as RNButton, ScrollView } from "react-native";
-import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Button as RNButton, ScrollView, TextInput as RNTextInput } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import { router, useNavigation } from "expo-router";
 import TextInput from "components/textinput";
 import Button from "components/button";
@@ -19,6 +19,7 @@ export default function Page() {
   const [error, setError] = useState<string | undefined>(undefined);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<RNTextInput>(null);
 
   const navigation = useNavigation();
   const gno = useGno();
@@ -30,6 +31,7 @@ export default function Page() {
       setName("");
       setPassword("");
       setConfirmPassword("");
+			inputRef.current?.focus();
       try {
         setPhrase(await gno.generateRecoveryPhrase());
       } catch (error) {
@@ -92,6 +94,7 @@ export default function Page() {
             <View style={{ minWidth: 200, paddingTop: 8 }}>
               <Spacer />
               <TextInput
+                ref={inputRef}
                 placeholder="Account Name"
                 value={name}
                 onChangeText={setName}

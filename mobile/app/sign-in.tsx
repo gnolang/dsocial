@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import { StyleSheet, Text, View, TextInput as RNTextInput } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
 import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
@@ -7,10 +7,9 @@ import { useGno } from "@gno/hooks/use-gno";
 import SeedBox from "components/seedbox";
 import { ModalConfirm } from "components/modal";
 import Alert from "components/alert";
-import { loggedIn } from "redux/features/accountSlice";
-import { useAppDispatch } from "@gno/redux";
 import useOnboarding from "@gno/hooks/use-onboarding";
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
+import { loggedIn, useAppDispatch } from "@gno/redux";
 
 export default function Page() {
   const [recoveryPhrase, setRecoveryPhrase] = useState("");
@@ -19,10 +18,24 @@ export default function Page() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [showModal, setShowModal] = useState(false);
+  const inputRef = useRef<RNTextInput>(null);
   const dispatch = useAppDispatch();
 
   const gno = useGno();
   const onboarding = useOnboarding();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      setName("");
+      setPassword("");
+      setConfirmPassword("");
+      setRecoveryPhrase("");
+      setError(undefined);
+      inputRef.current?.focus();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const recoverAccount = async (override: boolean = false) => {
     setError(undefined);
@@ -71,6 +84,7 @@ export default function Page() {
             <Spacer />
             <SeedBox
               placeholder="Enter your seed phrase"
+              ref={inputRef}
               value={recoveryPhrase}
               onChangeText={(value) => setRecoveryPhrase(value.trim())}
             />
