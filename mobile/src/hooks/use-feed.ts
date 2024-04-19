@@ -86,5 +86,15 @@ export const useFeed = () => {
     return user;
   }
 
-  return { fetchFeed, fetchCount, fetchThread };
+  async function postReply(post: Post, content: string) {
+    const gasFee = "1000000ugnot";
+    const gasWanted = 10000000;
+
+    const args: Array<string> = [post.user.address, String(post.id), String(post.id), content];
+    for await (const response of await gno.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
+      console.log("response ono post screen: ", response);
+    }
+  }
+
+  return { fetchFeed, fetchCount, fetchThread, postReply };
 };

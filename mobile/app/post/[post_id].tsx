@@ -11,6 +11,7 @@ import { useGno } from "@gno/hooks/use-gno";
 import { Tweet } from "@gno/components/feed/tweet";
 import { FlatList } from "react-native";
 import { Post } from "@gno/types";
+import { useFeed } from "@gno/hooks/use-feed";
 
 function Page() {
   const [postContent, setPostContent] = useState("");
@@ -21,6 +22,7 @@ function Page() {
   const thread = useAppSelector(selectReplyThread);
   const router = useRouter();
   const gno = useGno();
+	const feed = useFeed();
 
   const onPressReply = async () => {
     if (!post) return;
@@ -29,13 +31,7 @@ function Page() {
     setError(undefined);
 
     try {
-      const gasFee = "1000000ugnot";
-      const gasWanted = 10000000;
-
-      const args: Array<string> = [post.user.address, String(post.id), String(post.id), postContent];
-      for await (const response of await gno.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
-        console.log("response ono post screen: ", response);
-      }
+			feed.postReply(post, postContent)
 
       setPostContent("");
       router.back();
