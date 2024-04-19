@@ -1,4 +1,4 @@
-# gnosocial
+# dSocial
 Experimental: Social apps and dApps on Gno.land
 
 # Test from command line
@@ -7,7 +7,7 @@ To install `gnokey` and `gnodev`, in the gno repo enter:
 
     make install
 
-To start gnodev, in this repo in gnosocial/realm enter:
+To start gnodev, in this repo in dsocial/realm enter:
 
     gnodev .
 

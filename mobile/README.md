@@ -1,8 +1,8 @@
-# GnoSocial Mobile APP
+# dSocial Mobile APP
 
 ## Requirements
 
-The GnoSocial mobile app uses Expo. You can review the general expo requirements:
+The dSocial mobile app uses Expo. You can review the general expo requirements:
 
 - Expo Requiments: https://docs.expo.dev/get-started/installation/
 
