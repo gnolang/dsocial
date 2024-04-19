@@ -3,13 +3,9 @@ Experimental: Social apps and dApps on Gno.land
 
 # Test from command line
 
-To install gnokey in the gno repo in gno/gno.land enter:
+To install `gnokey` and `gnodev`, in the gno repo enter:
 
     make install
-
-To install gnodev, in the gno repo in gno/contribs enter:
-
-    make install.gnodev
 
 To start gnodev, in this repo in gnosocial/realm enter:
 
