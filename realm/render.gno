@@ -9,7 +9,7 @@ import (
 
 func Render(path string) string {
 	if path == "" {
-		str := "Welcome to GnoSocial!\n\n"
+		str := "Welcome to dSocial!\n\n"
 
 		// List the users who have posted. gUserAddressByName is already sorted by name.
 		gUserAddressByName.Iterate("", "", func(name string, value interface{}) bool {
