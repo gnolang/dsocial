@@ -1,11 +1,14 @@
 {
   "expo": {
-    "name": "gnosocial",
-    "slug": "gnosocial",
-		"platforms": ["ios", "android"],
+    "name": "dSocial",
+    "slug": "dsocial",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "land.gno.gnosocial",
+    "scheme": "tech.berty.dsocial",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -13,10 +16,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "land.gno.gnosocial",
+      "bundleIdentifier": "tech.berty.dsocial.ios",
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "NSAppTransportSecurity": {
@@ -33,8 +38,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "land.gno.gnosocial"
+      }
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -42,6 +46,17 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "40710094-d25f-4c27-9e2f-752938bd2a3d"
+      }
+    },
+    "owner": "iuriberty"
   }
 }

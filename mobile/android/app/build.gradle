@@ -83,9 +83,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'land.gno.gnosocial'
+    namespace 'tech.berty.dsocial.android'
     defaultConfig {
-        applicationId 'land.gno.gnosocial'
+        applicationId 'tech.berty.dsocial.android'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,4 +1,4 @@
-rootProject.name = 'gnosocial'
+rootProject.name = 'dsocial'
 
 dependencyResolutionManagement {
   versionCatalogs {
