@@ -20,13 +20,13 @@ message GetHomePostsRequest {
   uint64 endIndex = 3 [json_name = "EndIndex"];
 }
 
-message UserPost {
+message UserAndPostID {
   string userPostAddr = 1 [json_name = "UserPostAddr"];
-  uint64 postId = 2 [json_name = "PostId"];
+  uint64 postID = 2 [json_name = "PostID"];
 }
 
 message GetHomePostsResponse {
-  repeated UserPost userPosts = 1 [json_name = "UserPosts"];
+  repeated UserAndPostID homePosts = 1 [json_name = "HomePosts"];
 }
 
 message HelloRequest {
