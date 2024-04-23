@@ -98,7 +98,7 @@ func runMain(args []string) error {
 func startService() (IndexerService, error) {
 	options := []ServiceOption{
 		WithRemoteAddr(remote),
-		WithListen("localhost:26660"),
+		WithListen(":26660"),
 	}
 
 	service, err := NewIndexerService(options...)

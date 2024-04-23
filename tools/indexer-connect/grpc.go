@@ -22,7 +22,7 @@ import (
 func (s *indexerService) createGrpcServer() error {
 	s.logger.Debug("createGrpcServer called")
 
-	listener, err := net.Listen("tcp", s.listen.String())
+	listener, err := net.Listen("tcp", s.listen)
 	if err != nil {
 		s.logger.Debug("createGrpcServer error", zap.Error(err))
 		return api_gen.ErrCode_ErrRunGRPCServer.Wrap(err)
@@ -34,7 +34,7 @@ func (s *indexerService) createGrpcServer() error {
 		return err
 	}
 
-	s.logger.Info("createGrpcServer: gRPC server listens to", zap.String("addr", s.listen.String()))
+	s.logger.Info("createGrpcServer: gRPC server listens to", zap.String("addr", s.listen))
 
 	return nil
 }

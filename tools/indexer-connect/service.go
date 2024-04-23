@@ -5,7 +5,6 @@ import (
 	"io"
 	"net"
 	"net/http"
-	"net/url"
 	"sync"
 
 	"github.com/Khan/genqlient/graphql"
@@ -18,8 +17,8 @@ type IndexerService interface {
 
 type indexerService struct {
 	logger     *zap.Logger
-	remoteAddr *url.URL
-	listen     *url.URL
+	remoteAddr string
+	listen     string
 
 	listener net.Listener
 	server   *http.Server

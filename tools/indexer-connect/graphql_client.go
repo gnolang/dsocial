@@ -12,15 +12,20 @@ import (
 )
 
 func (s *indexerService) createGraphQLClient() error {
-	s.graphQLClient = graphql.NewClient(s.remoteAddr.String(), http.DefaultClient)
+	s.graphQLClient = graphql.NewClient(s.remoteAddr, http.DefaultClient)
 	resp, err := getTransactions(s.ctx, s.graphQLClient, "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5")
 	if err != nil {
 		return err
 	}
 	fmt.Println(resp)
 
+	clientAddr, err := websocketURL(s.remoteAddr)
+	if err != nil {
+		return err
+	}
+
 	wsClient := graphql.NewClientUsingWebSocket(
-		websocketURL(s.remoteAddr),
+		clientAddr,
 		&MyDialer{Dialer: websocket.DefaultDialer},
 		nil,
 	)
@@ -61,8 +66,12 @@ func (s *indexerService) createGraphQLClient() error {
 	return nil
 }
 
-func websocketURL(addr *url.URL) string {
-	return fmt.Sprintf("ws://%s%s", addr.Host, addr.Path)
+func websocketURL(addr string) (string, error) {
+	url, err := url.Parse(addr)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("ws://%s%s", url.Host, url.Path), nil
 }
 
 type MyDialer struct {
