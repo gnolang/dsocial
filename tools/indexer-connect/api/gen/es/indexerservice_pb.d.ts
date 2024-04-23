@@ -111,32 +111,32 @@ export declare class GetHomePostsRequest extends Message<GetHomePostsRequest> {
 }
 
 /**
- * @generated from message land.gno.gnosocial.indexerservice.v1.UserPost
+ * @generated from message land.gno.gnosocial.indexerservice.v1.UserAndPostID
  */
-export declare class UserPost extends Message<UserPost> {
+export declare class UserAndPostID extends Message<UserAndPostID> {
   /**
    * @generated from field: string userPostAddr = 1 [json_name = "UserPostAddr"];
    */
   userPostAddr: string;
 
   /**
-   * @generated from field: uint64 postId = 2 [json_name = "PostId"];
+   * @generated from field: uint64 postID = 2 [json_name = "PostID"];
    */
-  postId: bigint;
+  postID: bigint;
 
-  constructor(data?: PartialMessage<UserPost>);
+  constructor(data?: PartialMessage<UserAndPostID>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "land.gno.gnosocial.indexerservice.v1.UserPost";
+  static readonly typeName = "land.gno.gnosocial.indexerservice.v1.UserAndPostID";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UserPost;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UserAndPostID;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UserPost;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UserAndPostID;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UserPost;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UserAndPostID;
 
-  static equals(a: UserPost | PlainMessage<UserPost> | undefined, b: UserPost | PlainMessage<UserPost> | undefined): boolean;
+  static equals(a: UserAndPostID | PlainMessage<UserAndPostID> | undefined, b: UserAndPostID | PlainMessage<UserAndPostID> | undefined): boolean;
 }
 
 /**
@@ -144,9 +144,9 @@ export declare class UserPost extends Message<UserPost> {
  */
 export declare class GetHomePostsResponse extends Message<GetHomePostsResponse> {
   /**
-   * @generated from field: repeated land.gno.gnosocial.indexerservice.v1.UserPost userPosts = 1 [json_name = "UserPosts"];
+   * @generated from field: repeated land.gno.gnosocial.indexerservice.v1.UserAndPostID homePosts = 1 [json_name = "HomePosts"];
    */
-  userPosts: UserPost[];
+  homePosts: UserAndPostID[];
 
   constructor(data?: PartialMessage<GetHomePostsResponse>);
 

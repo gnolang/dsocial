@@ -2,11 +2,13 @@ import { Post, User } from "@gno/types";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
+import { useIndexer } from "@gno/hooks/use-indexer";
 
 export const useFeed = () => {
   const gno = useGnoNativeContext();
   const cache = useUserCache();
   const parser = useGnoJsonParser();
+  const indexer = useIndexer();
 
   async function fetchThread(address: string, postId: number): Promise<{ data: Post[]; n_posts: number }> {
     await checkActiveAccount();
@@ -20,12 +22,16 @@ export const useFeed = () => {
   async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
     const account = await checkActiveAccount();
 
-    const result = await gno.qEval(
-      "gno.land/r/berty/social",
-      `GetJsonHomePosts("${account.address}", ${startIndex}, ${endIndex})`
-    );
+    const homePostsResult = await indexer.getHomePosts(account.address, BigInt(startIndex), BigInt(endIndex));
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${homePostsResult})`);
+    console.log("result", result);
+    // const result = await gno.qEval(
+    //   "gno.land/r/berty/social",
+    //   `GetJsonHomePosts("${account.address}", ${startIndex}, ${endIndex})`
+    // );
 
     const json = await enrichData(result);
+    // const json = { data: [], n_posts: 0 };
     return json;
   }
 

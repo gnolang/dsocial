@@ -2,10 +2,10 @@ import * as Grpc from "@gno/grpc/client";
 import { PromiseClient } from "@connectrpc/connect";
 import { IndexerService } from "@gno/api/indexer/indexerservice_connect";
 
-import { GetHomePostsResponse, HelloResponse, HelloStreamResponse } from "@gno/api/indexer/indexerservice_pb";
+import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@gno/api/indexer/indexerservice_pb";
 
 export interface IndexerResponse {
-  getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<GetHomePostsResponse>;
+  getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<string>;
   hello: (name: string) => Promise<HelloResponse>;
   helloStream: (name: string) => Promise<AsyncIterable<HelloStreamResponse>>;
 }
@@ -29,9 +29,28 @@ export const useIndexer = (): IndexerResponse => {
     return clientIndexerInstance;
   };
 
-  const getHomePosts = async (userPostAddr: string, startIndex: bigint, endIndex: bigint) => {
+  const formatHomePost = (homePosts: UserAndPostID[]): string => {
+    let result = "[]UserAndPostID{";
+    for (const homePost of homePosts) {
+      result += `{"${homePost.userPostAddr}", ${homePost.postID}},`;
+    }
+    result += "}";
+
+    return result;
+  };
+
+  const getHomePosts = async (userPostAddr: string, startIndex: bigint, endIndex: bigint): Promise<string> => {
     const client = await getClient();
-    return client.getHomePosts({ userPostAddr, startIndex, endIndex });
+
+    const homePostsResult = await client.getHomePosts({
+      userPostAddr,
+      startIndex,
+      endIndex,
+    });
+    const homePosts = formatHomePost(homePostsResult.homePosts);
+
+    console.log(`HomePosts: ${homePosts}`);
+    return homePosts;
   };
 
   const hello = async (name: string) => {

@@ -44,13 +44,13 @@ export const GetHomePostsRequest = /*@__PURE__*/ proto3.makeMessageType(
 );
 
 /**
- * @generated from message land.gno.gnosocial.indexerservice.v1.UserPost
+ * @generated from message land.gno.gnosocial.indexerservice.v1.UserAndPostID
  */
-export const UserPost = /*@__PURE__*/ proto3.makeMessageType(
-  "land.gno.gnosocial.indexerservice.v1.UserPost",
+export const UserAndPostID = /*@__PURE__*/ proto3.makeMessageType(
+  "land.gno.gnosocial.indexerservice.v1.UserAndPostID",
   () => [
     { no: 1, name: "userPostAddr", jsonName: "UserPostAddr", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "postId", jsonName: "PostId", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 2, name: "postID", jsonName: "PostID", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
   ],
 );
 
@@ -60,7 +60,7 @@ export const UserPost = /*@__PURE__*/ proto3.makeMessageType(
 export const GetHomePostsResponse = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.GetHomePostsResponse",
   () => [
-    { no: 1, name: "userPosts", jsonName: "UserPosts", kind: "message", T: UserPost, repeated: true },
+    { no: 1, name: "homePosts", jsonName: "HomePosts", kind: "message", T: UserAndPostID, repeated: true },
   ],
 );
 

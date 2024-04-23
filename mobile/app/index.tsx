@@ -8,7 +8,6 @@ import ReenterPassword from "@gno/components/modal/reenter-password";
 import { Spacer } from "@gno/components/row";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
-import { useIndexer } from "@gno/hooks/use-indexer";
 import { loggedIn, useAppDispatch } from "@gno/redux";
 import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import { useGnoNativeContext } from "@gnolang/gnonative";
@@ -21,15 +20,12 @@ export default function Root() {
   const [reenterPassword, setReenterPassword] = useState<KeyInfo | undefined>(undefined);
 
   const gno = useGnoNativeContext();
-  const indexer = useIndexer();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       try {
-        const greeting = await indexer.getHomePosts("", 0n, 2n);
-        console.log(greeting.userPosts);
         setLoading("Loading accounts...");
 
         const response = await gno.listKeyInfo();
