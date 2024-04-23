@@ -33,6 +33,9 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// IndexerServiceGetHomePostsProcedure is the fully-qualified name of the IndexerService's
+	// GetHomePosts RPC.
+	IndexerServiceGetHomePostsProcedure = "/land.gno.gnosocial.indexerservice.v1.IndexerService/GetHomePosts"
 	// IndexerServiceHelloProcedure is the fully-qualified name of the IndexerService's Hello RPC.
 	IndexerServiceHelloProcedure = "/land.gno.gnosocial.indexerservice.v1.IndexerService/Hello"
 	// IndexerServiceHelloStreamProcedure is the fully-qualified name of the IndexerService's
@@ -42,14 +45,16 @@ const (
 
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
-	indexerServiceServiceDescriptor           = _go.File_indexerservice_proto.Services().ByName("IndexerService")
-	indexerServiceHelloMethodDescriptor       = indexerServiceServiceDescriptor.Methods().ByName("Hello")
-	indexerServiceHelloStreamMethodDescriptor = indexerServiceServiceDescriptor.Methods().ByName("HelloStream")
+	indexerServiceServiceDescriptor            = _go.File_indexerservice_proto.Services().ByName("IndexerService")
+	indexerServiceGetHomePostsMethodDescriptor = indexerServiceServiceDescriptor.Methods().ByName("GetHomePosts")
+	indexerServiceHelloMethodDescriptor        = indexerServiceServiceDescriptor.Methods().ByName("Hello")
+	indexerServiceHelloStreamMethodDescriptor  = indexerServiceServiceDescriptor.Methods().ByName("HelloStream")
 )
 
 // IndexerServiceClient is a client for the land.gno.gnosocial.indexerservice.v1.IndexerService
 // service.
 type IndexerServiceClient interface {
+	GetHomePosts(context.Context, *connect.Request[_go.GetHomePostsRequest]) (*connect.Response[_go.GetHomePostsResponse], error)
 	// Hello is for debug purposes
 	Hello(context.Context, *connect.Request[_go.HelloRequest]) (*connect.Response[_go.HelloResponse], error)
 	// HelloStream is for debug purposes
@@ -67,6 +72,12 @@ type IndexerServiceClient interface {
 func NewIndexerServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) IndexerServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &indexerServiceClient{
+		getHomePosts: connect.NewClient[_go.GetHomePostsRequest, _go.GetHomePostsResponse](
+			httpClient,
+			baseURL+IndexerServiceGetHomePostsProcedure,
+			connect.WithSchema(indexerServiceGetHomePostsMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 		hello: connect.NewClient[_go.HelloRequest, _go.HelloResponse](
 			httpClient,
 			baseURL+IndexerServiceHelloProcedure,
@@ -84,8 +95,14 @@ func NewIndexerServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // indexerServiceClient implements IndexerServiceClient.
 type indexerServiceClient struct {
-	hello       *connect.Client[_go.HelloRequest, _go.HelloResponse]
-	helloStream *connect.Client[_go.HelloStreamRequest, _go.HelloStreamResponse]
+	getHomePosts *connect.Client[_go.GetHomePostsRequest, _go.GetHomePostsResponse]
+	hello        *connect.Client[_go.HelloRequest, _go.HelloResponse]
+	helloStream  *connect.Client[_go.HelloStreamRequest, _go.HelloStreamResponse]
+}
+
+// GetHomePosts calls land.gno.gnosocial.indexerservice.v1.IndexerService.GetHomePosts.
+func (c *indexerServiceClient) GetHomePosts(ctx context.Context, req *connect.Request[_go.GetHomePostsRequest]) (*connect.Response[_go.GetHomePostsResponse], error) {
+	return c.getHomePosts.CallUnary(ctx, req)
 }
 
 // Hello calls land.gno.gnosocial.indexerservice.v1.IndexerService.Hello.
@@ -101,6 +118,7 @@ func (c *indexerServiceClient) HelloStream(ctx context.Context, req *connect.Req
 // IndexerServiceHandler is an implementation of the
 // land.gno.gnosocial.indexerservice.v1.IndexerService service.
 type IndexerServiceHandler interface {
+	GetHomePosts(context.Context, *connect.Request[_go.GetHomePostsRequest]) (*connect.Response[_go.GetHomePostsResponse], error)
 	// Hello is for debug purposes
 	Hello(context.Context, *connect.Request[_go.HelloRequest]) (*connect.Response[_go.HelloResponse], error)
 	// HelloStream is for debug purposes
@@ -113,6 +131,12 @@ type IndexerServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewIndexerServiceHandler(svc IndexerServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	indexerServiceGetHomePostsHandler := connect.NewUnaryHandler(
+		IndexerServiceGetHomePostsProcedure,
+		svc.GetHomePosts,
+		connect.WithSchema(indexerServiceGetHomePostsMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	indexerServiceHelloHandler := connect.NewUnaryHandler(
 		IndexerServiceHelloProcedure,
 		svc.Hello,
@@ -127,6 +151,8 @@ func NewIndexerServiceHandler(svc IndexerServiceHandler, opts ...connect.Handler
 	)
 	return "/land.gno.gnosocial.indexerservice.v1.IndexerService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case IndexerServiceGetHomePostsProcedure:
+			indexerServiceGetHomePostsHandler.ServeHTTP(w, r)
 		case IndexerServiceHelloProcedure:
 			indexerServiceHelloHandler.ServeHTTP(w, r)
 		case IndexerServiceHelloStreamProcedure:
@@ -139,6 +165,10 @@ func NewIndexerServiceHandler(svc IndexerServiceHandler, opts ...connect.Handler
 
 // UnimplementedIndexerServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedIndexerServiceHandler struct{}
+
+func (UnimplementedIndexerServiceHandler) GetHomePosts(context.Context, *connect.Request[_go.GetHomePostsRequest]) (*connect.Response[_go.GetHomePostsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("land.gno.gnosocial.indexerservice.v1.IndexerService.GetHomePosts is not implemented"))
+}
 
 func (UnimplementedIndexerServiceHandler) Hello(context.Context, *connect.Request[_go.HelloRequest]) (*connect.Response[_go.HelloResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("land.gno.gnosocial.indexerservice.v1.IndexerService.Hello is not implemented"))

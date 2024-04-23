@@ -7,10 +7,26 @@ option objc_class_prefix = "RTG";
 
 // IndexerService is the service to interact with the Gnosocial Indexer
 service IndexerService {
+  rpc GetHomePosts(GetHomePostsRequest) returns (GetHomePostsResponse);
   // Hello is for debug purposes
   rpc Hello(HelloRequest) returns (HelloResponse);
   // HelloStream is for debug purposes
   rpc HelloStream(HelloStreamRequest) returns (stream HelloStreamResponse);
+}
+
+message GetHomePostsRequest {
+  string userPostAddr = 1 [json_name = "UserPostAddr"];
+  uint64 startIndex = 2 [json_name = "StartIndex"];
+  uint64 endIndex = 3 [json_name = "EndIndex"];
+}
+
+message UserPost {
+  string userPostAddr = 1 [json_name = "UserPostAddr"];
+  uint64 postId = 2 [json_name = "PostId"];
+}
+
+message GetHomePostsResponse {
+  repeated UserPost userPosts = 1 [json_name = "UserPosts"];
 }
 
 message HelloRequest {

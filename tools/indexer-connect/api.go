@@ -10,6 +10,24 @@ import (
 	api_gen "github.com/gnolang/gnosocial/tools/indexer-connect/api/gen/go"
 )
 
+func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[api_gen.GetHomePostsRequest]) (*connect.Response[api_gen.GetHomePostsResponse], error) {
+	data := []*api_gen.UserPost{
+		{
+			UserPostAddr: "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5",
+			PostId:       1,
+		},
+		{
+			UserPostAddr: "g1c48vyrcpdaj6hzfr60kwn3uthgwkuym3qxzglx",
+			PostId:       2,
+		},
+	}
+
+	return connect.NewResponse(&api_gen.GetHomePostsResponse{
+		UserPosts: data,
+	}), nil
+}
+
+// Hello is for debug purposes
 func (s *indexerService) Hello(ctx context.Context, req *connect.Request[api_gen.HelloRequest]) (*connect.Response[api_gen.HelloResponse], error) {
 	s.logger.Debug("Hello called")
 	defer s.logger.Debug("Hello returned ok")

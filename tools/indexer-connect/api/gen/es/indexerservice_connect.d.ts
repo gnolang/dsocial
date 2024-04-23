@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { HelloRequest, HelloResponse, HelloStreamRequest, HelloStreamResponse } from "./indexerservice_pb.js";
+import { GetHomePostsRequest, GetHomePostsResponse, HelloRequest, HelloResponse, HelloStreamRequest, HelloStreamResponse } from "./indexerservice_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -14,6 +14,15 @@ import { MethodKind } from "@bufbuild/protobuf";
 export declare const IndexerService: {
   readonly typeName: "land.gno.gnosocial.indexerservice.v1.IndexerService",
   readonly methods: {
+    /**
+     * @generated from rpc land.gno.gnosocial.indexerservice.v1.IndexerService.GetHomePosts
+     */
+    readonly getHomePosts: {
+      readonly name: "GetHomePosts",
+      readonly I: typeof GetHomePostsRequest,
+      readonly O: typeof GetHomePostsResponse,
+      readonly kind: MethodKind.Unary,
+    },
     /**
      * Hello is for debug purposes
      *
