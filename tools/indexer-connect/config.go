@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/url"
-
 	"go.uber.org/zap"
 )
 
@@ -11,8 +9,8 @@ const DEFAULT_REMOTE_ADDR = "127.0.0.1:8546"
 
 type Config struct {
 	Logger     *zap.Logger
-	RemoteAddr *url.URL
-	Listen     *url.URL
+	RemoteAddr string
+	Listen     string
 }
 
 type ServiceOption func(cfg *Config) error
@@ -76,20 +74,19 @@ var WithFallbackLogger ServiceOption = func(cfg *Config) error {
 var WithRemoteAddr = func(remote string) ServiceOption {
 	return func(cfg *Config) error {
 		var err error
-		cfg.RemoteAddr, err = url.Parse(remote)
+		cfg.RemoteAddr = remote
 		return err
 	}
 }
 
 // WithDefaultRemoteAddr inits a default remote tx-indexer address.
 var WithDefaultRemoteAddr ServiceOption = func(cfg *Config) error {
-	var err error
-	cfg.RemoteAddr, err = url.Parse(DEFAULT_REMOTE_ADDR)
-	return err
+	cfg.RemoteAddr = DEFAULT_REMOTE_ADDR
+	return nil
 }
 
 var fallbackRemoteAddr = FallBackOption{
-	fallback: func(cfg *Config) bool { return cfg.RemoteAddr == nil },
+	fallback: func(cfg *Config) bool { return cfg.RemoteAddr == "" },
 	opt:      WithDefaultRemoteAddr,
 }
 
@@ -108,21 +105,19 @@ var WithFallbacRemoteAddr ServiceOption = func(cfg *Config) error {
 // If the TCP port is set to 0, a random port number will be chosen.
 var WithListen = func(addr string) ServiceOption {
 	return func(cfg *Config) error {
-		var err error
-		cfg.Listen, err = url.Parse(addr)
-		return err
+		cfg.Listen = addr
+		return nil
 	}
 }
 
 // WithDefaultListen sets a default TCP addr to listen to.
 var WithDefaultListen ServiceOption = func(cfg *Config) error {
-	var err error
-	cfg.Listen, err = url.Parse(DEFAULT_LISTEN_ADDR)
-	return err
+	cfg.Listen = DEFAULT_LISTEN_ADDR
+	return nil
 }
 
 var fallbackListen = FallBackOption{
-	fallback: func(cfg *Config) bool { return cfg.Listen == nil },
+	fallback: func(cfg *Config) bool { return cfg.Listen == "" },
 	opt:      WithDefaultListen,
 }
 
