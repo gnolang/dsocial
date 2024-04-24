@@ -28,6 +28,8 @@ export const TouchableOpacityButton = styled.TouchableOpacity<{ variant: ButtonV
   height: 48px;
   justify-content: center;
   border-radius: 28px;
+	margin-top: 4px;
+	margin-bottom: 4px;
 `;
 
 const getStyle = (variant: ButtonVariant) => {

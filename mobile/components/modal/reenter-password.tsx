@@ -1,12 +1,20 @@
+import { useEffect, useRef, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Modal,
+  TextInput as RNTextInput,
+} from "react-native";
 import { GRPCError } from "@gno/grpc/error";
 import { ErrCode } from "@gno/api/rpc_pb";
 import Alert from "@gno/components/alert";
-import { Modal } from "@gno/components/modal";
 import { Spacer } from "@gno/components/row";
-import TextInput from "@gno/components/textinput";
 import { useGno } from "@gno/hooks/use-gno";
-import { useState } from "react";
-import { Modal as NativeModal } from "react-native";
+import { ModalView } from ".";
+import TextInput from "../textinput";
 import Text from "../text";
 import Button from "../button";
 
@@ -20,6 +28,16 @@ const ReenterPassword = ({ visible, accountName, onClose }: Props) => {
   const gno = useGno();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
+
+  const inputRef = useRef<RNTextInput>(null);
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 200);
+    }
+  }, [visible]);
 
   const onConfirm = async () => {
     if (!password) return;
@@ -38,25 +56,55 @@ const ReenterPassword = ({ visible, accountName, onClose }: Props) => {
     }
   };
 
+  if (!visible) return null;
+
   return (
-    <NativeModal visible={visible} transparent={true} animationType="slide">
-      <Modal.Content>
-        <Modal.Header title="Re-enter your password" onClose={() => onClose(false)} />
-        <Text.BodyMedium>Please, reenter the password for the selected account.</Text.BodyMedium>
-        <Spacer />
-        <TextInput
-          placeholder={`Password for ${accountName}'s Account`}
-          error={error}
-          secureTextEntry={true}
-          onChangeText={setPassword}
-        />
-        <Spacer />
-        <Alert severity="error" message={error} />
-        <Spacer />
-        <Button.TouchableOpacity title="Confirm" onPress={onConfirm} variant="primary" />
-      </Modal.Content>
-    </NativeModal>
+    <Modal>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ height: "100%", backgroundColor: "green" }}>
+          <ModalView.Content>
+            <ModalView.Header title="Re-enter your password" onClose={() => onClose(false)} />
+            <Text.BodyMedium>Please, reenter the password for the selected account.</Text.BodyMedium>
+            <Spacer />
+            <TextInput
+              ref={inputRef}
+              placeholder={`Password for ${accountName}'s Account`}
+              error={error}
+              secureTextEntry={true}
+              onChangeText={setPassword}
+            />
+            <Alert severity="error" message={error} />
+            <Button.TouchableOpacity title="Confirm" onPress={onConfirm} variant="primary" />
+          </ModalView.Content>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </Modal>
   );
 };
 
 export default ReenterPassword;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  inner: {
+    padding: 24,
+    flex: 1,
+    justifyContent: "space-around",
+  },
+  header: {
+    fontSize: 36,
+    marginBottom: 48,
+  },
+  textInput: {
+    height: 40,
+    borderColor: "#000000",
+    borderBottomWidth: 1,
+    marginBottom: 36,
+  },
+  btnContainer: {
+    backgroundColor: "white",
+    marginTop: 12,
+  },
+});

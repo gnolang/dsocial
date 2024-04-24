@@ -6,13 +6,16 @@ const ModalContainer = styled.View`
   flex: 1;
   background-color: ${colors.modal.backgroundOpaque};
   justify-content: flex-end;
+	background-color: gray;
+	opacity: 0.8;
 `;
 
 const ModalView = styled.View`
   background-color: ${colors.modal.background};
-  border-radius: 16px;
-  padding: 32px;
-  padding-top: 4px;
+	border-top-end-radius: 16px;
+	border-top-start-radius: 16px;
+  padding: 14px;
+  padding-top: 0px;
   shadow-color: #000;
   shadow-opacity: 0.25;
   elevation: 5;
