@@ -9,6 +9,11 @@ import (
 	"gno.land/r/demo/users"
 )
 
+type UserAndPostID struct {
+	UserPostAddr std.Address
+	PostID       PostID
+}
+
 // Post a message to the caller's main user posts.
 // The caller must already be registered with /r/demo/users Register.
 // Return the "thread ID" of the new post.
@@ -86,6 +91,40 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 	}
 	repost := thread.AddRepostTo(caller, comment, dstUserPosts)
 	return repost.id
+}
+
+// For each address/PostID in addrAndIDs, get the thread post. The Post ID must be
+// for a a top-level thread (not a reply; to get reply posts, use GetThreadPosts).
+// If the Post ID is not found, set the result for that Post ID to {}.
+// The response is a JSON string.
+func GetJsonTopPostsByID(addrAndIDs []UserAndPostID) string {
+	json := "[ "
+	for _, addrAndID := range addrAndIDs {
+		if len(json) > 2 {
+			json += ",\n  "
+		}
+
+		userPosts := getUserPosts(addrAndID.UserPostAddr)
+		if userPosts == nil {
+			json += "{}"
+			continue
+		}
+
+		post := userPosts.GetThread(PostID(addrAndID.PostID))
+		if post == nil {
+			json += "{}"
+			continue
+		}
+
+		postJson, err := post.MarshalJSON()
+		if err != nil {
+			panic("can't get post JSON")
+		}
+		json += string(postJson)
+	}
+	json += "]"
+
+	return json
 }
 
 // Get posts in a thread for a user. A thread is the sequence of posts without replies.
