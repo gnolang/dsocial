@@ -226,7 +226,7 @@ func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) s
 }
 
 // Update the caller to follow the user with followedAddr. See UserPosts.Follow.
-func Follow(followedAddr std.Address) {
+func Follow(followedAddr std.Address) PostID {
 	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
 	name := usernameOf(caller)
@@ -240,7 +240,7 @@ func Follow(followedAddr std.Address) {
 
 	// A user can follow someone before doing any posts, so create the UserPosts if needed.
 	userPosts := getOrCreateUserPosts(caller, name)
-	userPosts.Follow(followedAddr)
+	return userPosts.Follow(followedAddr)
 }
 
 // Update the caller to unfollow the user with followedAddr. See UserPosts.Unfollow.

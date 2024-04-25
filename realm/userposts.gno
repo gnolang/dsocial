@@ -68,15 +68,16 @@ func (userPosts *UserPosts) AddThread(body string) *Post {
 	return thread
 }
 
-// If already following followedAddr, then do nothing.
+// If already following followedAddr, then do nothing and return 0.
 // If there is a UserPosts for followedAddr, then add it to following,
 // and add this user to its followers.
-// If there is no UserPosts for followedAddr, then do nothing. (We don't expect
+// If there is no UserPosts for followedAddr, then do nothing and return 0. (We don't expect
 // this because this is usually called by clicking on the display page of followedAddr.)
-func (userPosts *UserPosts) Follow(followedAddr std.Address) {
+// Return the value of startedPostsCtr in the added FollowingInfo.
+func (userPosts *UserPosts) Follow(followedAddr std.Address) PostID {
 	if userPosts.following.Has(followedAddr.String()) {
 		// Already following.
-		return
+		return PostID(0)
 	}
 
 	followedUserPosts := getUserPosts(followedAddr)
@@ -86,7 +87,10 @@ func (userPosts *UserPosts) Follow(followedAddr std.Address) {
 			startedPostsCtr:    PostID(postsCtr), // Ignore past messages.
 		})
 		followedUserPosts.followers.Set(userPosts.userAddr.String(), "")
+		return PostID(postsCtr)
 	}
+
+	return PostID(0)
 }
 
 // Remove followedAddr from following.
