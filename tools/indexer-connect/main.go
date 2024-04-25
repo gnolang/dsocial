@@ -15,6 +15,7 @@ import (
 )
 
 var remote string
+var listen string
 
 func main() {
 	// Start the Gno Native Kit gRPC service where the remote is gnoland.
@@ -64,7 +65,8 @@ func runMain(args []string) error {
 		fs = flag.NewFlagSet("indexerService", flag.ContinueOnError)
 	}
 
-	fs.StringVar(&remote, "remote", "http://testnet.gno.berty.io:8546/graphql/query", "address of the GraphQL tx-indexer")
+	fs.StringVar(&remote, "remote", "https://tx-indexer.gno.berty.io/graphql/query", "address of the GraphQL tx-indexer")
+	fs.StringVar(&listen, "listen", "localhost:26660", "gRPC listening address")
 
 	var root *ffcli.Command
 	{
@@ -98,7 +100,7 @@ func runMain(args []string) error {
 func startService() (IndexerService, error) {
 	options := []ServiceOption{
 		WithRemoteAddr(remote),
-		WithListen(":26660"),
+		WithListen(listen),
 	}
 
 	service, err := NewIndexerService(options...)
