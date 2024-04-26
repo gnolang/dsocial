@@ -292,6 +292,8 @@ type Transaction {
 	index: Int!
 """Hash from Transaction content in base64 encoding."""
 	hash: String!
+"""The success can determine whether the transaction succeeded or failed."""
+	success: Boolean!
 """The height of the Block in which this Transaction is included. Links the Transaction to its containing Block."""
 	block_height: Int!
 """The declared amount of computational effort the sender is willing to pay for executing this Transaction."""
@@ -307,6 +309,9 @@ A message consists of `router`, `type`, and `value` (whose form depends on the `
 `memo` can be utilized to find or distinguish transactions.
 For example, when trading a specific exchange, you would utilize the memo field of the transaction."""
 	memo: String!
+"""`response` is the processing result of the transaction.
+It has `log`, `info`, `error`, and `data`."""
+	response: TransactionResponse!
 }
 
 """`TransactionBankMessageInput` represents input parameters required when the message router is `bank`."""
@@ -339,6 +344,8 @@ input TransactionFilter {
 	message: TransactionMessageInput
 """Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
 	memo: String
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	success: Boolean
 }
 
 type TransactionMessage {
@@ -368,6 +375,19 @@ input TransactionMessageInput {
 """Transaction's message to filter Transactions.
 `TransactionMessageInput` can be configured as a filter with a transaction message's `router` and `type` and `parameters(bank / vm)`."""
 	vm_param: TransactionVmMessageInput
+}
+
+"""`TransactionResponse` is the processing result of the transaction.
+It has `log`, `info`, `error`, and `data`."""
+type TransactionResponse {
+"""The log value associated with the Transaction execution, if any."""
+	log: String!
+"""The Info associated with the Transaction execution, if any."""
+	info: String!
+"""The error value associated with the Transaction execution, if any."""
+	error: String!
+"""The response data associated with the Transaction execution, if any."""
+	data: String!
 }
 
 """`TransactionVmMessageInput` represents input parameters required when the message router is `vm`."""

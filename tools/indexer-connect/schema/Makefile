@@ -11,3 +11,9 @@ generate: ../generated.go
 
 ../generated.go: schema.graphql genqlient.graphql
 	go run github.com/Khan/genqlient
+
+clean:
+	rm -f schema.graphql
+	rm -f ../generated.go
+
+re: clean generate
