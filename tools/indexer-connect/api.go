@@ -13,12 +13,8 @@ import (
 func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[api_gen.GetHomePostsRequest]) (*connect.Response[api_gen.GetHomePostsResponse], error) {
 	data := []*api_gen.UserAndPostID{
 		{
-			UserPostAddr: "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5",
+			UserPostAddr: "g1ths47238093j8875lcqpqdvv6x5qq5hfly48ed",
 			PostID:       1,
-		},
-		{
-			UserPostAddr: "g1c48vyrcpdaj6hzfr60kwn3uthgwkuym3qxzglx",
-			PostID:       2,
 		},
 	}
 

@@ -65,7 +65,7 @@ func runMain(args []string) error {
 		fs = flag.NewFlagSet("indexerService", flag.ContinueOnError)
 	}
 
-	fs.StringVar(&remote, "remote", "https://tx-indexer.gno.berty.io/graphql/query", "address of the GraphQL tx-indexer")
+	fs.StringVar(&remote, "remote", "https://txindexer.gno.berty.io/graphql/query", "address of the GraphQL tx-indexer")
 	fs.StringVar(&listen, "listen", "localhost:26660", "gRPC listening address")
 
 	var root *ffcli.Command

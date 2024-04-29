@@ -35,8 +35,14 @@ export const useFeed = () => {
     return json;
   }
 
+  //   function parseJsonTopPosts(post: string): Post {
+  //
+  // }
+
   async function enrichData(result: string | undefined) {
     const jsonPosts = parser.toJson(result);
+
+    // const topPost = parseJsonTopPost(jsonPosts)
 
     const isThread = "n_threads" in jsonPosts;
     const n_posts = isThread ? jsonPosts.n_threads : jsonPosts.n_posts;
@@ -44,6 +50,7 @@ export const useFeed = () => {
     const posts: Post[] = [];
 
     for (const post of jsonPosts.posts) {
+      console.log("remi: post: ", post);
       const creator = await cache.getUser(post.post.creator);
 
       posts.push({
