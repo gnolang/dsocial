@@ -21,32 +21,32 @@
 		A5A602EC2B1E2B3900287011 /* GnoCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5A602EB2B1E2B3900287011 /* GnoCore.xcframework */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C18C66DA498A838570632F82 /* libPods-gnosocial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98579A04EAACC61B87C8F064 /* libPods-gnosocial.a */; };
+		C18C66DA498A838570632F82 /* libPods-dsocial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98579A04EAACC61B87C8F064 /* libPods-dsocial.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* gnosocial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gnosocial.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = gnosocial/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = gnosocial/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = gnosocial/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = gnosocial/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = gnosocial/main.m; sourceTree = "<group>"; };
-		26928F07A2B14F638F3E7CF3 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "gnosocial/noop-file.swift"; sourceTree = "<group>"; };
-		6C2E3173556A471DD304B334 /* Pods-gnosocial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gnosocial.debug.xcconfig"; path = "Target Support Files/Pods-gnosocial/Pods-gnosocial.debug.xcconfig"; sourceTree = "<group>"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-gnosocial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-gnosocial.release.xcconfig"; path = "Target Support Files/Pods-gnosocial/Pods-gnosocial.release.xcconfig"; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* dsocial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dsocial.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = dsocial/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = dsocial/AppDelegate.mm; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = dsocial/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = dsocial/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = dsocial/main.m; sourceTree = "<group>"; };
+		26928F07A2B14F638F3E7CF3 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "dsocial/noop-file.swift"; sourceTree = "<group>"; };
+		6C2E3173556A471DD304B334 /* Pods-dsocial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dsocial.debug.xcconfig"; path = "Target Support Files/Pods-dsocial/Pods-dsocial.debug.xcconfig"; sourceTree = "<group>"; };
+		7A4D352CD337FB3A3BF06240 /* Pods-dsocial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dsocial.release.xcconfig"; path = "Target Support Files/Pods-dsocial/Pods-dsocial.release.xcconfig"; sourceTree = "<group>"; };
 		8AB3905B2A85BA7C00CB681E /* GoBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBridge.m; sourceTree = "<group>"; };
 		8AB3905C2A85BA7C00CB681E /* GoBridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GoBridge.swift; sourceTree = "<group>"; };
 		8AB3905F2A85BD6000CB681E /* PromiseBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromiseBlock.swift; sourceTree = "<group>"; };
 		8AF1F6872A98ABBA0073D4D1 /* RootDir.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RootDir.m; sourceTree = "<group>"; };
 		8AF1F6882A98ABBA0073D4D1 /* RootDir.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootDir.swift; sourceTree = "<group>"; };
 		8AF1F68B2AA241430073D4D1 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
-		98579A04EAACC61B87C8F064 /* libPods-gnosocial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-gnosocial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		98579A04EAACC61B87C8F064 /* libPods-dsocial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-dsocial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A5A602EB2B1E2B3900287011 /* GnoCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GnoCore.xcframework; path = ../../framework/ios/GnoCore.xcframework; sourceTree = "<group>"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = gnosocial/SplashScreen.storyboard; sourceTree = "<group>"; };
-		B11419FF73544E34A5C7A3A2 /* gnosocial-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "gnosocial-Bridging-Header.h"; path = "gnosocial/gnosocial-Bridging-Header.h"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = dsocial/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B11419FF73544E34A5C7A3A2 /* dsocial-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "dsocial-Bridging-Header.h"; path = "dsocial/dsocial-Bridging-Header.h"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-gnosocial/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-dsocial/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,14 +56,14 @@
 			files = (
 				A5A602EC2B1E2B3900287011 /* GnoCore.xcframework in Frameworks */,
 				8AF1F68C2AA241430073D4D1 /* libresolv.tbd in Frameworks */,
-				C18C66DA498A838570632F82 /* libPods-gnosocial.a in Frameworks */,
+				C18C66DA498A838570632F82 /* libPods-dsocial.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* gnosocial */ = {
+		13B07FAE1A68108700A75B9A /* dsocial */ = {
 			isa = PBXGroup;
 			children = (
 				8AB390582A85B9B800CB681E /* Sources */,
@@ -75,9 +75,9 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				26928F07A2B14F638F3E7CF3 /* noop-file.swift */,
-				B11419FF73544E34A5C7A3A2 /* gnosocial-Bridging-Header.h */,
+				B11419FF73544E34A5C7A3A2 /* dsocial-Bridging-Header.h */,
 			);
-			name = gnosocial;
+			name = dsocial;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -86,7 +86,7 @@
 				A5A602EB2B1E2B3900287011 /* GnoCore.xcframework */,
 				8AF1F68B2AA241430073D4D1 /* libresolv.tbd */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				98579A04EAACC61B87C8F064 /* libPods-gnosocial.a */,
+				98579A04EAACC61B87C8F064 /* libPods-dsocial.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -101,7 +101,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* gnosocial */,
+				13B07FAE1A68108700A75B9A /* dsocial */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -116,7 +116,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* gnosocial.app */,
+				13B07F961A680F5B00A75B9A /* dsocial.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,7 +138,7 @@
 				8AB3905C2A85BA7C00CB681E /* GoBridge.swift */,
 			);
 			name = Bridge;
-			path = gnosocial/Sources/Bridge;
+			path = dsocial/Sources/Bridge;
 			sourceTree = SOURCE_ROOT;
 		};
 		8AF1F6862A98ABBA0073D4D1 /* RootDir */ = {
@@ -150,12 +150,12 @@
 			path = RootDir;
 			sourceTree = "<group>";
 		};
-		92DBD88DE9BF7D494EA9DA96 /* gnosocial */ = {
+		92DBD88DE9BF7D494EA9DA96 /* dsocial */ = {
 			isa = PBXGroup;
 			children = (
 				FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */,
 			);
-			name = gnosocial;
+			name = dsocial;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -164,14 +164,14 @@
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
 			);
 			name = Supporting;
-			path = gnosocial/Supporting;
+			path = dsocial/Supporting;
 			sourceTree = "<group>";
 		};
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6C2E3173556A471DD304B334 /* Pods-gnosocial.debug.xcconfig */,
-				7A4D352CD337FB3A3BF06240 /* Pods-gnosocial.release.xcconfig */,
+				6C2E3173556A471DD304B334 /* Pods-dsocial.debug.xcconfig */,
+				7A4D352CD337FB3A3BF06240 /* Pods-dsocial.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -179,7 +179,7 @@
 		D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				92DBD88DE9BF7D494EA9DA96 /* gnosocial */,
+				92DBD88DE9BF7D494EA9DA96 /* dsocial */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
@@ -187,9 +187,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* gnosocial */ = {
+		13B07F861A680F5B00A75B9A /* dsocial */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "gnosocial" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "dsocial" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
 				BD858FD2E95B7A0E599CEEE5 /* [Expo] Configure project */,
@@ -204,9 +204,9 @@
 			);
 			dependencies = (
 			);
-			name = gnosocial;
-			productName = gnosocial;
-			productReference = 13B07F961A680F5B00A75B9A /* gnosocial.app */;
+			name = dsocial;
+			productName = dsocial;
+			productReference = 13B07F961A680F5B00A75B9A /* dsocial.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -222,7 +222,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "gnosocial" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dsocial" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -235,7 +235,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* gnosocial */,
+				13B07F861A680F5B00A75B9A /* dsocial */,
 			);
 		};
 /* End PBXProject section */
@@ -283,7 +283,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-gnosocial-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-dsocial-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -296,7 +296,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-gnosocial/Pods-gnosocial-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -305,7 +305,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-gnosocial/Pods-gnosocial-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
@@ -314,7 +314,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-gnosocial/Pods-gnosocial-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-resources.sh",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
 			);
@@ -325,7 +325,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-gnosocial/Pods-gnosocial-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		BD858FD2E95B7A0E599CEEE5 /* [Expo] Configure project */ = {
@@ -345,7 +345,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-gnosocial/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-dsocial/expo-configure-project.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -371,11 +371,11 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-gnosocial.debug.xcconfig */;
+			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-dsocial.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = gnosocial/gnosocial.entitlements;
+				CODE_SIGN_ENTITLEMENTS = dsocial/dsocial.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = WMBQ84HN4T;
 				ENABLE_BITCODE = NO;
@@ -383,7 +383,7 @@
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				INFOPLIST_FILE = gnosocial/Info.plist;
+				INFOPLIST_FILE = dsocial/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -397,8 +397,8 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = tech.berty.dsocial.ios;
-				PRODUCT_NAME = gnosocial;
-				SWIFT_OBJC_BRIDGING_HEADER = "gnosocial/gnosocial-Bridging-Header.h";
+				PRODUCT_NAME = dsocial;
+				SWIFT_OBJC_BRIDGING_HEADER = "dsocial/dsocial-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -408,14 +408,14 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-gnosocial.release.xcconfig */;
+			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-dsocial.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = gnosocial/gnosocial.entitlements;
+				CODE_SIGN_ENTITLEMENTS = dsocial/dsocial.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = WMBQ84HN4T;
-				INFOPLIST_FILE = gnosocial/Info.plist;
+				INFOPLIST_FILE = dsocial/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -429,8 +429,8 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = tech.berty.dsocial.ios;
-				PRODUCT_NAME = gnosocial;
-				SWIFT_OBJC_BRIDGING_HEADER = "gnosocial/gnosocial-Bridging-Header.h";
+				PRODUCT_NAME = dsocial;
+				SWIFT_OBJC_BRIDGING_HEADER = "dsocial/dsocial-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -584,7 +584,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "gnosocial" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "dsocial" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -593,7 +593,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "gnosocial" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dsocial" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
