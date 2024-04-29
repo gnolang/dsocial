@@ -23,7 +23,6 @@ func (s *indexerService) createGraphQLClient() error {
 	if err != nil {
 		return err
 	}
-
 	wsClient := graphql.NewClientUsingWebSocket(
 		clientAddr,
 		&MyDialer{Dialer: websocket.DefaultDialer},
@@ -71,7 +70,16 @@ func websocketURL(addr string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("ws://%s%s", url.Host, url.Path), nil
+
+	var wsScheme string
+	switch url.Scheme {
+	case "https", "wss":
+		wsScheme = "wss"
+	default:
+		wsScheme = "ws"
+	}
+
+	return fmt.Sprintf("%s://%s%s", wsScheme, url.Host, url.Path), nil
 }
 
 type MyDialer struct {

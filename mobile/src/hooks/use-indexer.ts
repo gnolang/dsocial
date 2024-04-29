@@ -14,8 +14,12 @@ let clientIndexerInstance: PromiseClient<typeof IndexerService> | undefined = un
 
 export const useIndexer = (): IndexerResponse => {
   const getClient = async () => {
+    const serviceRemote = process.env.EXPO_PUBLIC_SERVICE_REMOTE;
+    if (!serviceRemote) {
+      throw new Error("service remote address is undefined");
+    }
     if (!clientIndexerInstance) {
-      clientIndexerInstance = Grpc.createIndexerClient("http://localhost:26660");
+      clientIndexerInstance = Grpc.createIndexerClient(serviceRemote);
       //clientIndexerInstance = Grpc.createIndexerClient('http://testnet.gno.berty.io:26660');
     }
 
