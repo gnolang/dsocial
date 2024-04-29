@@ -21,11 +21,6 @@ export function AccountBalance({ activeAccount }: Props) {
         return;
       }
 
-      const acc = await account.getJsonUserByName(activeAccount.name);
-
-      const acc22 = await gno.addressFromBech32(acc.address);
-      const acc2 = await gno.addressToBech32(acc22);
-
       gno.addressToBech32(activeAccount.address).then((address) => {
         setAddress(address);
       });

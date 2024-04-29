@@ -74,17 +74,14 @@ const useOnboarding = () => {
       body: raw,
     };
 
-    // use regex to replace the PORT from the url for :8545
-    let newUrl = remote.replace(/:\d+/, ":8545");
-
-    // regex to include `http://` if it's not included
-    const regex = /^http/;
-    if (!regex.test(newUrl)) {
-      newUrl = `http://${newUrl}`;
+    const faucetRemote = process.env.EXPO_PUBLIC_FAUCET_REMOTE;
+    if (!faucetRemote) {
+      throw new Error("faucet remote address is undefined");
     }
-    console.log("sending coins to %s on %s", address, newUrl);
 
-    return fetch(newUrl, requestOptions);
+    console.log("sending coins to %s on %s", address, faucetRemote);
+
+    return fetch(faucetRemote, requestOptions);
   };
 
   return { onboard };
