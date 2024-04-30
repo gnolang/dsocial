@@ -54,20 +54,20 @@ export default function Page() {
   };
 
   const fetchAccountData = async () => {
+		const account = await gno.getActiveAccount();
+		const chainId = await gno.getChainID();
+		const remote = await gno.getRemote();
+		setActiveAccount(account.key);
+		setChainID(chainId);
+		setRemote(remote);
+
     try {
-      const account = await gno.getActiveAccount();
-      const chainId = await gno.getChainID();
-      const remote = await gno.getRemote();
 			const address = await gno.addressToBech32(account?.key?.address!);
 			const followersCount = await search.GetJsonFollowersCount(address);
 
-      setActiveAccount(account.key);
-      setChainID(chainId);
-      setRemote(remote);
 			setFollowersCount(followersCount);
 
-      console.log("chainId: " + chainId);
-      console.log("remote: " + remote);
+      console.log("remote: %s chainId %s " + remote, chainId);
     } catch (error: unknown | Error) {
       console.log(error);
     }

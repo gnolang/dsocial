@@ -10,6 +10,8 @@ export interface Props {
 const Wrapper = styled.View`
   justify-content: center;
   align-items: center;
+	margin-top: 4px;
+	margin-bottom: 4px;
 `;
 
 const InnerContent = styled.View<{ severity: Props["severity"] }>`

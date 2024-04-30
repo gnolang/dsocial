@@ -1,3 +1,4 @@
+import { colors } from "@gno/styles/colors";
 import styled from "styled-components/native";
 
 export interface Props {
@@ -6,6 +7,7 @@ export interface Props {
 
 const TextInput = styled.TextInput.attrs<Props>({
   multiline: false,
+  placeholderTextColor: colors.grayscale[200],
 })`
   height: 48px;
   margin-top: 4px;

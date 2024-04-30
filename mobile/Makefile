@@ -66,3 +66,21 @@ clean:
 clean_install: clean node_modules
 	cd ios && pod install
 .PHONY: clean_install
+
+release: node_modules
+	yarn build
+	eas build --platform ios --profile production
+.PHONY: release
+
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Targets:"
+	@echo "  ios            - Build the iOS app"
+	@echo "  android        - Build the Android app"
+	@echo "  start          - Start the metro server"
+	@echo "  clean          - Clean the project"
+	@echo "  clean_install  - Clean the project and install dependencies"
+	@echo "  release        - Build the app for production"
+	@echo "  help           - Show this help message"
+.PHONY: help

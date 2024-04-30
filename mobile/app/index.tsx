@@ -95,8 +95,6 @@ export default function Root() {
 
             <Spacer />
             <Button.Link title="Sign up" href="sign-up" />
-            <Spacer />
-            <Button.Link title="Import Account" href="/sign-in" variant="tertiary" />
           </ScrollView>
         </Layout.BodyAlignedBotton>
       </Layout.Container>
