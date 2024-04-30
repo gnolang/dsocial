@@ -1,11 +1,23 @@
-query getTransactions($caller: String!) {
-    transactions(filter: {message: {vm_param: {exec: {func: "Follow", 
-      pkg_path: "gno.land/r/berty/social", caller: $caller}}}}) {
-    hash
+query getTransactions() {
+    transactions(filter: {
+      message: {vm_param: {exec: {pkg_path: "gno.land/r/berty/social"}}},
+      success: true}) {
+    messages {
+      value {
+        ... on MsgCall {
+          func
+          caller
+          args
+        }
+      }
+    }
+    response {
+      data
+    }
   }
 }
 
- subscription subscribeBlocks() {
+subscription subscribeBlocks() {
   blocks(filter: {}) {
     height
   }
