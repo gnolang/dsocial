@@ -5,7 +5,7 @@ import { IndexerService } from "@gno/api/indexer/indexerservice_connect";
 import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@gno/api/indexer/indexerservice_pb";
 
 export interface IndexerResponse {
-  getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<string>;
+  getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<[number, string]>;
   hello: (name: string) => Promise<HelloResponse>;
   helloStream: (name: string) => Promise<AsyncIterable<HelloStreamResponse>>;
 }
@@ -43,7 +43,10 @@ export const useIndexer = (): IndexerResponse => {
     return result;
   };
 
-  const getHomePosts = async (userPostAddr: string, startIndex: bigint, endIndex: bigint): Promise<string> => {
+  // Call getHomePosts and return [nHomePosts, addrAndIDs] where nHomePosts is the
+  // total number of home posts and addrAndIDs is a Go string of the slice of
+  // UserAndPostID which to use in qEval `GetJsonTopPostsByID(${addrAndIDs})`.
+  const getHomePosts = async (userPostAddr: string, startIndex: bigint, endIndex: bigint): Promise<[number, string]> => {
     const client = await getClient();
 
     const homePostsResult = await client.getHomePosts({
@@ -53,8 +56,7 @@ export const useIndexer = (): IndexerResponse => {
     });
     const homePosts = formatHomePost(homePostsResult.homePosts);
 
-    console.log(`HomePosts: ${homePosts}`);
-    return homePosts;
+    return [Number(homePostsResult.nPosts), homePosts];
   };
 
   const hello = async (name: string) => {
