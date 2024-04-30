@@ -24,25 +24,12 @@ export const useFeed = () => {
 
     const homePostsResult = await indexer.getHomePosts(account.address, BigInt(startIndex), BigInt(endIndex));
     const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${homePostsResult})`);
-    console.log("result", result);
-    // const result = await gno.qEval(
-    //   "gno.land/r/berty/social",
-    //   `GetJsonHomePosts("${account.address}", ${startIndex}, ${endIndex})`
-    // );
 
-    const json = await enrichData(result);
-    // const json = { data: [], n_posts: 0 };
-    return json;
+    return await enrichData(result);
   }
-
-  //   function parseJsonTopPosts(post: string): Post {
-  //
-  // }
 
   async function enrichData(result: string | undefined) {
     const jsonPosts = parser.toJson(result);
-
-    // const topPost = parseJsonTopPost(jsonPosts)
 
     const isThread = "n_threads" in jsonPosts;
     const n_posts = isThread ? jsonPosts.n_threads : jsonPosts.n_posts;
@@ -50,7 +37,6 @@ export const useFeed = () => {
     const posts: Post[] = [];
 
     for (const post of jsonPosts.posts) {
-      console.log("remi: post: ", post);
       const creator = await cache.getUser(post.post.creator);
 
       posts.push({

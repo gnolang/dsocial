@@ -98,21 +98,19 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 // If the Post ID is not found, set the result for that Post ID to {}.
 // The response is a JSON string.
 func GetJsonTopPostsByID(addrAndIDs []UserAndPostID) string {
-	json := "[ "
+	json := ""
 	for i, addrAndID := range addrAndIDs {
-		if len(json) > 2 {
+		if json != "" {
 			json += ",\n  "
 		}
 
 		userPosts := getUserPosts(addrAndID.UserPostAddr)
 		if userPosts == nil {
-			json += "{}"
 			continue
 		}
 
 		post := userPosts.GetThread(PostID(addrAndID.PostID))
 		if post == nil {
-			json += "{}"
 			continue
 		}
 
@@ -122,7 +120,6 @@ func GetJsonTopPostsByID(addrAndIDs []UserAndPostID) string {
 		}
 		json += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", int(i), string(postJson))
 	}
-	json += "]"
 
 	return ufmt.Sprintf("{\"n_posts\": %d, \"posts\": [\n  %s]}", len(addrAndIDs), json)
 }
