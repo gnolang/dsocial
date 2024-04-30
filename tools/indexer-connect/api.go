@@ -11,9 +11,11 @@ import (
 )
 
 func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[api_gen.GetHomePostsRequest]) (*connect.Response[api_gen.GetHomePostsResponse], error) {
+	nPosts := 0
 	data := []*api_gen.UserAndPostID{}
 	userPosts, ok := gUserPostsByAddress[req.Msg.UserPostAddr]
 	if ok {
+		nPosts = len(userPosts.homePosts)
 		for i := int(req.Msg.StartIndex); i < int(req.Msg.EndIndex) && i < len(userPosts.homePosts); i++ {
 			data = append(data, &api_gen.UserAndPostID{
 				UserPostAddr: userPosts.homePosts[i].UserPostAddr,
@@ -23,7 +25,7 @@ func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[
 	}
 
 	return connect.NewResponse(&api_gen.GetHomePostsResponse{
-		NPosts:    uint64(len(userPosts.homePosts)),
+		NPosts:    uint64(nPosts),
 		HomePosts: data,
 	}), nil
 }
