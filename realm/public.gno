@@ -98,19 +98,21 @@ func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) Po
 // If the Post ID is not found, set the result for that Post ID to {}.
 // The response is a JSON string.
 func GetJsonTopPostsByID(addrAndIDs []UserAndPostID) string {
-	json := ""
-	for i, addrAndID := range addrAndIDs {
-		if json != "" {
+	json := "[ "
+	for _, addrAndID := range addrAndIDs {
+		if len(json) > 2 {
 			json += ",\n  "
 		}
 
 		userPosts := getUserPosts(addrAndID.UserPostAddr)
 		if userPosts == nil {
+			json += "{}"
 			continue
 		}
 
 		post := userPosts.GetThread(PostID(addrAndID.PostID))
 		if post == nil {
+			json += "{}"
 			continue
 		}
 
@@ -118,10 +120,11 @@ func GetJsonTopPostsByID(addrAndIDs []UserAndPostID) string {
 		if err != nil {
 			panic("can't get post JSON")
 		}
-		json += ufmt.Sprintf("{\"index\": %d, \"post\": %s}", int(i), string(postJson))
+		json += string(postJson)
 	}
+	json += "]"
 
-	return ufmt.Sprintf("{\"n_posts\": %d, \"posts\": [\n  %s]}", len(addrAndIDs), json)
+	return json
 }
 
 // Get posts in a thread for a user. A thread is the sequence of posts without replies.
