@@ -6,17 +6,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/Khan/genqlient/graphql"
 )
-
-// __getTransactionsInput is used internally by genqlient
-type __getTransactionsInput struct {
-	Caller string `json:"caller"`
-}
-
-// GetCaller returns __getTransactionsInput.Caller, and is useful for accessing the field via an interface.
-func (v *__getTransactionsInput) GetCaller() string { return v.Caller }
 
 // getTransactionsResponse is returned by getTransactions on success.
 type getTransactionsResponse struct {
@@ -34,12 +27,317 @@ func (v *getTransactionsResponse) GetTransactions() []getTransactionsTransaction
 //
 // Defines a transaction within a block, detailing its execution specifics and content.
 type getTransactionsTransactionsTransaction struct {
-	// Hash from Transaction content in base64 encoding.
-	Hash string `json:"hash"`
+	// The payload of a message shows the contents of the messages in a transaction.
+	// A message consists of `router`, `type`, and `value` (whose form depends on the `router` and `type`).
+	Messages []getTransactionsTransactionsTransactionMessagesTransactionMessage `json:"messages"`
+	// `response` is the processing result of the transaction.
+	// It has `log`, `info`, `error`, and `data`.
+	Response getTransactionsTransactionsTransactionResponse `json:"response"`
 }
 
-// GetHash returns getTransactionsTransactionsTransaction.Hash, and is useful for accessing the field via an interface.
-func (v *getTransactionsTransactionsTransaction) GetHash() string { return v.Hash }
+// GetMessages returns getTransactionsTransactionsTransaction.Messages, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransaction) GetMessages() []getTransactionsTransactionsTransactionMessagesTransactionMessage {
+	return v.Messages
+}
+
+// GetResponse returns getTransactionsTransactionsTransaction.Response, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransaction) GetResponse() getTransactionsTransactionsTransactionResponse {
+	return v.Response
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessage includes the requested fields of the GraphQL type TransactionMessage.
+type getTransactionsTransactionsTransactionMessagesTransactionMessage struct {
+	// MessageValue is the content of the transaction.
+	// `value` can be of type `BankMsgSend`, `MsgCall`, `MsgAddPackage`, `MsgRun`, `UnexpectedMessage`.
+	Value getTransactionsTransactionsTransactionMessagesTransactionMessageValue `json:"-"`
+}
+
+// GetValue returns getTransactionsTransactionsTransactionMessagesTransactionMessage.Value, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessage) GetValue() getTransactionsTransactionsTransactionMessagesTransactionMessageValue {
+	return v.Value
+}
+
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessage) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*getTransactionsTransactionsTransactionMessagesTransactionMessage
+		Value json.RawMessage `json:"value"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.getTransactionsTransactionsTransactionMessagesTransactionMessage = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Value
+		src := firstPass.Value
+		if len(src) != 0 && string(src) != "null" {
+			err = __unmarshalgetTransactionsTransactionsTransactionMessagesTransactionMessageValue(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal getTransactionsTransactionsTransactionMessagesTransactionMessage.Value: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalgetTransactionsTransactionsTransactionMessagesTransactionMessage struct {
+	Value json.RawMessage `json:"value"`
+}
+
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessage) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessage) __premarshalJSON() (*__premarshalgetTransactionsTransactionsTransactionMessagesTransactionMessage, error) {
+	var retval __premarshalgetTransactionsTransactionsTransactionMessagesTransactionMessage
+
+	{
+
+		dst := &retval.Value
+		src := v.Value
+		var err error
+		*dst, err = __marshalgetTransactionsTransactionsTransactionMessagesTransactionMessageValue(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal getTransactionsTransactionsTransactionMessagesTransactionMessage.Value: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValue includes the requested fields of the GraphQL interface MessageValue.
+//
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValue is implemented by the following types:
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage
+type getTransactionsTransactionsTransactionMessagesTransactionMessageValue interface {
+	implementsGraphQLInterfacegetTransactionsTransactionsTransactionMessagesTransactionMessageValue()
+	// GetTypename returns the receiver's concrete GraphQL type-name (see interface doc for possible values).
+	GetTypename() string
+}
+
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend) implementsGraphQLInterfacegetTransactionsTransactionsTransactionMessagesTransactionMessageValue() {
+}
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage) implementsGraphQLInterfacegetTransactionsTransactionsTransactionMessagesTransactionMessageValue() {
+}
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall) implementsGraphQLInterfacegetTransactionsTransactionsTransactionMessagesTransactionMessageValue() {
+}
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun) implementsGraphQLInterfacegetTransactionsTransactionsTransactionMessagesTransactionMessageValue() {
+}
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage) implementsGraphQLInterfacegetTransactionsTransactionsTransactionMessagesTransactionMessageValue() {
+}
+
+func __unmarshalgetTransactionsTransactionsTransactionMessagesTransactionMessageValue(b []byte, v *getTransactionsTransactionsTransactionMessagesTransactionMessageValue) error {
+	if string(b) == "null" {
+		return nil
+	}
+
+	var tn struct {
+		TypeName string `json:"__typename"`
+	}
+	err := json.Unmarshal(b, &tn)
+	if err != nil {
+		return err
+	}
+
+	switch tn.TypeName {
+	case "BankMsgSend":
+		*v = new(getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend)
+		return json.Unmarshal(b, *v)
+	case "MsgAddPackage":
+		*v = new(getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage)
+		return json.Unmarshal(b, *v)
+	case "MsgCall":
+		*v = new(getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall)
+		return json.Unmarshal(b, *v)
+	case "MsgRun":
+		*v = new(getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun)
+		return json.Unmarshal(b, *v)
+	case "UnexpectedMessage":
+		*v = new(getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage)
+		return json.Unmarshal(b, *v)
+	case "":
+		return fmt.Errorf(
+			"response was missing MessageValue.__typename")
+	default:
+		return fmt.Errorf(
+			`unexpected concrete type for getTransactionsTransactionsTransactionMessagesTransactionMessageValue: "%v"`, tn.TypeName)
+	}
+}
+
+func __marshalgetTransactionsTransactionsTransactionMessagesTransactionMessageValue(v *getTransactionsTransactionsTransactionMessagesTransactionMessageValue) ([]byte, error) {
+
+	var typename string
+	switch v := (*v).(type) {
+	case *getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend:
+		typename = "BankMsgSend"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend
+		}{typename, v}
+		return json.Marshal(result)
+	case *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage:
+		typename = "MsgAddPackage"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage
+		}{typename, v}
+		return json.Marshal(result)
+	case *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall:
+		typename = "MsgCall"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall
+		}{typename, v}
+		return json.Marshal(result)
+	case *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun:
+		typename = "MsgRun"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun
+		}{typename, v}
+		return json.Marshal(result)
+	case *getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage:
+		typename = "UnexpectedMessage"
+
+		result := struct {
+			TypeName string `json:"__typename"`
+			*getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage
+		}{typename, v}
+		return json.Marshal(result)
+	case nil:
+		return []byte("null"), nil
+	default:
+		return nil, fmt.Errorf(
+			`unexpected concrete type for getTransactionsTransactionsTransactionMessagesTransactionMessageValue: "%T"`, v)
+	}
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend includes the requested fields of the GraphQL type BankMsgSend.
+// The GraphQL type's documentation follows.
+//
+// `BankMsgSend` is a message with a message router of `bank` and a message type of `send`.
+// `BankMsgSend` is the fund transfer tx message.
+type getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend.Typename, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueBankMsgSend) GetTypename() string {
+	return v.Typename
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage includes the requested fields of the GraphQL type MsgAddPackage.
+// The GraphQL type's documentation follows.
+//
+// `MsgAddPackage` is a message with a message router of `vm` and a message type of `add_package`.
+// `MsgAddPackage` is the package deployment tx message.
+type getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage.Typename, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgAddPackage) GetTypename() string {
+	return v.Typename
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall includes the requested fields of the GraphQL type MsgCall.
+// The GraphQL type's documentation follows.
+//
+// `MsgCall` is a message with a message router of `vm` and a message type of `exec`.
+// `MsgCall` is the method invocation tx message.
+type getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall struct {
+	Typename string `json:"__typename"`
+	// the function name being invoked.
+	Func string `json:"func"`
+	// the bech32 address of the function caller.
+	// ex) `g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5`
+	Caller string `json:"caller"`
+	// `args` are the arguments passed to the executed function.
+	Args []string `json:"args"`
+}
+
+// GetTypename returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall.Typename, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall) GetTypename() string {
+	return v.Typename
+}
+
+// GetFunc returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall.Func, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall) GetFunc() string {
+	return v.Func
+}
+
+// GetCaller returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall.Caller, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall) GetCaller() string {
+	return v.Caller
+}
+
+// GetArgs returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall.Args, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall) GetArgs() []string {
+	return v.Args
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun includes the requested fields of the GraphQL type MsgRun.
+// The GraphQL type's documentation follows.
+//
+// `MsgRun` is a message with a message router of `vm` and a message type of `run`.
+// `MsgRun is the execute arbitrary Gno code tx message`.
+type getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun.Typename, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgRun) GetTypename() string {
+	return v.Typename
+}
+
+// getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage includes the requested fields of the GraphQL type UnexpectedMessage.
+// The GraphQL type's documentation follows.
+//
+// `UnexpectedMessage` is an Undefined Message, which is a message that decoding failed.
+type getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage struct {
+	Typename string `json:"__typename"`
+}
+
+// GetTypename returns getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage.Typename, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionMessagesTransactionMessageValueUnexpectedMessage) GetTypename() string {
+	return v.Typename
+}
+
+// getTransactionsTransactionsTransactionResponse includes the requested fields of the GraphQL type TransactionResponse.
+// The GraphQL type's documentation follows.
+//
+// `TransactionResponse` is the processing result of the transaction.
+// It has `log`, `info`, `error`, and `data`.
+type getTransactionsTransactionsTransactionResponse struct {
+	// The response data associated with the Transaction execution, if any.
+	Data string `json:"data"`
+}
+
+// GetData returns getTransactionsTransactionsTransactionResponse.Data, and is useful for accessing the field via an interface.
+func (v *getTransactionsTransactionsTransactionResponse) GetData() string { return v.Data }
 
 // subscribeBlocksBlocksBlock includes the requested fields of the GraphQL type Block.
 // The GraphQL type's documentation follows.
@@ -72,9 +370,21 @@ func (v *subscribeBlocksResponse) GetBlocks() subscribeBlocksBlocksBlock { retur
 
 // The query executed by getTransactions.
 const getTransactions_Operation = `
-query getTransactions ($caller: String!) {
-	transactions(filter: {message:{vm_param:{exec:{func:"Follow",pkg_path:"gno.land/r/berty/social",caller:$caller}}}}) {
-		hash
+query getTransactions {
+	transactions(filter: {message:{vm_param:{exec:{pkg_path:"gno.land/r/berty/social"}}},success:true}) {
+		messages {
+			value {
+				__typename
+				... on MsgCall {
+					func
+					caller
+					args
+				}
+			}
+		}
+		response {
+			data
+		}
 	}
 }
 `
@@ -82,14 +392,10 @@ query getTransactions ($caller: String!) {
 func getTransactions(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	caller string,
 ) (data_ *getTransactionsResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getTransactions",
 		Query:  getTransactions_Operation,
-		Variables: &__getTransactionsInput{
-			Caller: caller,
-		},
 	}
 
 	data_ = &getTransactionsResponse{}
