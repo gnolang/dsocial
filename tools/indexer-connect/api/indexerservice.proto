@@ -26,7 +26,8 @@ message UserAndPostID {
 }
 
 message GetHomePostsResponse {
-  repeated UserAndPostID homePosts = 1 [json_name = "HomePosts"];
+  uint64 nPosts = 1 [json_name = "NPosts"];
+  repeated UserAndPostID homePosts = 2 [json_name = "HomePosts"];
 }
 
 message HelloRequest {

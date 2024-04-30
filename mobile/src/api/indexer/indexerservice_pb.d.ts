@@ -144,7 +144,12 @@ export declare class UserAndPostID extends Message<UserAndPostID> {
  */
 export declare class GetHomePostsResponse extends Message<GetHomePostsResponse> {
   /**
-   * @generated from field: repeated land.gno.gnosocial.indexerservice.v1.UserAndPostID homePosts = 1 [json_name = "HomePosts"];
+   * @generated from field: uint64 nPosts = 1 [json_name = "NPosts"];
+   */
+  nPosts: bigint;
+
+  /**
+   * @generated from field: repeated land.gno.gnosocial.indexerservice.v1.UserAndPostID homePosts = 2 [json_name = "HomePosts"];
    */
   homePosts: UserAndPostID[];
 
