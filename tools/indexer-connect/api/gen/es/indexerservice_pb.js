@@ -60,7 +60,8 @@ export const UserAndPostID = /*@__PURE__*/ proto3.makeMessageType(
 export const GetHomePostsResponse = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.GetHomePostsResponse",
   () => [
-    { no: 1, name: "homePosts", jsonName: "HomePosts", kind: "message", T: UserAndPostID, repeated: true },
+    { no: 1, name: "nPosts", jsonName: "NPosts", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 2, name: "homePosts", jsonName: "HomePosts", kind: "message", T: UserAndPostID, repeated: true },
   ],
 );
 

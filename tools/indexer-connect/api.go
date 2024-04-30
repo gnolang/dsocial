@@ -11,14 +11,19 @@ import (
 )
 
 func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[api_gen.GetHomePostsRequest]) (*connect.Response[api_gen.GetHomePostsResponse], error) {
-	data := []*api_gen.UserAndPostID{
-		{
-			UserPostAddr: "g1ths47238093j8875lcqpqdvv6x5qq5hfly48ed",
-			PostID:       1,
-		},
+	data := []*api_gen.UserAndPostID{}
+	userPosts, ok := gUserPostsByAddress[req.Msg.UserPostAddr]
+	if ok {
+		for i := int(req.Msg.StartIndex); i < int(req.Msg.EndIndex) && i < len(userPosts.homePosts); i++ {
+			data = append(data, &api_gen.UserAndPostID{
+				UserPostAddr: userPosts.homePosts[i].UserPostAddr,
+				PostID:       uint64(userPosts.homePosts[i].PostID),
+			})
+		}
 	}
 
 	return connect.NewResponse(&api_gen.GetHomePostsResponse{
+		NPosts:    uint64(len(userPosts.homePosts)),
 		HomePosts: data,
 	}), nil
 }
