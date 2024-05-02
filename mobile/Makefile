@@ -6,6 +6,7 @@ node_modules: package.json package-lock.json
 .PHONY: node_modules
 
 ios: node_modules
+	cd ios; pod install
 	npm run ios
 .PHONY: ios
 

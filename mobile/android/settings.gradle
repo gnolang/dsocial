@@ -1,4 +1,4 @@
-rootProject.name = 'dsocial'
+rootProject.name = 'dSocial'
 
 dependencyResolutionManagement {
   versionCatalogs {
