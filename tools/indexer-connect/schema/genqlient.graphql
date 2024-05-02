@@ -1,7 +1,4 @@
-query getTransactions() {
-    transactions(filter: {
-      message: {vm_param: {exec: {pkg_path: "gno.land/r/berty/social"}}},
-      success: true}) {
+fragment CallInfo on Transaction {
     messages {
       value {
         ... on MsgCall {
@@ -14,11 +11,20 @@ query getTransactions() {
     response {
       data
     }
+}
+
+query getTransactions() {
+    transactions(filter: {
+      message: {vm_param: {exec: {pkg_path: "gno.land/r/berty/social"}}},
+      success: true}) {
+    ... CallInfo
   }
 }
 
-subscription subscribeBlocks() {
-  blocks(filter: {}) {
-    height
+subscription subscribeTransactions() {
+    transactions(filter: {
+      message: {vm_param: {exec: {pkg_path: "gno.land/r/berty/social"}}},
+      success: true}) {
+    ... CallInfo
   }
 }

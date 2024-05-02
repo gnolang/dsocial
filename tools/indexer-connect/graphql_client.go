@@ -56,6 +56,49 @@ func getPostID(response string) (int, error) {
 	return postID, nil
 }
 
+func processCallInfo(messages []CallInfoMessagesTransactionMessage, response CallInfoResponseTransactionResponse) {
+	for _, m := range messages {
+		msgCall, ok := m.Value.(*CallInfoMessagesTransactionMessageValueMsgCall)
+		if !ok {
+			continue
+		}
+
+		if msgCall.Func == "Follow" {
+			followedUserPosts := getOrCreateUserPosts(msgCall.Args[0])
+			startedPostsCtr, err := getPostID(response.Data)
+			if err != nil {
+				fmt.Printf("Error getting PostID: %s\n", err.Error())
+				continue
+			}
+			if startedPostsCtr == 0 {
+				// Not a new following.
+				continue
+			}
+
+			followedUserPosts.followers[msgCall.Caller] = startedPostsCtr
+		} else if msgCall.Func == "PostMessage" || msgCall.Func == "RepostThread" {
+			userPosts := getOrCreateUserPosts(msgCall.Caller)
+			postID, err := getPostID(response.Data)
+			if err != nil {
+				fmt.Printf("Error getting PostID: %s\n", err.Error())
+				continue
+			}
+			userAndPostID := &UserAndPostID{
+				UserPostAddr: msgCall.Caller,
+				PostID:       postID,
+			}
+			userPosts.homePosts = append(userPosts.homePosts, userAndPostID)
+
+			for followerAddr, startedPostsCtr := range userPosts.followers {
+				if postID > startedPostsCtr {
+					followerUserPosts := getOrCreateUserPosts(followerAddr)
+					followerUserPosts.homePosts = append(followerUserPosts.homePosts, userAndPostID)
+				}
+			}
+		}
+	}
+}
+
 func (s *indexerService) createGraphQLClient() error {
 	s.graphQLClient = graphql.NewClient(s.remoteAddr, http.DefaultClient)
 	resp, err := getTransactions(s.ctx, s.graphQLClient)
@@ -63,48 +106,7 @@ func (s *indexerService) createGraphQLClient() error {
 		return err
 	}
 	for _, t := range resp.Transactions {
-		for _, m := range t.Messages {
-			msgCall, ok := m.Value.(*getTransactionsTransactionsTransactionMessagesTransactionMessageValueMsgCall)
-			if !ok {
-				continue
-			}
-
-			if msgCall.Func == "Follow" {
-				followedUserPosts := getOrCreateUserPosts(msgCall.Args[0])
-				startedPostsCtr, err := getPostID(t.Response.Data)
-				if err != nil {
-					fmt.Printf("Error getting PostID: %s\n", err.Error())
-					continue
-				}
-				if startedPostsCtr == 0 {
-					// Not a new following.
-					continue
-				}
-
-				followedUserPosts.followers[msgCall.Caller] = startedPostsCtr
-			}
-
-			if msgCall.Func == "PostMessage" {
-				userPosts := getOrCreateUserPosts(msgCall.Caller)
-				postID, err := getPostID(t.Response.Data)
-				if err != nil {
-					fmt.Printf("Error getting PostID: %s\n", err.Error())
-					continue
-				}
-				userAndPostID := &UserAndPostID{
-					UserPostAddr: msgCall.Caller,
-					PostID:       postID,
-				}
-				userPosts.homePosts = append(userPosts.homePosts, userAndPostID)
-
-				for followerAddr, startedPostsCtr := range userPosts.followers {
-					if postID > startedPostsCtr {
-						followerUserPosts := getOrCreateUserPosts(followerAddr)
-						followerUserPosts.homePosts = append(followerUserPosts.homePosts, userAndPostID)
-					}
-				}
-			}
-		}
+		processCallInfo(t.Messages, t.Response)
 	}
 
 	clientAddr, err := websocketURL(s.remoteAddr)
@@ -122,7 +124,7 @@ func (s *indexerService) createGraphQLClient() error {
 		return err
 	}
 
-	dataChan, subscriptionID, err := subscribeBlocks(s.ctx, wsClient)
+	dataChan, subscriptionID, err := subscribeTransactions(s.ctx, wsClient)
 	if err != nil {
 		return err
 	}
@@ -136,7 +138,7 @@ func (s *indexerService) createGraphQLClient() error {
 				break
 			}
 			if msg.Data != nil {
-				fmt.Println(msg.Data.Blocks.Height)
+				processCallInfo(msg.Data.Transactions.Messages, msg.Data.Transactions.Response)
 			}
 			if msg.Errors != nil {
 				fmt.Println("error:", msg.Errors)
