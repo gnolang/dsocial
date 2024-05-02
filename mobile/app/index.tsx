@@ -8,9 +8,9 @@ import ReenterPassword from "@gno/components/modal/reenter-password";
 import { Spacer } from "@gno/components/row";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { loggedIn, useAppDispatch } from "@gno/redux";
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 
 export default function Root() {
   const route = useRouter();

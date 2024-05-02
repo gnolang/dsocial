@@ -1,4 +1,4 @@
-import { useGno } from "./use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 
 const useOnboarding = () => {
   const gno = useGno();

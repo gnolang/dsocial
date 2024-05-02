@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Text from "@gno/components/text";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { useSearch } from "@gno/hooks/use-search";
 
 interface Props {

@@ -1,11 +1,11 @@
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Alert from "@gno/components/alert";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import Spacer from "@gno/components/spacer";
 import Text from "@gno/components/text";
 import TextInput from "@gno/components/textinput";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";

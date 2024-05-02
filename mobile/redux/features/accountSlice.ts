@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "@gno/types";
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
-import { useGno } from "@gno/hooks/use-gno";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 
 export interface CounterState {
   account?: User;

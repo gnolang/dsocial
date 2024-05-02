@@ -8,11 +8,11 @@ import {
   Modal,
   TextInput as RNTextInput,
 } from "react-native";
-import { GRPCError } from "@gno/grpc/error";
-import { ErrCode } from "@gno/api/rpc_pb";
+import { GRPCError } from "@gnolang/gnonative/src/grpc/error";
+import { ErrCode } from "@buf/gnolang_gnonative.bufbuild_es/rpc_pb";
 import Alert from "@gno/components/alert";
 import { Spacer } from "@gno/components/row";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { ModalView } from ".";
 import TextInput from "../textinput";
 import Text from "../text";

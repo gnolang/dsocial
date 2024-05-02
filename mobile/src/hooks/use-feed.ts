@@ -1,5 +1,5 @@
 import { Post, User } from "@gno/types";
-import { useGno } from "./use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
 

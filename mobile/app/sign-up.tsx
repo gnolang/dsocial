@@ -5,7 +5,7 @@ import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { useAppDispatch, loggedIn } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";

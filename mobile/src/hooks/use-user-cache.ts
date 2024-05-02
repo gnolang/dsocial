@@ -1,5 +1,5 @@
 import { User } from "@gno/types";
-import { useGno } from "./use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 
 const usersCache = new Map<string, User>();
 

@@ -7,7 +7,7 @@ import TextInput from "@gno/components/textinput";
 import Button from "@gno/components/button";
 import Spacer from "@gno/components/spacer";
 import Alert from "@gno/components/alert";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { Tweet } from "@gno/components/feed/tweet";
 import { FlatList } from "react-native";
 import { Post } from "@gno/types";
