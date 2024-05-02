@@ -1,16 +1,16 @@
 check-program = $(foreach exec,$(1),$(if $(shell PATH="$(PATH)" which $(exec)),,$(error "Missing deps: no '$(exec)' in PATH")))
 
-node_modules: package.json yarn.lock
-	$(call check-program, yarn)
-	(yarn && touch $@) || true
+node_modules: package.json package-lock.json
+	$(call check-program, npm)
+	(npm install && touch $@) || true
 .PHONY: node_modules
 
 ios: node_modules
-	yarn ios
+	npm run ios
 .PHONY: ios
 
 android: node_modules
-	yarn android
+	npm run android
 .PHONY: android
 
 android.reverse:
@@ -20,7 +20,7 @@ android.reverse:
 .PHONY: android.reverse
 
 start: node_modules
-	yarn start
+	npm run start
 .PHONY: start
 
 # - asdf
@@ -39,10 +39,10 @@ asdf.install_tools: asdf.add_plugins
 	@asdf install
 
 clean:
-	$(call check-program, yarn)
+	$(call check-program, npm)
 
 	# React-Native cmd
-	yarn cache clean -f
+	npm cache clean --force
 
 # React-Native files
 	rm -rf .tmp
@@ -68,7 +68,7 @@ clean_install: clean node_modules
 .PHONY: clean_install
 
 release: node_modules
-	yarn build
+	npm run build
 	eas build --platform ios --profile production
 .PHONY: release
 
