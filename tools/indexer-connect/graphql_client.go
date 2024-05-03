@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/gorilla/websocket"
@@ -146,8 +145,8 @@ func (s *indexerService) createGraphQLClient() error {
 			}
 		case err = <-errChan:
 			return err
-		case <-time.After(time.Minute):
-			err = wsClient.Unsubscribe(subscriptionID)
+		case <-s.ctx.Done():
+			wsClient.Unsubscribe(subscriptionID)
 			loop = false
 		}
 	}
