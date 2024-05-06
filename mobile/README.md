@@ -45,15 +45,15 @@ Start a new terminal to get the changes to the environment .
 
 (optional) To install Android Studio, download and install the latest
 android-studio-{version}-mac.dmg from https://developer.android.com/studio .
-(Tested with Iguana 2023.2.1 .)
+(Tested with Jellyfish 2023.3.1 .)
 
-### Install requirements for Ubuntu 20.04 and 22.04
+### Install requirements for Ubuntu 20.04, 22.04 and 24.04
 
 To install asdf, follow instructions at https://asdf-vm.com . In short, in
 a terminal enter:
 
 ```sh
-sudo apt install curl git
+sudo apt install curl git make
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf
 echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
 echo 'export ANDROID_HOME="$HOME/Android/Sdk"' >> ~/.bashrc
@@ -64,7 +64,7 @@ Start a new terminal to get the changes to the environment .
 
 To install Android Studio, download the latest
 android-studio-{version}-linux.tar.gz from
-https://developer.android.com/studio . (Tested with Iguana 2023.2.1 .)
+https://developer.android.com/studio . (Tested with Jellyfish 2023.3.1 .)
 In a terminal, enter the following with the correct {version}:
 
 ```sh
