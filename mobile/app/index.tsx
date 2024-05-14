@@ -8,9 +8,9 @@ import ReenterPassword from "@gno/components/modal/reenter-password";
 import { Spacer } from "@gno/components/row";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
-import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
 import { loggedIn, useAppDispatch } from "@gno/redux";
 import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 
 export default function Root() {
   const route = useRouter();
@@ -19,7 +19,7 @@ export default function Root() {
   const [loading, setLoading] = useState<string | undefined>(undefined);
   const [reenterPassword, setReenterPassword] = useState<KeyInfo | undefined>(undefined);
 
-  const gno = useGno();
+  const gno = useGnoNativeContext();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
@@ -51,7 +51,8 @@ export default function Root() {
         return;
       }
 
-      dispatch(loggedIn(keyInfo));
+      const bech32 = await gno.addressToBech32(keyInfo.address);
+      await dispatch(loggedIn({ keyInfo, bech32 }));
       setTimeout(() => route.replace("/home"), 500);
     } catch (error: unknown | Error) {
       setLoading(error?.toString());
@@ -61,7 +62,8 @@ export default function Root() {
 
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
-      dispatch(loggedIn(reenterPassword));
+      const bech32 = await gno.addressToBech32(reenterPassword.address);
+      await dispatch(loggedIn({ keyInfo: reenterPassword, bech32 }));
       setTimeout(() => route.replace("/home"), 500);
     }
     setReenterPassword(undefined);

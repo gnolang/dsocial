@@ -7,7 +7,7 @@ import TextInput from "@gno/components/textinput";
 import Button from "@gno/components/button";
 import Spacer from "@gno/components/spacer";
 import Alert from "@gno/components/alert";
-import { useGno } from "@gnolang/gnonative/src/hooks/use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 import { Tweet } from "@gno/components/feed/tweet";
 import { FlatList } from "react-native";
 import { Post } from "@gno/types";
@@ -20,7 +20,7 @@ function Page() {
   const post = useAppSelector(selectPostToReply);
   const thread = useAppSelector(selectReplyThread);
   const router = useRouter();
-  const gno = useGno();
+  const gno = useGnoNativeContext();
 
   const onPressReply = async () => {
     if (!post) return;

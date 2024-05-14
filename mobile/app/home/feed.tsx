@@ -28,8 +28,8 @@ export default function Page() {
       setError(undefined);
       setIsLoading(true);
       try {
-        const total = await feed.fetchCount();
-        setTotalPosts(total);
+        // const total = await feed.fetchCount();
+        // setTotalPosts(total);
       } catch (error) {
         console.error(error);
       } finally {
