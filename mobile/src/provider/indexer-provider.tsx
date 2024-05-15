@@ -3,8 +3,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import * as Grpc from "@gno/grpc/client";
 import { PromiseClient } from "@connectrpc/connect";
 
-import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@gno/api/indexer/indexerservice_pb";
-import { IndexerService } from "@gno/api/indexer/indexerservice_connect";
+import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@buf/gnolang_dsocial.bufbuild_es/indexerservice_pb";
+import { IndexerService } from "@buf/gnolang_dsocial.connectrpc_es/indexerservice_connect";
 
 export interface IndexerContextProps {
   getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<[number, string]>;
