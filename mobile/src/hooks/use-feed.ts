@@ -2,13 +2,13 @@ import { Post, User } from "@gno/types";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
-import { useIndexer } from "@gno/hooks/use-indexer";
+import { useIndexerContext } from "@gno/provider/indexer-provider";
 
 export const useFeed = () => {
   const gno = useGnoNativeContext();
   const cache = useUserCache();
   const parser = useGnoJsonParser();
-  const indexer = useIndexer();
+  const indexer = useIndexerContext();
 
   async function fetchThread(address: string, postId: number): Promise<{ data: Post[]; n_posts: number }> {
     await checkActiveAccount();
