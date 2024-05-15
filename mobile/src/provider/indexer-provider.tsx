@@ -1,26 +1,40 @@
+import { createContext, useContext, useEffect, useState } from "react";
+
 import * as Grpc from "@gno/grpc/client";
 import { PromiseClient } from "@connectrpc/connect";
-import { IndexerService } from "@gno/api/indexer/indexerservice_connect";
 
 import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@gno/api/indexer/indexerservice_pb";
+import { IndexerService } from "@gno/api/indexer/indexerservice_connect";
 
-export interface IndexerResponse {
+export interface IndexerContextProps {
   getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<[number, string]>;
   hello: (name: string) => Promise<HelloResponse>;
   helloStream: (name: string) => Promise<AsyncIterable<HelloStreamResponse>>;
 }
 
-let clientIndexerInstance: PromiseClient<typeof IndexerService> | undefined = undefined;
+interface ConfigProps {
+  remote: string;
+}
 
-export const useIndexer = (): IndexerResponse => {
-  const getClient = async () => {
-    const serviceRemote = process.env.EXPO_PUBLIC_SERVICE_REMOTE;
-    if (!serviceRemote) {
-      throw new Error("service remote address is undefined");
-    }
-    if (!clientIndexerInstance) {
-      clientIndexerInstance = Grpc.createIndexerClient(serviceRemote);
-      //clientIndexerInstance = Grpc.createIndexerClient('http://testnet.gno.berty.io:26660');
+interface IndexerProviderProps {
+  config: ConfigProps;
+  children: React.ReactNode;
+}
+
+const IndexerContext = createContext<IndexerContextProps | null>(null);
+
+const IndexerProvider: React.FC<IndexerProviderProps> = ({ children, config }) => {
+  const [clientInstance, setClientInstance] = useState<PromiseClient<typeof IndexerService> | undefined>(undefined);
+
+  useEffect(() => {
+    (async () => {
+      setClientInstance(initClient(config));
+    })();
+  }, []);
+
+  const initClient = (config: ConfigProps): PromiseClient<typeof IndexerService> => {
+    if (clientInstance) {
+      return clientInstance;
     }
 
     // FIXME: Remove this test code.
@@ -30,7 +44,15 @@ export const useIndexer = (): IndexerResponse => {
     //     console.log('response: ', response);
     //   }
 
-    return clientIndexerInstance;
+    return Grpc.createIndexerClient(config.remote);
+  };
+
+  const getClient = () => {
+    if (!clientInstance) {
+      throw new Error("Indexer client instance not initialized.");
+    }
+
+    return clientInstance;
   };
 
   const formatHomePost = (homePosts: UserAndPostID[]): string => {
@@ -47,7 +69,7 @@ export const useIndexer = (): IndexerResponse => {
   // total number of home posts and addrAndIDs is a Go string of the slice of
   // UserAndPostID which to use in qEval `GetJsonTopPostsByID(${addrAndIDs})`.
   const getHomePosts = async (userPostAddr: string, startIndex: bigint, endIndex: bigint): Promise<[number, string]> => {
-    const client = await getClient();
+    const client = getClient();
 
     const homePostsResult = await client.getHomePosts({
       userPostAddr,
@@ -60,18 +82,35 @@ export const useIndexer = (): IndexerResponse => {
   };
 
   const hello = async (name: string) => {
-    const client = await getClient();
+    const client = getClient();
     return client.hello({ name });
   };
 
   const helloStream = async (name: string) => {
-    const client = await getClient();
+    const client = getClient();
     return client.helloStream({ name });
   };
 
-  return {
+  if (!clientInstance) {
+    return null;
+  }
+
+  const value = {
     getHomePosts,
     hello,
     helloStream,
   };
+
+  return <IndexerContext.Provider value={value}>{children}</IndexerContext.Provider>;
 };
+
+function useIndexerContext() {
+  const context = useContext(IndexerContext) as IndexerContextProps;
+
+  if (context === undefined) {
+    throw new Error("useIndexerContext must be used within a IndexerProvider");
+  }
+  return context;
+}
+
+export { IndexerProvider, useIndexerContext };
