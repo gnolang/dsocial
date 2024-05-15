@@ -81,17 +81,17 @@ export declare enum ErrCode {
  */
 export declare class GetHomePostsRequest extends Message<GetHomePostsRequest> {
   /**
-   * @generated from field: string userPostAddr = 1 [json_name = "UserPostAddr"];
+   * @generated from field: string userPostAddr = 1;
    */
   userPostAddr: string;
 
   /**
-   * @generated from field: uint64 startIndex = 2 [json_name = "StartIndex"];
+   * @generated from field: uint64 startIndex = 2;
    */
   startIndex: bigint;
 
   /**
-   * @generated from field: uint64 endIndex = 3 [json_name = "EndIndex"];
+   * @generated from field: uint64 endIndex = 3;
    */
   endIndex: bigint;
 
@@ -115,12 +115,12 @@ export declare class GetHomePostsRequest extends Message<GetHomePostsRequest> {
  */
 export declare class UserAndPostID extends Message<UserAndPostID> {
   /**
-   * @generated from field: string userPostAddr = 1 [json_name = "UserPostAddr"];
+   * @generated from field: string userPostAddr = 1;
    */
   userPostAddr: string;
 
   /**
-   * @generated from field: uint64 postID = 2 [json_name = "PostID"];
+   * @generated from field: uint64 postID = 2;
    */
   postID: bigint;
 
@@ -144,12 +144,12 @@ export declare class UserAndPostID extends Message<UserAndPostID> {
  */
 export declare class GetHomePostsResponse extends Message<GetHomePostsResponse> {
   /**
-   * @generated from field: uint64 nPosts = 1 [json_name = "NPosts"];
+   * @generated from field: uint64 nPosts = 1;
    */
   nPosts: bigint;
 
   /**
-   * @generated from field: repeated land.gno.gnosocial.indexerservice.v1.UserAndPostID homePosts = 2 [json_name = "HomePosts"];
+   * @generated from field: repeated land.gno.gnosocial.indexerservice.v1.UserAndPostID homePosts = 2;
    */
   homePosts: UserAndPostID[];
 
@@ -173,7 +173,7 @@ export declare class GetHomePostsResponse extends Message<GetHomePostsResponse> 
  */
 export declare class HelloRequest extends Message<HelloRequest> {
   /**
-   * @generated from field: string name = 1 [json_name = "Name"];
+   * @generated from field: string name = 1;
    */
   name: string;
 
@@ -197,7 +197,7 @@ export declare class HelloRequest extends Message<HelloRequest> {
  */
 export declare class HelloResponse extends Message<HelloResponse> {
   /**
-   * @generated from field: string greeting = 1 [json_name = "Greeting"];
+   * @generated from field: string greeting = 1;
    */
   greeting: string;
 
@@ -221,7 +221,7 @@ export declare class HelloResponse extends Message<HelloResponse> {
  */
 export declare class HelloStreamRequest extends Message<HelloStreamRequest> {
   /**
-   * @generated from field: string name = 1 [json_name = "Name"];
+   * @generated from field: string name = 1;
    */
   name: string;
 
@@ -245,7 +245,7 @@ export declare class HelloStreamRequest extends Message<HelloStreamRequest> {
  */
 export declare class HelloStreamResponse extends Message<HelloStreamResponse> {
   /**
-   * @generated from field: string greeting = 1 [json_name = "Greeting"];
+   * @generated from field: string greeting = 1;
    */
   greeting: string;
 

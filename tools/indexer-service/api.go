@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"go.uber.org/zap"
 
-	api_gen "github.com/gnolang/gnosocial/tools/indexer-connect/api/gen/go"
+	api_gen "github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go"
 )
 
 func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[api_gen.GetHomePostsRequest]) (*connect.Response[api_gen.GetHomePostsResponse], error) {

@@ -37,9 +37,9 @@ export const ErrCode = /*@__PURE__*/ proto3.makeEnum(
 export const GetHomePostsRequest = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.GetHomePostsRequest",
   () => [
-    { no: 1, name: "userPostAddr", jsonName: "UserPostAddr", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "startIndex", jsonName: "StartIndex", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
-    { no: 3, name: "endIndex", jsonName: "EndIndex", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "userPostAddr", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "startIndex", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 3, name: "endIndex", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
   ],
 );
 
@@ -49,8 +49,8 @@ export const GetHomePostsRequest = /*@__PURE__*/ proto3.makeMessageType(
 export const UserAndPostID = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.UserAndPostID",
   () => [
-    { no: 1, name: "userPostAddr", jsonName: "UserPostAddr", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 2, name: "postID", jsonName: "PostID", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 1, name: "userPostAddr", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "postID", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
   ],
 );
 
@@ -60,8 +60,8 @@ export const UserAndPostID = /*@__PURE__*/ proto3.makeMessageType(
 export const GetHomePostsResponse = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.GetHomePostsResponse",
   () => [
-    { no: 1, name: "nPosts", jsonName: "NPosts", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
-    { no: 2, name: "homePosts", jsonName: "HomePosts", kind: "message", T: UserAndPostID, repeated: true },
+    { no: 1, name: "nPosts", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+    { no: 2, name: "homePosts", kind: "message", T: UserAndPostID, repeated: true },
   ],
 );
 
@@ -71,7 +71,7 @@ export const GetHomePostsResponse = /*@__PURE__*/ proto3.makeMessageType(
 export const HelloRequest = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.HelloRequest",
   () => [
-    { no: 1, name: "name", jsonName: "Name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -81,7 +81,7 @@ export const HelloRequest = /*@__PURE__*/ proto3.makeMessageType(
 export const HelloResponse = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.HelloResponse",
   () => [
-    { no: 1, name: "greeting", jsonName: "Greeting", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "greeting", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -91,7 +91,7 @@ export const HelloResponse = /*@__PURE__*/ proto3.makeMessageType(
 export const HelloStreamRequest = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.HelloStreamRequest",
   () => [
-    { no: 1, name: "name", jsonName: "Name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -101,7 +101,7 @@ export const HelloStreamRequest = /*@__PURE__*/ proto3.makeMessageType(
 export const HelloStreamResponse = /*@__PURE__*/ proto3.makeMessageType(
   "land.gno.gnosocial.indexerservice.v1.HelloStreamResponse",
   () => [
-    { no: 1, name: "greeting", jsonName: "Greeting", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "greeting", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 

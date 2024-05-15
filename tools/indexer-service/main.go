@@ -18,29 +18,6 @@ var remote string
 var listen string
 
 func main() {
-	// Start the Gno Native Kit gRPC service where the remote is gnoland.
-	// options := []service.GnoNativeOption{
-	// 	service.WithTcpAddr("localhost:0"),
-	// 	service.WithUseTcpListener(),
-	// }
-	// service, err := service.NewGnoNativeService(options...)
-	// if err != nil {
-	// 	log.Fatalf("failed to run GnoNativeService: %v", err)
-	// 	return
-	// }
-	// defer service.Close()
-
-	// Create a Gno Native Kit gRPC client.
-	// gnoNativeClient := _goconnect.NewGnoNativeServiceClient(
-	// 	http.DefaultClient,
-	// 	fmt.Sprintf("http://localhost:%d", service.GetTcpPort()),
-	// )
-	//
-	// if err := run(gnoNativeClient); err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
 	err := runMain(os.Args[1:])
 
 	switch {
@@ -62,7 +39,7 @@ func runMain(args []string) error {
 	// setup flags
 	var fs *flag.FlagSet
 	{
-		fs = flag.NewFlagSet("indexerService", flag.ContinueOnError)
+		fs = flag.NewFlagSet("indexer", flag.ContinueOnError)
 	}
 
 	fs.StringVar(&remote, "remote", "https://txindexer.gno.berty.io/graphql/query", "address of the GraphQL tx-indexer")
@@ -71,7 +48,7 @@ func runMain(args []string) error {
 	var root *ffcli.Command
 	{
 		root = &ffcli.Command{
-			ShortUsage: "indexer-connect [flag]",
+			ShortUsage: "indexer [flag]",
 			ShortHelp:  "start an indexer service",
 			FlagSet:    fs,
 			Exec: func(ctx context.Context, args []string) error {
