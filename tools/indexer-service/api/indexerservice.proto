@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package land.gno.gnosocial.indexerservice.v1;
 
-option go_package = "github.com/gnolang/gnosocial/tools/indexer-connect/api/gen/go";
+option go_package = "github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go";
 option objc_class_prefix = "RTG";
 
 // IndexerService is the service to interact with the Gnosocial Indexer
@@ -15,35 +15,35 @@ service IndexerService {
 }
 
 message GetHomePostsRequest {
-  string userPostAddr = 1 [json_name = "UserPostAddr"];
-  uint64 startIndex = 2 [json_name = "StartIndex"];
-  uint64 endIndex = 3 [json_name = "EndIndex"];
+  string userPostAddr = 1 [json_name = "userPostAddr"];
+  uint64 startIndex = 2 [json_name = "startIndex"];
+  uint64 endIndex = 3 [json_name = "endIndex"];
 }
 
 message UserAndPostID {
-  string userPostAddr = 1 [json_name = "UserPostAddr"];
-  uint64 postID = 2 [json_name = "PostID"];
+  string userPostAddr = 1 [json_name = "userPostAddr"];
+  uint64 postID = 2 [json_name = "postID"];
 }
 
 message GetHomePostsResponse {
-  uint64 nPosts = 1 [json_name = "NPosts"];
-  repeated UserAndPostID homePosts = 2 [json_name = "HomePosts"];
+  uint64 nPosts = 1 [json_name = "nPosts"];
+  repeated UserAndPostID homePosts = 2 [json_name = "homePosts"];
 }
 
 message HelloRequest {
-	string name = 1 [json_name = "Name"];
+  string name = 1 [json_name = "name"];
 }
 
 message HelloResponse {
-	string greeting = 1 [json_name = "Greeting"];
+  string greeting = 1 [json_name = "greeting"];
 }
 
 message HelloStreamRequest {
-	string name = 1 [json_name = "Name"];
+  string name = 1 [json_name = "name"];
 }
 
 message HelloStreamResponse {
-	string greeting = 1 [json_name = "Greeting"];
+  string greeting = 1 [json_name = "greeting"];
 }
 
 // The ErrCode enum defines errors for gRPC API functions. These are converted

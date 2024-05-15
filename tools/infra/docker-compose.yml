@@ -28,6 +28,10 @@ services:
       retries: 3
       start_period: 20s
       start_interval: 5s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       # traefik specific labels
       - "traefik.enable=true"
@@ -47,8 +51,8 @@ services:
       - "traefik.http.routers.gno-api.tls.domains[0].main=${API_DOMAIN_MAIN}"
       - "traefik.http.routers.gno-api.tls.domains[0].sans=${API_DOMAIN_SANS}"
       - "traefik.http.services.gno-api.loadbalancer.server.port=36657"
-  faucet:
-    container_name: gno_faucet
+  faucet-legacy:
+    container_name: gno_faucet_legacy
     image: gno.faucet
     restart: always
     networks:
@@ -62,14 +66,61 @@ services:
       - serve
       - -send-amount=10000000000ugnot
       - -chain-id=dev
+      - -listen-address=0.0.0.0:8545
       - -remote=http://gnodev:36657
       - -mnemonic=${FAUCET_MNEMONIC}
     expose:
       - 8545
     environment:
       - FAUCET_DOMAIN_MAIN
+      - FAUCET_LEGACY_DOMAIN_SANS
+      - FAUCET_MNEMONIC
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      # traefik specific labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.gno-faucet-legacy.rule=Host(`${FAUCET_LEGACY_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-faucet-legacy.service=gno-faucet-legacy"
+      - "traefik.http.routers.gno-faucet-legacy.entryPoints=https"
+      - "traefik.http.routers.gno-faucet-legacy.tls=true"
+      - "traefik.http.routers.gno-faucet-legacy.tls.certresolver=cf"
+      - "traefik.http.routers.gno-faucet-legacy.tls.domains[0].main=${FAUCET_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-faucet-legacy.tls.domains[0].sans=${FAUCET_LEGACY_DOMAIN_SANS}"
+      - "traefik.http.services.gno-faucet-legacy.loadbalancer.server.port=8545"
+  faucet:
+    container_name: gno_faucet_captcha
+    image: gno
+    restart: always
+    networks:
+      - traefik_default
+    depends_on:
+      gnodev:
+        condition: service_healthy
+        restart: true
+    entrypoint:
+      - gnofaucet
+      - serve
+      - -max-send-amount=10000000000ugnot
+      - -chain-id=dev
+      - -listen-address=0.0.0.0:5050
+      - -remote=http://gnodev:36657
+      - -is-behind-proxy=true
+      - -mnemonic=${FAUCET_MNEMONIC}
+      - -captcha-secret=${FAUCET_RECAPTCHA_SECRET}
+    expose:
+      - 5050
+    environment:
+      - FAUCET_DOMAIN_MAIN
       - FAUCET_DOMAIN_SANS
       - FAUCET_MNEMONIC
+      - FAUCET_RECAPTCHA_SECRET
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       # traefik specific labels
       - "traefik.enable=true"
@@ -80,7 +131,7 @@ services:
       - "traefik.http.routers.gno-faucet.tls.certresolver=cf"
       - "traefik.http.routers.gno-faucet.tls.domains[0].main=${FAUCET_DOMAIN_MAIN}"
       - "traefik.http.routers.gno-faucet.tls.domains[0].sans=${FAUCET_DOMAIN_SANS}"
-      - "traefik.http.services.gno-faucet.loadbalancer.server.port=8545"
+      - "traefik.http.services.gno-faucet.loadbalancer.server.port=5050"
   tx-indexer:
     container_name: gno_tx-indexer
     image: gno.tx-indexer
@@ -110,6 +161,10 @@ services:
       retries: 3
       start_period: 5s
       start_interval: 5s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       # traefik specific labels
       - "traefik.enable=true"
@@ -140,6 +195,10 @@ services:
     environment:
       - INDEXER_DOMAIN_MAIN
       - INDEXER_DOMAIN_SANS
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
     labels:
       # traefik specific labels
       - "traefik.enable=true"
