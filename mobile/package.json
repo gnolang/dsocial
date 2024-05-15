@@ -11,6 +11,8 @@
     "ts:check": "tsc"
   },
   "dependencies": {
+    "@buf/gnolang_dsocial.bufbuild_es": "^1.9.0-20240515134543-27b14adf1e0a.1",
+    "@buf/gnolang_dsocial.connectrpc_es": "^1.4.0-20240515134543-27b14adf1e0a.2",
     "@buf/gnolang_gnonative.bufbuild_es": "^1.9.0-20240430140846-fe9f3938584d.1",
     "@bufbuild/protobuf": "^1.6.0",
     "@connectrpc/connect": "^1.2.1",
