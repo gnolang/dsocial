@@ -1,10 +1,10 @@
-import { Following, GetJsonFollowersResult, GetJsonFollowingResult, User } from "@gno/types";
-import { useGno } from "./use-gno";
+import { GetJsonFollowersResult, GetJsonFollowingResult, User } from "@gno/types";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 
 const MAX_RESULT = 10;
 
 export const useSearch = () => {
-  const gno = useGno();
+  const gno = useGnoNativeContext();
 
   async function Follow(address: string) {
     checkActiveAccount();
@@ -84,7 +84,7 @@ export const useSearch = () => {
   }
 
   async function convertToJson(result: string | undefined) {
-		if (result === "(\"\" string)") return undefined;
+    if (result === '("" string)') return undefined;
 
     if (!result || !(result.startsWith("(") && result.endsWith(" string)"))) throw new Error("Malformed GetThreadPosts response");
     const quoted = result.substring(1, result.length - " string)".length);
@@ -102,7 +102,7 @@ export const useSearch = () => {
   return {
     searchUser,
     getJsonUserByName,
-		GetJsonFollowersCount,
+    GetJsonFollowersCount,
     GetJsonFollowing,
     GetJsonFollowers,
     Follow,

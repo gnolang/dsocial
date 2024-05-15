@@ -10,21 +10,29 @@ import { Provider } from "react-redux";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { store } from "@gno/redux";
 import { Guard } from "@gno/components/auth/guard";
+import { GnoNativeProvider } from "@gnolang/gnonative";
+
+const gnoDefaultConfig = {
+  remote: process.env.EXPO_PUBLIC_GNO_REMOTE!,
+  chain_id: process.env.EXPO_PUBLIC_GNO_CHAIN_ID!,
+};
 
 export default function AppLayout() {
   return (
-    <Provider store={store}>
-      <ThemeProvider value={DefaultTheme}>
-        <Guard>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              headerLargeTitle: true,
-              headerBackVisible: false,
-            }}
-          />
-        </Guard>
-      </ThemeProvider>
-    </Provider>
+    <GnoNativeProvider config={gnoDefaultConfig}>
+      <Provider store={store}>
+        <ThemeProvider value={DefaultTheme}>
+          <Guard>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                headerLargeTitle: true,
+                headerBackVisible: false,
+              }}
+            />
+          </Guard>
+        </ThemeProvider>
+      </Provider>
+    </GnoNativeProvider>
   );
 }

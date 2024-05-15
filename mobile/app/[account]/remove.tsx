@@ -2,10 +2,11 @@ import { selectFollowers } from "redux/features/profileSlice";
 import { logedOut, useAppDispatch, useAppSelector } from "@gno/redux";
 import { User } from "@gno/types";
 import RemoveAccountContent from "@gno/components/view/account/remove-account.tsx";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
+
 
 export default function Page() {
-  const gno = useGno();
+  const gno = useGnoNativeContext();
   const dispatch = useAppDispatch();
   const data = useAppSelector(selectFollowers);
 

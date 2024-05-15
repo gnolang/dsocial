@@ -1,11 +1,11 @@
 import { StyleSheet, View } from "react-native";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 import { logedOut, useAppDispatch } from "@gno/redux";
 import Button from "@gno/components/button";
 import useOnboarding from "@gno/hooks/use-onboarding";
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Layout from "@gno/components/layout";
 import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
@@ -19,7 +19,7 @@ export default function Page() {
   const [remote, setRemote] = useState("");
 	const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
 
-  const gno = useGno();
+  const gno = useGnoNativeContext();
 	const search = useSearch();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();

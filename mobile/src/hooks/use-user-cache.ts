@@ -1,10 +1,10 @@
 import { User } from "@gno/types";
-import { useGno } from "./use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 
 const usersCache = new Map<string, User>();
 
 export const useUserCache = () => {
-  const gno = useGno();
+  const gno = useGnoNativeContext();
 
   async function getUser(bech32: string): Promise<User> {
     if (usersCache.has(bech32)) {

@@ -5,11 +5,11 @@ import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
-import { useGno } from "@gno/hooks/use-gno";
 import { useAppDispatch, loggedIn } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 
 export default function Page() {
   const [name, setName] = useState("");
@@ -21,7 +21,7 @@ export default function Page() {
   const inputRef = useRef<RNTextInput>(null);
 
   const navigation = useNavigation();
-  const gno = useGno();
+  const gno = useGnoNativeContext();
   const dispatch = useAppDispatch();
   const onboarding = useOnboarding();
 
@@ -63,20 +63,15 @@ export default function Page() {
 
     try {
       setLoading(true);
-      const response = await gno.createAccount(name, phrase, password);
-      if (!response) throw new Error("Failed to create account");
-      console.log("createAccount response: " + JSON.stringify(response));
+      const newAccount = await gno.createAccount(name, phrase, password);
+      if (!newAccount) throw new Error("Failed to create account");
+      console.log("createAccount response: " + JSON.stringify(newAccount));
 
       await gno.selectAccount(name);
       await gno.setPassword(password);
-
-      await gno.selectAccount(name);
-      await gno.setPassword(password);
-      await onboarding.onboard(response.name, response.address);
-
-      dispatch(loggedIn(response));
-
-      await dispatch(loggedIn(response));
+      await onboarding.onboard(newAccount.name, newAccount.address);
+			const bech32 = await gno.addressToBech32(newAccount.address);
+      await dispatch(loggedIn({ keyInfo: newAccount, bech32}));
       router.push("/home");
     } catch (error) {
       setError("" + error);

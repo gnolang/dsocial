@@ -1,7 +1,7 @@
-import { useGno } from "./use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 
 const useOnboarding = () => {
-  const gno = useGno();
+  const gno = useGnoNativeContext();
 
   const onboard = async (name: string, address: Uint8Array) => {
     const address_bech32 = await gno.addressToBech32(address);
@@ -16,7 +16,8 @@ const useOnboarding = () => {
         return;
       }
 
-      await sendCoins(address_bech32);
+      const response = await sendCoins(address_bech32);
+			console.log("sent coins %s", response);
 
       await registerAccount(name);
     } catch (error) {

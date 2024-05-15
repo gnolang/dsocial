@@ -1,10 +1,10 @@
 import { Post, User } from "@gno/types";
-import { useGno } from "./use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
 
 export const useFeed = () => {
-  const gno = useGno();
+  const gno = useGnoNativeContext();
   const cache = useUserCache();
   const parser = useGnoJsonParser();
 

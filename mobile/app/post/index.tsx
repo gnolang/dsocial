@@ -1,22 +1,21 @@
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Alert from "@gno/components/alert";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import Spacer from "@gno/components/spacer";
 import Text from "@gno/components/text";
 import TextInput from "@gno/components/textinput";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
-  const [account, setAccount] = useState<KeyInfo | undefined>(undefined);
 
-  const gno = useGno();
+  const gno = useGnoNativeContext();
   const navigation = useNavigation();
   const router = useRouter();
 
@@ -26,7 +25,6 @@ export default function Search() {
       try {
         const response = await gno.getActiveAccount();
         if (!response.key) throw new Error("No active account");
-        setAccount(response.key);
       } catch (error: unknown | Error) {
         console.log(error);
       }

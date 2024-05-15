@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { KeyInfo } from "@gno/api/gnonativetypes_pb";
+import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Text from "@gno/components/text";
-import { useGno } from "@gno/hooks/use-gno";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useSearch } from "@gno/hooks/use-search";
 
 interface Props {
@@ -12,7 +12,7 @@ export function AccountBalance({ activeAccount }: Props) {
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [balance, setBalance] = useState<string | undefined>(undefined);
 
-  const gno = useGno();
+  const gno = useGnoNativeContext();
   const account = useSearch();
 
   useEffect(() => {
