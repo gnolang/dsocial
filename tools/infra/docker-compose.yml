@@ -1,0 +1,216 @@
+services:
+  gnodev:
+    container_name: gno_gnodev
+    image: gno
+    restart: always
+    networks:
+      - traefik_default
+    entrypoint:
+      - gnodev
+      - -node-rpc-listener=0.0.0.0:36657
+      - -web-listener=0.0.0.0:8888
+      - /dsocial/realm
+    expose:
+      - 8888
+      - 36657
+    environment:
+      - WEB_DOMAIN_MAIN
+      - WEB_DOMAIN_SANS
+      - API_DOMAIN_MAIN
+      - API_DOMAIN_SANS
+    volumes:
+      - ./dsocial:/dsocial
+    tty: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888"]
+      interval: 30s
+      timeout: 25s
+      retries: 3
+      start_period: 20s
+      start_interval: 5s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      # traefik specific labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.gno-web.rule=Host(`${WEB_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-web.service=gno-web"
+      - "traefik.http.routers.gno-web.entryPoints=https"
+      - "traefik.http.routers.gno-web.tls=true"
+      - "traefik.http.routers.gno-web.tls.certresolver=cf"
+      - "traefik.http.routers.gno-web.tls.domains[0].main=${WEB_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-web.tls.domains[0].sans=${WEB_DOMAIN_SANS}"
+      - "traefik.http.services.gno-web.loadbalancer.server.port=8888"
+      - "traefik.http.routers.gno-api.rule=Host(`${API_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-api.service=gno-api"
+      - "traefik.http.routers.gno-api.entryPoints=https"
+      - "traefik.http.routers.gno-api.tls=true"
+      - "traefik.http.routers.gno-api.tls.certresolver=cf"
+      - "traefik.http.routers.gno-api.tls.domains[0].main=${API_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-api.tls.domains[0].sans=${API_DOMAIN_SANS}"
+      - "traefik.http.services.gno-api.loadbalancer.server.port=36657"
+  faucet-legacy:
+    container_name: gno_faucet_legacy
+    image: gno.faucet
+    restart: always
+    networks:
+      - traefik_default
+    depends_on:
+      gnodev:
+        condition: service_healthy
+        restart: true
+    entrypoint:
+      - gnofaucet
+      - serve
+      - -send-amount=10000000000ugnot
+      - -chain-id=dev
+      - -listen-address=0.0.0.0:8545
+      - -remote=http://gnodev:36657
+      - -mnemonic=${FAUCET_MNEMONIC}
+    expose:
+      - 8545
+    environment:
+      - FAUCET_DOMAIN_MAIN
+      - FAUCET_LEGACY_DOMAIN_SANS
+      - FAUCET_MNEMONIC
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      # traefik specific labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.gno-faucet-legacy.rule=Host(`${FAUCET_LEGACY_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-faucet-legacy.service=gno-faucet-legacy"
+      - "traefik.http.routers.gno-faucet-legacy.entryPoints=https"
+      - "traefik.http.routers.gno-faucet-legacy.tls=true"
+      - "traefik.http.routers.gno-faucet-legacy.tls.certresolver=cf"
+      - "traefik.http.routers.gno-faucet-legacy.tls.domains[0].main=${FAUCET_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-faucet-legacy.tls.domains[0].sans=${FAUCET_LEGACY_DOMAIN_SANS}"
+      - "traefik.http.services.gno-faucet-legacy.loadbalancer.server.port=8545"
+  faucet:
+    container_name: gno_faucet_captcha
+    image: gno
+    restart: always
+    networks:
+      - traefik_default
+    depends_on:
+      gnodev:
+        condition: service_healthy
+        restart: true
+    entrypoint:
+      - gnofaucet
+      - serve
+      - -max-send-amount=10000000000ugnot
+      - -chain-id=dev
+      - -listen-address=0.0.0.0:5050
+      - -remote=http://gnodev:36657
+      - -is-behind-proxy=true
+      - -mnemonic=${FAUCET_MNEMONIC}
+      - -captcha-secret=${FAUCET_RECAPTCHA_SECRET}
+    expose:
+      - 5050
+    environment:
+      - FAUCET_DOMAIN_MAIN
+      - FAUCET_DOMAIN_SANS
+      - FAUCET_MNEMONIC
+      - FAUCET_RECAPTCHA_SECRET
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      # traefik specific labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.gno-faucet.rule=Host(`${FAUCET_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-faucet.service=gno-faucet"
+      - "traefik.http.routers.gno-faucet.entryPoints=https"
+      - "traefik.http.routers.gno-faucet.tls=true"
+      - "traefik.http.routers.gno-faucet.tls.certresolver=cf"
+      - "traefik.http.routers.gno-faucet.tls.domains[0].main=${FAUCET_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-faucet.tls.domains[0].sans=${FAUCET_DOMAIN_SANS}"
+      - "traefik.http.services.gno-faucet.loadbalancer.server.port=5050"
+  tx-indexer:
+    container_name: gno_tx-indexer
+    image: gno.tx-indexer
+    restart: always
+    networks:
+      - traefik_default
+    depends_on:
+      gnodev:
+        condition: service_healthy
+        restart: true
+    entrypoint:
+      - indexer
+      - start
+      - --remote=http://gnodev:36657
+      - --db-path=indexer-db
+    expose:
+      - 8546
+    environment:
+      - TXINDEXER_DOMAIN_MAIN
+      - TXINDEXER_DOMAIN_SANS
+    volumes:
+      - ./indexer-db:/indexer-db
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:8546/graphql || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+      start_interval: 5s
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      # traefik specific labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.gno-tx-indexer.rule=Host(`${TXINDEXER_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-tx-indexer.service=gno-tx-indexer"
+      - "traefik.http.routers.gno-tx-indexer.entryPoints=https"
+      - "traefik.http.routers.gno-tx-indexer.tls=true"
+      - "traefik.http.routers.gno-tx-indexer.tls.certresolver=cf"
+      - "traefik.http.routers.gno-tx-indexer.tls.domains[0].main=${TXINDEXER_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-tx-indexer.tls.domains[0].sans=${TXINDEXER_DOMAIN_SANS}"
+      - "traefik.http.services.gno-tx-indexer.loadbalancer.server.port=8546"
+  indexer:
+    container_name: gno_indexer
+    image: gno.indexer
+    restart: always
+    networks:
+      - traefik_default
+    depends_on:
+      tx-indexer:
+        condition: service_healthy
+        restart: true
+    entrypoint:
+      - indexer
+      - -remote=http://tx-indexer:8546/graphql/query
+      - -listen=:26660
+    expose:
+      - 26660
+    environment:
+      - INDEXER_DOMAIN_MAIN
+      - INDEXER_DOMAIN_SANS
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      # traefik specific labels
+      - "traefik.enable=true"
+      - "traefik.http.routers.gno-indexer.rule=Host(`${INDEXER_DOMAIN_SANS}`)"
+      - "traefik.http.routers.gno-indexer.service=gno-indexer"
+      - "traefik.http.routers.gno-indexer.entryPoints=https"
+      - "traefik.http.routers.gno-indexer.tls=true"
+      - "traefik.http.routers.gno-indexer.tls.certresolver=cf"
+      - "traefik.http.routers.gno-indexer.tls.domains[0].main=${INDEXER_DOMAIN_MAIN}"
+      - "traefik.http.routers.gno-indexer.tls.domains[0].sans=${INDEXER_DOMAIN_SANS}"
+      - "traefik.http.services.gno-indexer.loadbalancer.server.port=26660"
+
+networks:
+  traefik_default:
+    external: true

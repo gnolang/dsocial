@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import SideMenuAccountList from "@gno/components/list/account/account-list";

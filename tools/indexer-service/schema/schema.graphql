@@ -1,0 +1,414 @@
+"""The @defer directive may be specified on a fragment spread to imply de-prioritization, that causes the fragment to be omitted in the initial response, and delivered as a subsequent response afterward. A query with @defer directive will cause the request to potentially return multiple responses, where non-deferred data is delivered in the initial response and data deferred delivered in a subsequent response. @include and @skip take precedence over @defer."""
+directive @defer(
+	if: Boolean
+	label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""The @deprecated built-in directive is used within the type system definition language to indicate deprecated portions of a GraphQL service's schema, such as deprecated fields on a type, arguments on a field, input fields on an input type, or values of an enum type."""
+directive @deprecated(
+	reason: String
+) on FIELD_DEFINITION | ARGUMENT_DEFINITION | INPUT_FIELD_DEFINITION | ENUM_VALUE
+
+"""The @include directive may be provided for fields, fragment spreads, and inline fragments, and allows for conditional inclusion during execution as described by the if argument."""
+directive @include(
+	if: Boolean!
+) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""The @skip directive may be provided for fields, fragment spreads, and inline fragments, and allows for conditional exclusion during execution as described by the if argument."""
+directive @skip(
+	if: Boolean!
+) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+"""The @specifiedBy built-in directive is used within the type system definition language to provide a scalar specification URL for specifying the behavior of custom scalar types."""
+directive @specifiedBy(
+	url: String!
+) on SCALAR
+
+"""`AmountInput` is a range of token quantities to filter by."""
+input AmountInput {
+"""`AmountInput` is a range of token quantities to filter by."""
+	from: Int
+"""`AmountInput` is a range of token quantities to filter by."""
+	to: Int
+"""`AmountInput` is a range of token quantities to filter by."""
+	denomination: String
+}
+
+"""`BankMsgSend` is a message with a message router of `bank` and a message type of `send`.
+`BankMsgSend` is the fund transfer tx message."""
+type BankMsgSend {
+"""the bech32 address of the fund sender.
+ex) `g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5`"""
+	from_address: String!
+"""the bech32 address of the fund receiver.
+ex) `g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5`"""
+	to_address: String!
+"""the denomination and amount of fund sent ("<amount><denomination>").
+ex) `1000000ugnot`"""
+	amount: String!
+}
+
+"""`BankMsgSendInput` represents input parameters required when the message type is `send`."""
+input BankMsgSendInput {
+"""`BankMsgSendInput` represents input parameters required when the message type is `send`."""
+	from_address: String
+"""`BankMsgSendInput` represents input parameters required when the message type is `send`."""
+	to_address: String
+"""`BankMsgSendInput` represents input parameters required when the message type is `send`."""
+	amount: AmountInput
+}
+
+"""Represents a blockchain block with various attributes detailing its creation and content."""
+type Block {
+"""A unique identifier for the Block determined by its position in the blockchain.
+This integer is strictly increasing with each new Block."""
+	height: Int!
+"""The software version of the node that created this Block, indicating the specific
+implementation and versioning of the blockchain protocol used."""
+	version: String!
+"""An identifier for the specific blockchain network this Block belongs to. Helps in
+distinguishing between different networks like mainnet, testnet, etc."""
+	chain_id: String!
+"""The timestamp at which this Block was proposed and finalized in the blockchain. Represented in UTC."""
+	time: Time!
+"""Encoded data representing the blockchain address of the proposer who submitted this Block.
+It is raw and requires decoding to be human-readable."""
+	proposer_address_raw: String!
+}
+
+"""Filters for querying Blocks within specified criteria related to their attributes."""
+input BlockFilter {
+"""Filters for querying Blocks within specified criteria related to their attributes."""
+	from_height: Int
+"""Filters for querying Blocks within specified criteria related to their attributes."""
+	to_height: Int
+"""Filters for querying Blocks within specified criteria related to their attributes."""
+	from_time: Time
+"""Filters for querying Blocks within specified criteria related to their attributes."""
+	to_time: Time
+}
+
+"""The `Boolean` scalar type represents `true` or `false`."""
+scalar Boolean
+
+"""The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point)."""
+scalar Float
+
+"""The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as "4") or integer (such as 4) input value will be accepted as an ID."""
+scalar ID
+
+"""The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."""
+scalar Int
+
+"""`MemFile` is the metadata information tied to a single gno package / realm file"""
+type MemFile {
+"""the name of the source file."""
+	name: String!
+"""the content of the source file."""
+	body: String!
+}
+
+"""`MemFileInput` is the metadata information tied to a single gno package / realm file."""
+input MemFileInput {
+"""`MemFileInput` is the metadata information tied to a single gno package / realm file."""
+	name: String
+"""`MemFileInput` is the metadata information tied to a single gno package / realm file."""
+	body: String
+}
+
+"""`MemPackage` is the metadata information tied to package / realm deployment."""
+type MemPackage {
+"""the name of the package."""
+	name: String!
+"""the gno path of the package."""
+	path: String!
+"""the associated package gno source."""
+	files: [MemFile!]
+}
+
+"""`MemPackageInput` represents a package stored in memory."""
+input MemPackageInput {
+"""`MemPackageInput` represents a package stored in memory."""
+	name: String
+"""`MemPackageInput` represents a package stored in memory."""
+	path: String
+"""`MemPackageInput` represents a package stored in memory."""
+	files: [MemFileInput]
+}
+
+"""`MessageRoute` is route type of the transactional message.
+`MessageRoute` has the values of vm and bank."""
+enum MessageRoute {
+	vm
+	bank
+}
+
+"""`MessageType` is message type of the transaction.
+`MessageType` has the values `send`, `exec`, `add_package`, and `run`."""
+enum MessageType {
+"""The route value for this message type is `bank`, and the value for transactional messages is `BankMsgSend`.
+This is a transaction message used when sending native tokens."""
+	send
+"""The route value for this message type is `vm`, and the value for transactional messages is `MsgCall`.
+This is a transaction message that executes a function in realm or package that is deployed in the GNO chain."""
+	exec
+"""The route value for this message type is `vm`, and the value for transactional messages is `MsgAddPackage`.
+This is a transactional message that adds a package to the GNO chain."""
+	add_package
+"""The route value for this message type is `vm`, and the value for transactional messages is `MsgRun`.
+This is a transactional message that executes an arbitrary Gno-coded TX message."""
+	run
+}
+
+union MessageValue =BankMsgSend | MsgCall | MsgAddPackage | MsgRun | UnexpectedMessage
+
+"""`MsgAddPackage` is a message with a message router of `vm` and a message type of `add_package`.
+`MsgAddPackage` is the package deployment tx message."""
+type MsgAddPackage {
+"""the bech32 address of the package deployer.
+ex) `g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5`"""
+	creator: String!
+"""the package being deployed."""
+	package: MemPackage!
+"""the amount of funds to be deposited at deployment, if any ("<amount><denomination>").
+ex) `1000000ugnot`"""
+	deposit: String!
+}
+
+"""`MsgAddPackageInput` represents input parameters required when the message type is `add_package`."""
+input MsgAddPackageInput {
+"""`MsgAddPackageInput` represents input parameters required when the message type is `add_package`."""
+	creator: String
+"""`MsgAddPackageInput` represents input parameters required when the message type is `add_package`."""
+	package: MemPackageInput
+"""`MsgAddPackageInput` represents input parameters required when the message type is `add_package`."""
+	deposit: AmountInput
+}
+
+"""`MsgCall` is a message with a message router of `vm` and a message type of `exec`.
+`MsgCall` is the method invocation tx message."""
+type MsgCall {
+"""the bech32 address of the function caller.
+ex) `g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5`"""
+	caller: String!
+"""the amount of funds to be deposited to the package, if any ("<amount><denomination>").
+ex) `1000000ugnot`"""
+	send: String!
+"""the gno package path."""
+	pkg_path: String!
+"""the function name being invoked."""
+	func: String!
+"""`args` are the arguments passed to the executed function."""
+	args: [String!]
+}
+
+"""`MsgCallInput` represents input parameters required when the message type is `exec`."""
+input MsgCallInput {
+"""`MsgCallInput` represents input parameters required when the message type is `exec`."""
+	caller: String
+"""`MsgCallInput` represents input parameters required when the message type is `exec`."""
+	send: AmountInput
+"""`MsgCallInput` represents input parameters required when the message type is `exec`."""
+	pkg_path: String
+"""`MsgCallInput` represents input parameters required when the message type is `exec`."""
+	func: String
+"""`MsgCallInput` represents input parameters required when the message type is `exec`."""
+	args: [String!]
+}
+
+"""`MsgRun` is a message with a message router of `vm` and a message type of `run`.
+`MsgRun is the execute arbitrary Gno code tx message`."""
+type MsgRun {
+"""the bech32 address of the function caller.
+ex) `g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5`"""
+	caller: String!
+"""the amount of funds to be deposited to the package, if any ("<amount><denomination>").
+ex) `1000000ugnot`"""
+	send: String!
+"""the package being executed."""
+	package: MemPackage!
+}
+
+"""`MsgRunInput` represents input parameters required when the message type is `run`."""
+input MsgRunInput {
+"""`MsgRunInput` represents input parameters required when the message type is `run`."""
+	caller: String
+"""`MsgRunInput` represents input parameters required when the message type is `run`."""
+	send: AmountInput
+"""`MsgRunInput` represents input parameters required when the message type is `run`."""
+	package: MemPackageInput
+}
+
+"""Root Query type to fetch data about Blocks and Transactions based on filters or retrieve the latest block height."""
+type Query {
+"""Retrieves a list of Transactions that match the given filter criteria. If the result is incomplete due to errors, both partial results and errors are returned."""
+	transactions(
+		filter: TransactionFilter!
+	): [Transaction!]
+"""Fetches Blocks matching the specified filter criteria. Incomplete results due to errors return both the partial Blocks and the associated errors."""
+	blocks(
+		filter: BlockFilter!
+	): [Block!]
+"""Returns the height of the most recently processed Block by the blockchain indexer, indicating the current length of the blockchain."""
+	latestBlockHeight: Int!
+}
+
+"""The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text."""
+scalar String
+
+"""Subscriptions provide a way for clients to receive real-time updates about Transactions and Blocks based on specified filter criteria.
+Subscribers will only receive updates for events occurring after the subscription is established."""
+type Subscription {
+"""Subscribes to real-time updates of Transactions that match the provided filter criteria.
+This subscription starts immediately and only includes Transactions added to the blockchain after the subscription is active.
+
+This is useful for applications needing to track Transactions in real-time, such as wallets tracking incoming transactions
+or analytics platforms monitoring blockchain activity.
+
+Returns:
+- Transaction: Each received update is a Transaction object that matches the filter criteria."""
+	transactions(
+		filter: TransactionFilter!
+	): Transaction!
+"""Subscribes to real-time updates of Blocks that match the provided filter criteria. Similar to the Transactions subscription,
+this subscription is active immediately upon creation and only includes Blocks added after the subscription begins.
+
+This subscription is ideal for services that need to be notified of new Blocks for processing or analysis, such as block explorers,
+data aggregators, or security monitoring tools.
+
+Returns:
+- Block: Each update consists of a Block object that satisfies the filter criteria, allowing subscribers to process or analyze new Blocks in real time."""
+	blocks(
+		filter: BlockFilter!
+	): Block!
+}
+
+"""Field representing a point on time. It is following the RFC3339Nano format ("2006-01-02T15:04:05.999999999Z07:00")"""
+scalar Time
+
+"""Defines a transaction within a block, detailing its execution specifics and content."""
+type Transaction {
+"""A sequential index representing the order of this Transaction within its Block. Unique within the context of its Block."""
+	index: Int!
+"""Hash from Transaction content in base64 encoding."""
+	hash: String!
+"""The success can determine whether the transaction succeeded or failed."""
+	success: Boolean!
+"""The height of the Block in which this Transaction is included. Links the Transaction to its containing Block."""
+	block_height: Int!
+"""The declared amount of computational effort the sender is willing to pay for executing this Transaction."""
+	gas_wanted: Int!
+"""The actual amount of computational effort consumed to execute this Transaction. It could be less or equal to `gas_wanted`."""
+	gas_used: Int!
+"""The payload of the Transaction in a raw format, typically containing the instructions and any data necessary for execution."""
+	content_raw: String!
+"""The payload of a message shows the contents of the messages in a transaction.
+A message consists of `router`, `type`, and `value` (whose form depends on the `router` and `type`)."""
+	messages: [TransactionMessage]!
+"""`memo` are string information stored within a transaction.
+`memo` can be utilized to find or distinguish transactions.
+For example, when trading a specific exchange, you would utilize the memo field of the transaction."""
+	memo: String!
+"""`response` is the processing result of the transaction.
+It has `log`, `info`, `error`, and `data`."""
+	response: TransactionResponse!
+}
+
+"""`TransactionBankMessageInput` represents input parameters required when the message router is `bank`."""
+input TransactionBankMessageInput {
+"""`TransactionBankMessageInput` represents input parameters required when the message router is `bank`."""
+	send: BankMsgSendInput
+}
+
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+input TransactionFilter {
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	from_block_height: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	to_block_height: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	from_index: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	to_index: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	from_gas_wanted: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	to_gas_wanted: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	from_gas_used: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	to_gas_used: Int
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	hash: String
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	message: TransactionMessageInput
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	memo: String
+"""Filters for querying Transactions within specified criteria related to their execution and placement within Blocks."""
+	success: Boolean
+}
+
+type TransactionMessage {
+"""The type of transaction message.
+The value of `typeUrl` can be `send`, `exec`, `add_package`, `run`."""
+	typeUrl: String!
+"""The route of transaction message.
+The value of `route` can be `bank`, `vm`."""
+	route: String!
+"""MessageValue is the content of the transaction.
+`value` can be of type `BankMsgSend`, `MsgCall`, `MsgAddPackage`, `MsgRun`, `UnexpectedMessage`."""
+	value: MessageValue!
+}
+
+"""Transaction's message to filter Transactions.
+`TransactionMessageInput` can be configured as a filter with a transaction message's `router` and `type` and `parameters(bank / vm)`."""
+input TransactionMessageInput {
+"""Transaction's message to filter Transactions.
+`TransactionMessageInput` can be configured as a filter with a transaction message's `router` and `type` and `parameters(bank / vm)`."""
+	type_url: MessageType
+"""Transaction's message to filter Transactions.
+`TransactionMessageInput` can be configured as a filter with a transaction message's `router` and `type` and `parameters(bank / vm)`."""
+	route: MessageRoute
+"""Transaction's message to filter Transactions.
+`TransactionMessageInput` can be configured as a filter with a transaction message's `router` and `type` and `parameters(bank / vm)`."""
+	bank_param: TransactionBankMessageInput
+"""Transaction's message to filter Transactions.
+`TransactionMessageInput` can be configured as a filter with a transaction message's `router` and `type` and `parameters(bank / vm)`."""
+	vm_param: TransactionVmMessageInput
+}
+
+"""`TransactionResponse` is the processing result of the transaction.
+It has `log`, `info`, `error`, and `data`."""
+type TransactionResponse {
+"""The log value associated with the Transaction execution, if any."""
+	log: String!
+"""The Info associated with the Transaction execution, if any."""
+	info: String!
+"""The error value associated with the Transaction execution, if any."""
+	error: String!
+"""The response data associated with the Transaction execution, if any."""
+	data: String!
+}
+
+"""`TransactionVmMessageInput` represents input parameters required when the message router is `vm`."""
+input TransactionVmMessageInput {
+"""`TransactionVmMessageInput` represents input parameters required when the message router is `vm`."""
+	exec: MsgCallInput
+"""`TransactionVmMessageInput` represents input parameters required when the message router is `vm`."""
+	add_package: MsgAddPackageInput
+"""`TransactionVmMessageInput` represents input parameters required when the message router is `vm`."""
+	run: MsgRunInput
+}
+
+type TxFee {
+"""gas limit"""
+	gas_wanted: Int!
+"""gas fee details (<value><denomination>)"""
+	gas_fee: Int!
+}
+
+"""`UnexpectedMessage` is an Undefined Message, which is a message that decoding failed."""
+type UnexpectedMessage {
+	raw: String!
+}
+

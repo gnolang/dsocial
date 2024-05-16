@@ -2,11 +2,13 @@ import { Post, User } from "@gno/types";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
+import { useIndexerContext } from "@gno/provider/indexer-provider";
 
 export const useFeed = () => {
   const gno = useGnoNativeContext();
   const cache = useUserCache();
   const parser = useGnoJsonParser();
+  const indexer = useIndexerContext();
 
   async function fetchThread(address: string, postId: number): Promise<{ data: Post[]; n_posts: number }> {
     await checkActiveAccount();
@@ -20,25 +22,24 @@ export const useFeed = () => {
   async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
     const account = await checkActiveAccount();
 
-    const result = await gno.qEval(
-      "gno.land/r/berty/social",
-      `GetJsonHomePosts("${account.address}", ${startIndex}, ${endIndex})`
-    );
-
-    const json = await enrichData(result);
-    return json;
+    const [nHomePosts, addrAndIDs] = await indexer.getHomePosts(account.address, BigInt(startIndex), BigInt(endIndex));
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${addrAndIDs})`);
+    return await enrichData(result, nHomePosts);
   }
 
-  async function enrichData(result: string | undefined) {
-    const jsonPosts = parser.toJson(result);
+  async function enrichData(result: string, nHomePosts?: number) {
+    const jsonResult = parser.toJson(result);
 
-    const isThread = "n_threads" in jsonPosts;
-    const n_posts = isThread ? jsonPosts.n_threads : jsonPosts.n_posts;
+    // If isThread then jsonResult is {n_threads: number, posts: array<{index: number, post: Post}>} from GetThreadPosts.
+    const isThread = "n_threads" in jsonResult;
+    const jsonPosts = isThread ? jsonResult.posts : jsonResult;
+    const n_posts = isThread ? jsonResult.n_threads : nHomePosts;
 
     const posts: Post[] = [];
 
-    for (const post of jsonPosts.posts) {
-      const creator = await cache.getUser(post.post.creator);
+    for (const jsonPost of jsonPosts) {
+      const post = isThread ? jsonPost.post : jsonPost;
+      const creator = await cache.getUser(post.creator);
 
       posts.push({
         user: {
@@ -49,13 +50,12 @@ export const useFeed = () => {
           url: "string",
           bio: "string",
         },
-        index: post.index,
-        id: post.post.id,
-        post: post.post.body,
-        date: post.post.createdAt,
-        n_replies: post.post.n_replies,
-        n_replies_all: post.post.n_replies_all,
-        parent_id: post.post.parent_id,
+        id: post.id,
+        post: post.body,
+        date: post.createdAt,
+        n_replies: post.n_replies,
+        n_replies_all: post.n_replies_all,
+        parent_id: post.parent_id,
       });
     }
 
@@ -68,11 +68,9 @@ export const useFeed = () => {
   async function fetchCount() {
     const account = await checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetHomePostsCount("${account.address}")`);
-
-    const data = result.substring(1, result.length - " int)".length);
-
-    return parseInt(data);
+    // Use a range of 0,0 to just get nHomePosts.
+    const [nHomePosts, _] = await indexer.getHomePosts(account.address, BigInt(0), BigInt(0));
+    return nHomePosts;
   }
 
   async function checkActiveAccount() {

@@ -1,0 +1,30 @@
+fragment CallInfo on Transaction {
+    messages {
+      value {
+        ... on MsgCall {
+          func
+          caller
+          args
+        }
+      }
+    }
+    response {
+      data
+    }
+}
+
+query getTransactions() {
+    transactions(filter: {
+      message: {vm_param: {exec: {pkg_path: "gno.land/r/berty/social"}}},
+      success: true}) {
+    ... CallInfo
+  }
+}
+
+subscription subscribeTransactions() {
+    transactions(filter: {
+      message: {vm_param: {exec: {pkg_path: "gno.land/r/berty/social"}}},
+      success: true}) {
+    ... CallInfo
+  }
+}

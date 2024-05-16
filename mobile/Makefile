@@ -15,9 +15,15 @@ android: node_modules
 .PHONY: android
 
 android.reverse:
-	adb reverse tcp:8081 tcp:8081
-	adb reverse tcp:36657 tcp:36657
-	adb reverse tcp:8545 tcp:8545
+	$(call check-program, adb)
+	$(if $(ANDROID_DEVICE),,$(eval ANDROID_DEVICE = $(shell adb devices | tail +2 | head -1 | cut -f 1)))
+	@if [ -z "$(ANDROID_DEVICE)" ]; then \
+	  >&2 echo "ERROR: no Android device found"; exit 1; \
+	fi
+	adb -s $(ANDROID_DEVICE) reverse tcp:8081 tcp:8081 # metro
+	adb -s $(ANDROID_DEVICE) reverse tcp:36657 tcp:36657 # gnoland
+	adb -s $(ANDROID_DEVICE) reverse tcp:8545 tcp:8545 # faucet
+	adb -s $(ANDROID_DEVICE) reverse tcp:26660 tcp:26660 # indexer
 .PHONY: android.reverse
 
 start: node_modules

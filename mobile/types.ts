@@ -9,7 +9,6 @@ export type Post = {
   };
   post: string;
   date: string;
-  index: string;
   id: string;
   n_replies: number;
   n_replies_all: number;

@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package land.gno.gnosocial.indexerservice.v1;
+
+option go_package = "github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go";
+option objc_class_prefix = "RTG";
+
+// IndexerService is the service to interact with the Gnosocial Indexer
+service IndexerService {
+  rpc GetHomePosts(GetHomePostsRequest) returns (GetHomePostsResponse);
+  // Hello is for debug purposes
+  rpc Hello(HelloRequest) returns (HelloResponse);
+  // HelloStream is for debug purposes
+  rpc HelloStream(HelloStreamRequest) returns (stream HelloStreamResponse);
+}
+
+message GetHomePostsRequest {
+  string userPostAddr = 1 [json_name = "userPostAddr"];
+  uint64 startIndex = 2 [json_name = "startIndex"];
+  uint64 endIndex = 3 [json_name = "endIndex"];
+}
+
+message UserAndPostID {
+  string userPostAddr = 1 [json_name = "userPostAddr"];
+  uint64 postID = 2 [json_name = "postID"];
+}
+
+message GetHomePostsResponse {
+  uint64 nPosts = 1 [json_name = "nPosts"];
+  repeated UserAndPostID homePosts = 2 [json_name = "homePosts"];
+}
+
+message HelloRequest {
+  string name = 1 [json_name = "name"];
+}
+
+message HelloResponse {
+  string greeting = 1 [json_name = "greeting"];
+}
+
+message HelloStreamRequest {
+  string name = 1 [json_name = "name"];
+}
+
+message HelloStreamResponse {
+  string greeting = 1 [json_name = "greeting"];
+}
+
+// The ErrCode enum defines errors for gRPC API functions. These are converted
+// from the Go error types returned by gnoclient.
+enum ErrCode {
+  //----------------
+  // Special errors
+  //----------------
+
+  // Undefined is the default value. It should never be set manually
+  Undefined = 0;
+
+  // TODO indicates that you plan to create an error later
+  TODO = 1;
+  // ErrNotImplemented indicates that a method is not implemented yet
+  ErrNotImplemented = 2;
+  // ErrInternal indicates an unknown error (without Code), i.e. in gRPC
+  ErrInternal = 3;
+
+  //----------------
+  // Generic errors
+  //----------------
+
+  // Parameters and I/O errors
+
+  ErrInvalidInput = 100;
+  ErrMissingInput = 101;
+  ErrSerialization = 102;
+  ErrDeserialization = 103;
+  ErrInitService = 104;
+  ErrRunGRPCServer = 105;
+}
+
+message ErrDetails {
+  repeated ErrCode codes = 1;
+}

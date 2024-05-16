@@ -63,8 +63,6 @@ const useOnboarding = () => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
-    const remote = await gno.getRemote();
-
     const raw = JSON.stringify({
       To: address,
     });
