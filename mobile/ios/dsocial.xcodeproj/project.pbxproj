@@ -11,28 +11,28 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		96905EF65AED1B983A6B3ABC /* libPods-dSocial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dSocial.a */; };
-		A45F9365447D4C47AB5CC398 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12EC2050BBBF4B0D85B472DE /* noop-file.swift */; };
+		7BEF5A67726548A78CDE13ED /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49279C9759CB4303A13596B2 /* noop-file.swift */; };
+		96905EF65AED1B983A6B3ABC /* libPods-dsocial.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dsocial.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		12EC2050BBBF4B0D85B472DE /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "dSocial/noop-file.swift"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* dSocial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dSocial.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = dSocial/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = dSocial/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = dSocial/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = dSocial/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = dSocial/main.m; sourceTree = "<group>"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dSocial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-dSocial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C2E3173556A471DD304B334 /* Pods-dSocial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dSocial.debug.xcconfig"; path = "Target Support Files/Pods-dSocial/Pods-dSocial.debug.xcconfig"; sourceTree = "<group>"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-dSocial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dSocial.release.xcconfig"; path = "Target Support Files/Pods-dSocial/Pods-dSocial.release.xcconfig"; sourceTree = "<group>"; };
-		805CA17E6AE5496D9F92ACB0 /* dSocial-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "dSocial-Bridging-Header.h"; path = "dSocial/dSocial-Bridging-Header.h"; sourceTree = "<group>"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = dSocial/SplashScreen.storyboard; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* dsocial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dsocial.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = dsocial/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = dsocial/AppDelegate.mm; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = dsocial/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = dsocial/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = dsocial/main.m; sourceTree = "<group>"; };
+		49279C9759CB4303A13596B2 /* noop-file.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = "noop-file.swift"; path = "dsocial/noop-file.swift"; sourceTree = "<group>"; };
+		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dsocial.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-dsocial.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		683DEBB43B1149BEACAD75B6 /* dsocial-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "dsocial-Bridging-Header.h"; path = "dsocial/dsocial-Bridging-Header.h"; sourceTree = "<group>"; };
+		6C2E3173556A471DD304B334 /* Pods-dsocial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dsocial.debug.xcconfig"; path = "Target Support Files/Pods-dsocial/Pods-dsocial.debug.xcconfig"; sourceTree = "<group>"; };
+		7A4D352CD337FB3A3BF06240 /* Pods-dsocial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dsocial.release.xcconfig"; path = "Target Support Files/Pods-dsocial/Pods-dsocial.release.xcconfig"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = dsocial/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-dSocial/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-dsocial/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,14 +40,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96905EF65AED1B983A6B3ABC /* libPods-dSocial.a in Frameworks */,
+				96905EF65AED1B983A6B3ABC /* libPods-dsocial.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		13B07FAE1A68108700A75B9A /* dSocial */ = {
+		13B07FAE1A68108700A75B9A /* dsocial */ = {
 			isa = PBXGroup;
 			children = (
 				BB2F792B24A3F905000567C9 /* Supporting */,
@@ -57,17 +57,17 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				12EC2050BBBF4B0D85B472DE /* noop-file.swift */,
-				805CA17E6AE5496D9F92ACB0 /* dSocial-Bridging-Header.h */,
+				49279C9759CB4303A13596B2 /* noop-file.swift */,
+				683DEBB43B1149BEACAD75B6 /* dsocial-Bridging-Header.h */,
 			);
-			name = dSocial;
+			name = dsocial;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dSocial.a */,
+				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dsocial.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -82,7 +82,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* dSocial */,
+				13B07FAE1A68108700A75B9A /* dsocial */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -97,17 +97,17 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* dSocial.app */,
+				13B07F961A680F5B00A75B9A /* dsocial.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		92DBD88DE9BF7D494EA9DA96 /* dSocial */ = {
+		92DBD88DE9BF7D494EA9DA96 /* dsocial */ = {
 			isa = PBXGroup;
 			children = (
 				FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */,
 			);
-			name = dSocial;
+			name = dsocial;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
@@ -116,14 +116,14 @@
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
 			);
 			name = Supporting;
-			path = dSocial/Supporting;
+			path = dsocial/Supporting;
 			sourceTree = "<group>";
 		};
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6C2E3173556A471DD304B334 /* Pods-dSocial.debug.xcconfig */,
-				7A4D352CD337FB3A3BF06240 /* Pods-dSocial.release.xcconfig */,
+				6C2E3173556A471DD304B334 /* Pods-dsocial.debug.xcconfig */,
+				7A4D352CD337FB3A3BF06240 /* Pods-dsocial.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -131,7 +131,7 @@
 		D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */ = {
 			isa = PBXGroup;
 			children = (
-				92DBD88DE9BF7D494EA9DA96 /* dSocial */,
+				92DBD88DE9BF7D494EA9DA96 /* dsocial */,
 			);
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
@@ -139,26 +139,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		13B07F861A680F5B00A75B9A /* dSocial */ = {
+		13B07F861A680F5B00A75B9A /* dsocial */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "dSocial" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "dsocial" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				52CF4AA9372D4F46BCD1F9C8 /* [Expo] Configure project */,
+				88F199CF6A50F1558E3AF279 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				913C1AA6D2C77D2B613F7451 /* [CP] Embed Pods Frameworks */,
+				61FAC10610E376208D275BDB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = dSocial;
-			productName = dSocial;
-			productReference = 13B07F961A680F5B00A75B9A /* dSocial.app */;
+			name = dsocial;
+			productName = dsocial;
+			productReference = 13B07F961A680F5B00A75B9A /* dsocial.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -174,7 +174,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dSocial" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dsocial" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -187,7 +187,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* dSocial */,
+				13B07F861A680F5B00A75B9A /* dsocial */,
 			);
 		};
 /* End PBXProject section */
@@ -236,14 +236,56 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-dSocial-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-dsocial-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		52CF4AA9372D4F46BCD1F9C8 /* [Expo] Configure project */ = {
+		61FAC10610E376208D275BDB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-dsocial/Pods-dsocial-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		88F199CF6A50F1558E3AF279 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -260,49 +302,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-dSocial/expo-configure-project.sh\"\n";
-		};
-		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-dSocial/Pods-dSocial-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/RCTI18nStrings.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/RCTI18nStrings.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-dSocial/Pods-dSocial-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		913C1AA6D2C77D2B613F7451 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-dSocial/Pods-dSocial-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-dSocial/Pods-dSocial-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-dsocial/expo-configure-project.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -314,7 +314,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				A45F9365447D4C47AB5CC398 /* noop-file.swift in Sources */,
+				7BEF5A67726548A78CDE13ED /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,18 +323,18 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-dSocial.debug.xcconfig */;
+			baseConfigurationReference = 6C2E3173556A471DD304B334 /* Pods-dsocial.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = dSocial/dSocial.entitlements;
+				CODE_SIGN_ENTITLEMENTS = dsocial/dsocial.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
-				INFOPLIST_FILE = dSocial/Info.plist;
+				INFOPLIST_FILE = dsocial/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -345,8 +345,8 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = tech.berty.dsocial.ios;
-				PRODUCT_NAME = dSocial;
-				SWIFT_OBJC_BRIDGING_HEADER = "dSocial/dSocial-Bridging-Header.h";
+				PRODUCT_NAME = dsocial;
+				SWIFT_OBJC_BRIDGING_HEADER = "dsocial/dsocial-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -356,13 +356,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-dSocial.release.xcconfig */;
+			baseConfigurationReference = 7A4D352CD337FB3A3BF06240 /* Pods-dsocial.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = dSocial/dSocial.entitlements;
+				CODE_SIGN_ENTITLEMENTS = dsocial/dsocial.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = dSocial/Info.plist;
+				INFOPLIST_FILE = dsocial/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -373,8 +373,8 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = tech.berty.dsocial.ios;
-				PRODUCT_NAME = dSocial;
-				SWIFT_OBJC_BRIDGING_HEADER = "dSocial/dSocial-Bridging-Header.h";
+				PRODUCT_NAME = dsocial;
+				SWIFT_OBJC_BRIDGING_HEADER = "dsocial/dsocial-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -438,8 +438,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-Wl",
-					"-ld_classic",
+					" ",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -496,8 +495,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-Wl",
-					"-ld_classic",
+					" ",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -509,7 +507,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "dSocial" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "dsocial" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -518,7 +516,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dSocial" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "dsocial" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
