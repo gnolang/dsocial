@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "dSocial.app"
-               BlueprintName = "dSocial"
-               ReferencedContainer = "container:dSocial.xcodeproj">
+               BuildableName = "dsocial.app"
+               BlueprintName = "dsocial"
+               ReferencedContainer = "container:dsocial.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "dSocialTests.xctest"
-               BlueprintName = "dSocialTests"
-               ReferencedContainer = "container:dSocial.xcodeproj">
+               BuildableName = "dsocialTests.xctest"
+               BlueprintName = "dsocialTests"
+               ReferencedContainer = "container:dsocial.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "dSocial.app"
-            BlueprintName = "dSocial"
-            ReferencedContainer = "container:dSocial.xcodeproj">
+            BuildableName = "dsocial.app"
+            BlueprintName = "dsocial"
+            ReferencedContainer = "container:dsocial.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "dSocial.app"
-            BlueprintName = "dSocial"
-            ReferencedContainer = "container:dSocial.xcodeproj">
+            BuildableName = "dsocial.app"
+            BlueprintName = "dsocial"
+            ReferencedContainer = "container:dsocial.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
