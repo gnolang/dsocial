@@ -12,9 +12,8 @@ export const useSearch = () => {
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
-      const send = "200000000ugnot";
       const args: Array<string> = [address];
-      for await (const response of await gno.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted, send)) {
+      for await (const response of await gno.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
@@ -28,9 +27,8 @@ export const useSearch = () => {
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
-      const send = "200000000ugnot";
       const args: Array<string> = [address];
-      for await (const response of await gno.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted, send)) {
+      for await (const response of await gno.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
