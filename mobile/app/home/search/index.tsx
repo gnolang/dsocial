@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSearch } from "@gno/hooks/use-search";
 import SearchResults from "@gno/components/list/search/search-result-list";
+import { colors } from "@gno/styles/colors";
 
 export default function Search() {
   const router = useRouter();
@@ -30,9 +31,13 @@ export default function Search() {
       <Stack.Screen
         options={{
           title: "Search",
+					headerStyle: {
+						backgroundColor: colors.grayscale[50],
+					},
           headerSearchBarOptions: {
             autoCapitalize: "none",
             inputType: "text",
+						textColor: "black",
             onChangeText: (event) => {
               router.setParams({
                 q: event.nativeEvent.text,

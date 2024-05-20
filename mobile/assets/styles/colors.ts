@@ -34,6 +34,7 @@ export const colors = {
   },
 
   grayscale: {
+		50: "#f9f9f9",
     100: "#dbdbdb",
     200: "#A8A8A8",
     700: "#333333",

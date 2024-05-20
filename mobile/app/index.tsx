@@ -5,12 +5,12 @@ import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import SideMenuAccountList from "@gno/components/list/account/account-list";
 import ReenterPassword from "@gno/components/modal/reenter-password";
-import { Spacer } from "@gno/components/row";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
 import { loggedIn, useAppDispatch } from "@gno/redux";
 import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import { useGnoNativeContext } from "@gnolang/gnonative";
+import Spacer from "@gno/components/spacer";
 
 export default function Root() {
   const route = useRouter();
