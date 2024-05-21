@@ -10,6 +10,10 @@ ios: node_modules
 	npm run ios
 .PHONY: ios
 
+ios.release-mode: node_modules
+	npx expo run:ios --configuration Release
+.PHONY: ios.release-mode
+
 android: node_modules
 	npm run android
 .PHONY: android
