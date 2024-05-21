@@ -7,10 +7,4 @@ const Row = styled.View`
   justify-content: space-between;
 `;
 
-const Spacer = styled.View`
-  height: 16px;
-`;
-
-export { Spacer };
-
 export default Row;

@@ -1,7 +1,6 @@
 import { Link } from "expo-router";
 import { ActivityIndicator, GestureResponderEvent } from "react-native";
-import { ButtonVariant, TouchableOpacityButton, styles } from "./button";
-import Text from "../text";
+import { ButtonVariant, ButtonBase, ButtonLabel } from "./button";
 
 interface ButtonProps {
   title: string;
@@ -16,9 +15,9 @@ const LinkButton = (props: ButtonProps) => {
 
   return (
     <Link href={href} asChild>
-      <TouchableOpacityButton variant={variant} onPress={onPress}>
-        {loading ? <ActivityIndicator size="small" /> : <Text.Body style={styles.buttonText}>{title}</Text.Body>}
-      </TouchableOpacityButton>
+      <ButtonBase variant={variant} onPress={onPress}>
+        {loading ? <ActivityIndicator size="small" /> : <ButtonLabel variant={variant}>{title}</ButtonLabel>}
+      </ButtonBase>
     </Link>
   );
 };

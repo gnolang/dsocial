@@ -1,22 +1,51 @@
-import { colors } from "@gno/styles/colors";
+import React from "react";
+import { TextInput as RNTextInput, TextInputProps } from "react-native";
 import styled from "styled-components/native";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
-export interface Props {
-  error?: boolean | string;
+export interface Props extends TextInputProps {
+  error?: boolean | string | undefined;
 }
 
-const TextInput = styled.TextInput.attrs<Props>({
-  multiline: false,
-  placeholderTextColor: colors.grayscale[200],
-})`
-  height: 48px;
-  margin-top: 4px;
-  margin-bottom: 4px;
+const Container = styled.View<Props>`
+  flex-direction: row;
+  align-items: center;
   border-width: 1px;
-  padding: 10px;
-  border-radius: 5px;
-  width: 100%;
   border-color: ${(props) => (props.error ? "red" : "black")};
+  border-radius: 4px;
+  padding: 2px;
+  margin: 10px 0;
 `;
+
+const TextInputBase = styled.TextInput.attrs<Props>({
+  multiline: false,
+})`
+  flex: 1;
+  padding: 8px;
+  font-size: 16px;
+  color: black;
+  height: 48px;
+  border-width: 0;
+`;
+
+const ToggleIcon = styled.TouchableOpacity`
+  padding: 2px;
+`;
+
+export const TextInput = React.forwardRef<RNTextInput, Props>((props, ref) => {
+  const [isSecureText, setShowSecureText] = React.useState(props.secureTextEntry);
+
+  return (
+    <Container>
+      <TextInputBase {...props} ref={ref} secureTextEntry={isSecureText} />
+
+      {props.secureTextEntry ? (
+        <ToggleIcon>
+          <FontAwesome size={28} name={isSecureText ? "eye-slash" : "eye"} onPress={() => setShowSecureText((prev) => !prev)} />
+        </ToggleIcon>
+      ) : null}
+    </Container>
+  );
+});
 
 export default TextInput;

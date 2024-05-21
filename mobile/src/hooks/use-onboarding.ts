@@ -17,7 +17,7 @@ const useOnboarding = () => {
       }
 
       const response = await sendCoins(address_bech32);
-			console.log("sent coins %s", response);
+      console.log("sent coins %s", response);
 
       await registerAccount(name);
     } catch (error) {
@@ -71,6 +71,7 @@ const useOnboarding = () => {
       method: "POST",
       headers: myHeaders,
       body: raw,
+      reactNative: { textStreaming: true }
     };
 
     const faucetRemote = process.env.EXPO_PUBLIC_FAUCET_REMOTE;

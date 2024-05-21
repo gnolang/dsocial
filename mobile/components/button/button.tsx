@@ -1,11 +1,62 @@
-import React from "react";
+import { colors } from "@gno/styles/colors";
 import { ActivityIndicator, TouchableOpacityProps } from "react-native";
-import { StyleSheet } from "react-native";
-import { colors } from "../../assets/styles/colors";
-import styled from "styled-components/native";
-import Text from "../text";
+import styled, { css } from "styled-components/native";
 
-export type ButtonVariant = "primary" | "secondary" | "tertiary" | "white" | "primary2" | "primary-red" | "secondary-red";
+const variants = {
+  common: css`
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    height: 48px;
+    justify-content: center;
+    border-radius: 28px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  `,
+  primary: css`
+    background: ${colors.primary};
+  `,
+  secondary: css`
+    background: ${colors.button.secondary};
+  `,
+  text: css`
+    background: transparent;
+  `,
+  "primary-red": css`
+    background-color: red;
+  `,
+};
+
+const textVariants = {
+  common: css`
+    color: white;
+    font-weight: bold;
+    text-align: center;
+  `,
+  primary: css`
+    color: white;
+  `,
+  text: css`
+    color: ${colors.text.secondary};
+    text-align: left;
+    font-size: 14px;
+  `,
+  secondary: css`
+    color: white;
+  `,
+  "primary-red": css`
+    color: white;
+  `,
+};
+
+export type ButtonVariant = keyof typeof variants;
+
+export const ButtonBase = styled.TouchableOpacity<{ variant: ButtonVariant }>`
+  padding: 10px;
+  border-radius: 5px;
+  ${variants.common}
+  ${(props) => variants[props.variant || "primary"]}
+`;
 
 export type Props = {
   title: string;
@@ -14,51 +65,18 @@ export type Props = {
   variant: ButtonVariant;
 } & TouchableOpacityProps;
 
-const Button: React.FC<Props> = ({ title, onPress, loading = false, variant, ...rest }) => {
+const Button: React.FC<Props> = ({ variant, title, loading, ...rest }) => {
   return (
-    <TouchableOpacityButton variant={variant} onPress={onPress} {...rest}>
-      {loading ? <ActivityIndicator size="small" /> : <Text.Body style={styles.buttonText}>{title}</Text.Body>}
-    </TouchableOpacityButton>
+    <ButtonBase variant={variant} {...rest}>
+      {rest.children}
+      {loading ? <ActivityIndicator size="small" /> : <ButtonLabel variant={variant}>{title}</ButtonLabel>}
+    </ButtonBase>
   );
 };
 
-export const TouchableOpacityButton = styled.TouchableOpacity<{ variant: ButtonVariant }>`
-  background-color: ${(props) => getStyle(props.variant)};
-  width: 100%;
-  height: 48px;
-  justify-content: center;
-  border-radius: 28px;
-	margin-top: 4px;
-	margin-bottom: 4px;
+export const ButtonLabel = styled.Text<{ variant: Partial<ButtonVariant> }>`
+  ${textVariants.common}
+  ${(props) => textVariants[props.variant || "primary"]}
 `;
-
-const getStyle = (variant: ButtonVariant) => {
-  switch (variant) {
-    case "primary":
-      return colors.primary;
-    case "secondary":
-      return colors.button.secondary;
-    case "tertiary":
-      return colors.tertiary;
-    case "white":
-      return colors.white;
-    case "primary2":
-      return "transparent";
-    case "primary-red":
-      return colors.red[500];
-    case "secondary-red":
-      return colors.red[300];
-    default:
-      return colors.blue;
-  }
-};
-
-export const styles = StyleSheet.create({
-  buttonText: {
-    color: colors.white,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-});
 
 export default Button;

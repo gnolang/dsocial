@@ -30,7 +30,7 @@ export default function Page() {
       setName("");
       setPassword("");
       setConfirmPassword("");
-			inputRef.current?.focus();
+      inputRef.current?.focus();
       try {
         setPhrase(await gno.generateRecoveryPhrase());
       } catch (error) {
@@ -70,8 +70,8 @@ export default function Page() {
       await gno.selectAccount(name);
       await gno.setPassword(password);
       await onboarding.onboard(newAccount.name, newAccount.address);
-			const bech32 = await gno.addressToBech32(newAccount.address);
-      await dispatch(loggedIn({ keyInfo: newAccount, bech32}));
+      const bech32 = await gno.addressToBech32(newAccount.address);
+      await dispatch(loggedIn({ keyInfo: newAccount, bech32 }));
       router.push("/home");
     } catch (error) {
       setError("" + error);
@@ -105,7 +105,6 @@ export default function Page() {
                 secureTextEntry={true}
                 error={error}
               />
-              <Spacer />
             </View>
             <View style={{ minWidth: 200, paddingTop: 8 }}>
               <Text>Your seed phrase:</Text>
@@ -114,7 +113,7 @@ export default function Page() {
               <RNButton title="copy" onPress={copyToClipboard} />
               <Spacer />
               <Alert severity="error" message={error} />
-              <Spacer space={64} />
+              <Spacer />
               <Button.TouchableOpacity title="Create" onPress={onCreate} variant="primary" loading={loading} />
               <Spacer space={16} />
               <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" disabled={loading} />

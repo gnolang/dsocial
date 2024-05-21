@@ -1,6 +1,6 @@
 import Button from "@gno/components/button";
-import { Spacer } from "@gno/components/row";
-import { GnoAccount } from "@gno/native_modules/types";
+import Spacer from "@gno/components/spacer";
+import { GnoAccount } from "@gnolang/gnonative/build/hooks/types";
 
 interface SideMenuAccountItemProps {
   account: GnoAccount;

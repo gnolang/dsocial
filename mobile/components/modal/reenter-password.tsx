@@ -11,12 +11,12 @@ import {
 import { GRPCError } from "@gnolang/gnonative/src/grpc/error";
 import { ErrCode } from "@buf/gnolang_gnonative.bufbuild_es/rpc_pb";
 import Alert from "@gno/components/alert";
-import { Spacer } from "@gno/components/row";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { ModalView } from ".";
 import TextInput from "../textinput";
 import Text from "../text";
 import Button from "../button";
+import Spacer from "../spacer";
 
 export type Props = {
   visible: boolean;
@@ -61,7 +61,7 @@ const ReenterPassword = ({ visible, accountName, onClose }: Props) => {
   return (
     <Modal>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ height: "100%", backgroundColor: "green" }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{ height: "100%" }}>
           <ModalView.Content>
             <ModalView.Header title="Re-enter your password" onClose={() => onClose(false)} />
             <Text.BodyMedium>Please, reenter the password for the selected account.</Text.BodyMedium>
@@ -75,6 +75,7 @@ const ReenterPassword = ({ visible, accountName, onClose }: Props) => {
             />
             <Alert severity="error" message={error} />
             <Button.TouchableOpacity title="Confirm" onPress={onConfirm} variant="primary" />
+            <Spacer />
           </ModalView.Content>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>

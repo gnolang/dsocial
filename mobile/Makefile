@@ -5,12 +5,16 @@ node_modules: package.json package-lock.json
 	(npm install && touch $@) || true
 .PHONY: node_modules
 
-ios: node_modules
+ios: node_modules # Run the iOS app
 	cd ios; pod install
 	npm run ios
 .PHONY: ios
 
-android: node_modules
+ios.release: node_modules # Run the iOS app in release mode
+	npx expo run:ios --configuration Release
+.PHONY: ios.release
+
+android: node_modules # Run the Android app
 	npm run android
 .PHONY: android
 
