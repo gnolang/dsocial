@@ -1,5 +1,4 @@
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import { Alert } from "react-native";
 
 const useOnboarding = () => {
   const gno = useGnoNativeContext();
@@ -18,20 +17,11 @@ const useOnboarding = () => {
       }
 
       const response = await sendCoins(address_bech32);
-			console.log("sent coins %s", response);
+      console.log("sent coins %s", response);
 
       await registerAccount(name);
     } catch (error) {
       console.error("onboard error", error);
-
-			Alert.alert('Alert Title', 'onboard error ' + error, [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'OK', onPress: () => console.log('OK Pressed')},
-      ]);
     }
   };
 
@@ -81,7 +71,7 @@ const useOnboarding = () => {
       method: "POST",
       headers: myHeaders,
       body: raw,
-			reactNative: { textStreaming: true }
+      reactNative: { textStreaming: true }
     };
 
     const faucetRemote = process.env.EXPO_PUBLIC_FAUCET_REMOTE;
