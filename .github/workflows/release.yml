@@ -10,9 +10,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@v3
+
+      - name: Setup Node version
+        run: |
+          asdf plugin add nodejs
+          asdf install nodejs
+          echo "node_version=$(asdf current nodejs | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
+
+      - name: Set nodejs as global exec
+        run: |
+          asdf global nodejs ${{ env.node_version }}
+
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v4
         with:
           working_directory: ./mobile
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
