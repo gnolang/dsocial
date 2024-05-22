@@ -6,8 +6,7 @@ node_modules: package.json package-lock.json
 .PHONY: node_modules
 
 ios: node_modules # Run the iOS app
-	cd ios; pod install
-	npm run ios
+	npx expo run:ios
 .PHONY: ios
 
 ios.release: node_modules # Run the iOS app in release mode
@@ -15,7 +14,7 @@ ios.release: node_modules # Run the iOS app in release mode
 .PHONY: ios.release
 
 android: node_modules # Run the Android app
-	npm run android
+	npx expo run:android
 .PHONY: android
 
 android.reverse:
@@ -63,14 +62,10 @@ clean:
 	rm -rf .eslintcache
 
 	# Android files
-	rm -rf android/.gradle
-	rm -rf android/build
-	rm -rf android/app/build
-	rm -f android/libs/gobridge.aar
+	rm -rf android
 
 	# iOS files
-	rm -rf ios/build
-	rm -rf ios/Pods
+	rm -rf ios
 
 .PHONY: clean
 
@@ -88,6 +83,7 @@ help:
 	@echo ""
 	@echo "Targets:"
 	@echo "  ios            - Build the iOS app"
+	@echo "  ios.release    - Build the iOS app in release mode"
 	@echo "  android        - Build the Android app"
 	@echo "  start          - Start the metro server"
 	@echo "  clean          - Clean the project"
