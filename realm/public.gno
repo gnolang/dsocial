@@ -19,7 +19,6 @@ type UserAndPostID struct {
 // Return the "thread ID" of the new post.
 // (This is similar to boards.CreateThread, but no message title)
 func PostMessage(body string) PostID {
-	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
 	name := usernameOf(caller)
 	if name == "" {
@@ -38,7 +37,6 @@ func PostMessage(body string) PostID {
 // Return the new post ID.
 // (This is similar to boards.CreateReply.)
 func PostReply(userPostsAddr std.Address, threadid, postid PostID, body string) PostID {
-	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
 	if usernameOf(caller) == "" {
 		panic("please register")
@@ -69,7 +67,6 @@ func PostReply(userPostsAddr std.Address, threadid, postid PostID, body string) 
 // Return the new post ID.
 // (This is similar to boards.CreateRepost.)
 func RepostThread(userPostsAddr std.Address, threadid PostID, comment string) PostID {
-	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
 	if userPostsAddr == caller {
 		panic("Cannot repost a user's own message")
@@ -227,7 +224,6 @@ func GetJsonHomePosts(userPostsAddr std.Address, startIndex int, endIndex int) s
 
 // Update the caller to follow the user with followedAddr. See UserPosts.Follow.
 func Follow(followedAddr std.Address) PostID {
-	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
 	name := usernameOf(caller)
 	if name == "" {
@@ -245,7 +241,6 @@ func Follow(followedAddr std.Address) PostID {
 
 // Update the caller to unfollow the user with followedAddr. See UserPosts.Unfollow.
 func Unfollow(followedAddr std.Address) {
-	std.AssertOriginCall()
 	caller := std.GetOrigCaller()
 	name := usernameOf(caller)
 	if name == "" {
