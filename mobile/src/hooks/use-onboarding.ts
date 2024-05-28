@@ -1,3 +1,4 @@
+import { Alert as RNAlert } from "react-native";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 
 const useOnboarding = () => {
@@ -36,6 +37,7 @@ const useOnboarding = () => {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
+      RNAlert.alert("Erro on registering account", "" + error);
       console.error("error registering account", error);
     }
   };
@@ -71,7 +73,7 @@ const useOnboarding = () => {
       method: "POST",
       headers: myHeaders,
       body: raw,
-      reactNative: { textStreaming: true }
+      reactNative: { textStreaming: true },
     };
 
     const faucetRemote = process.env.EXPO_PUBLIC_FAUCET_REMOTE;

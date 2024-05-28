@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Button as RNButton, ScrollView, TextInput as RNTextInput } from "react-native";
+import { StyleSheet, Text, View, Button as RNButton, ScrollView, TextInput as RNTextInput, Alert as RNAlert } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { router, useNavigation } from "expo-router";
 import TextInput from "components/textinput";
@@ -74,6 +74,7 @@ export default function Page() {
       await dispatch(loggedIn({ keyInfo: newAccount, bech32 }));
       router.push("/home");
     } catch (error) {
+      RNAlert.alert("Error", "" + error);
       setError("" + error);
       console.log(error);
     } finally {

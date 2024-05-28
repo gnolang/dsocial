@@ -3,6 +3,7 @@ import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
 import { useIndexerContext } from "@gno/provider/indexer-provider";
+import { Alert } from "react-native";
 
 export const useFeed = () => {
   const gno = useGnoNativeContext();
@@ -22,9 +23,14 @@ export const useFeed = () => {
   async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
     const account = await checkActiveAccount();
 
-    const [nHomePosts, addrAndIDs] = await indexer.getHomePosts(account.address, BigInt(startIndex), BigInt(endIndex));
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${addrAndIDs})`);
-    return await enrichData(result, nHomePosts);
+    try {
+      const [nHomePosts, addrAndIDs] = await indexer.getHomePosts(account.address, BigInt(startIndex), BigInt(endIndex));
+      const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${addrAndIDs})`);
+      return await enrichData(result, nHomePosts);
+    } catch (error) {
+      Alert.alert("Error while fetching posts", " " + error);
+      throw error;
+    }
   }
 
   async function enrichData(result: string, nHomePosts?: number) {
