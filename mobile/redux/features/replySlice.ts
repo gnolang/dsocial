@@ -1,24 +1,19 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Post } from "@gno/types";
-import { useFeed } from "@gno/hooks/use-feed";
 
 export interface State {
   postToReply: Post | undefined;
-	/** This thread belongs to the postToReply */
-	thread: Post[] | undefined;
+  /** This thread belongs to the postToReply */
+  thread: Post[] | undefined;
 }
 
 const initialState: State = {
   postToReply: undefined,
-	thread: undefined,
+  thread: undefined,
 };
 
-export const setPostToReply = createAsyncThunk("post/reply", async (post: Post, _) => {
-  const { fetchThread } = useFeed();
-
-	const result = await fetchThread(post.user.address, Number(post.id));
-
-  return {post, thread: result.data};
+export const setPostToReply = createAsyncThunk("post/reply", async ({ post, thread }: { post: Post; thread: Post[] }) => {
+  return { post, thread };
 });
 
 export const replySlice = createSlice({
@@ -32,7 +27,12 @@ export const replySlice = createSlice({
   extraReducers(builder) {
     builder.addCase(setPostToReply.fulfilled, (state, action) => {
       state.postToReply = action.payload.post;
-			state.thread = action.payload.thread;
+      state.thread = action.payload.thread;
+    });
+    builder.addCase(setPostToReply.rejected, (state, action) => {
+      state.postToReply = undefined;
+      state.thread = undefined;
+      console.log("Error while replying a post, please, check the logs.", action.error.message);
     });
   },
 });
