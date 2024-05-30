@@ -20,11 +20,9 @@ export const useFeed = () => {
     return json;
   }
 
-  async function fetchFeed(startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
-    const account = await checkActiveAccount();
-
+  async function fetchFeed(address: string, startIndex: number, endIndex: number): Promise<{ data: Post[]; n_posts: number }> {
     try {
-      const [nHomePosts, addrAndIDs] = await indexer.getHomePosts(account.address, BigInt(startIndex), BigInt(endIndex));
+      const [nHomePosts, addrAndIDs] = await indexer.getHomePosts(address, BigInt(startIndex), BigInt(endIndex));
       const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${addrAndIDs})`);
       return await enrichData(result, nHomePosts);
     } catch (error) {
@@ -90,5 +88,5 @@ export const useFeed = () => {
     return user;
   }
 
-  return { fetchFeed, fetchCount, fetchThread };
+  return { fetchFeed, fetchCount, fetchThread, checkActiveAccount };
 };

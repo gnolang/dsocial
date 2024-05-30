@@ -5,6 +5,7 @@ import Layout from "@gno/components/layout";
 import { colors } from "@gno/styles/colors";
 import Button from "@gno/components/button";
 import { Following, User } from "@gno/types";
+import FeedView from "../feed";
 
 interface Props {
   onPressFollowing: () => void;
@@ -62,6 +63,14 @@ function AccountView(props: Props) {
             </TouchableOpacity>
           </View>
         </View>
+        <Layout.Body>
+          <View style={{ margin: 4 }}>
+            <Text.Body>Posts</Text.Body>
+          </View>
+          <View style={{ height: 1, backgroundColor: colors.grayscale[200] }}></View>
+          <FeedView totalPosts={1} onPress={(e) => console.log(e)} address={user.address} />
+        </Layout.Body>
+        <View style={{ padding: 8 }}></View>
       </View>
     </Layout.Container>
   );
