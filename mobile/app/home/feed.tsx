@@ -1,8 +1,7 @@
-import { ActivityIndicator, FlatList, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, Platform, StyleSheet, View, Alert } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
-import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import Button from "@gno/components/button";
@@ -31,6 +30,7 @@ export default function Page() {
         const total = await feed.fetchCount();
         setTotalPosts(total);
       } catch (error) {
+        Alert.alert("Error while fetching posts.", " " + error);
         console.error(error);
       } finally {
         setIsLoading(false);
