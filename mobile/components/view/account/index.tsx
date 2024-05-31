@@ -16,10 +16,21 @@ interface Props {
   currentUser: User;
   followers: Following[];
   following: Following[];
+  totalPosts: number;
 }
 
 function AccountView(props: Props) {
-  const { onPressFollowing, onPressFollowers, onPressFollow, onPressUnfollow, user, following, followers, currentUser } = props;
+  const {
+    onPressFollowing,
+    onPressFollowers,
+    onPressFollow,
+    onPressUnfollow,
+    user,
+    following,
+    followers,
+    currentUser,
+    totalPosts,
+  } = props;
   const accountName = user.name;
 
   const isFollowed = useMemo(() => followers.find((f) => f.address === currentUser.address) != null, [user, followers]);
@@ -63,14 +74,11 @@ function AccountView(props: Props) {
             </TouchableOpacity>
           </View>
         </View>
-        <Layout.Body>
-          <View style={{ margin: 4 }}>
-            <Text.Body>Posts</Text.Body>
-          </View>
-          <View style={{ height: 1, backgroundColor: colors.grayscale[200] }}></View>
-          <FeedView totalPosts={1} onPress={(e) => console.log(e)} address={user.address} />
-        </Layout.Body>
-        <View style={{ padding: 8 }}></View>
+        <View style={{ flex: 1, width: "100%", paddingHorizontal: 16, paddingTop: 8 }}>
+          <Text.Body>Posts</Text.Body>
+          <View style={{ height: 1, backgroundColor: colors.grayscale[200] }} />
+          <FeedView totalPosts={totalPosts} onPress={(e) => console.log(e)} address={user.address} />
+        </View>
       </View>
     </Layout.Container>
   );

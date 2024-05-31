@@ -27,10 +27,14 @@ export default function Page() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      if (!user) {
+        RNAlert.alert("No user found.");
+        return;
+      }
       setError(undefined);
       setIsLoading(true);
       try {
-        const total = await feed.fetchCount();
+        const total = await feed.fetchCount(user.address);
         setTotalPosts(total);
       } catch (error) {
         RNAlert.alert("Error while fetching posts.", " " + error);

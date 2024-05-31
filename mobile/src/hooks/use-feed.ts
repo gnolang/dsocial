@@ -69,11 +69,10 @@ export const useFeed = () => {
     };
   }
 
-  async function fetchCount() {
-    const account = await checkActiveAccount();
+  async function fetchCount(address: string) {
 
     // Use a range of 0,0 to just get nHomePosts.
-    const [nHomePosts, _] = await indexer.getHomePosts(account.address, BigInt(0), BigInt(0));
+    const [nHomePosts, _] = await indexer.getHomePosts(address, BigInt(0), BigInt(0));
     return nHomePosts;
   }
 

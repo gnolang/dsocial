@@ -8,6 +8,7 @@ import { Following, User } from "@gno/types";
 import { useAppSelector } from "@gno/redux";
 import { selectAccount } from "redux/features/accountSlice";
 import { setFollows } from "redux/features/profileSlice";
+import { useFeed } from "@gno/hooks/use-feed";
 
 export default function Page() {
   const { accountName } = useLocalSearchParams<{ accountName: string }>();
@@ -16,8 +17,10 @@ export default function Page() {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [following, setFollowing] = useState<Following[]>([]);
   const [followers, setFollowers] = useState<Following[]>([]);
+	const [totalPosts, setTotalPosts] = useState<number>(0);
 
   const navigation = useNavigation();
+	const feed = useFeed();
   const search = useSearch();
   const currentUser = useAppSelector(selectAccount);
   const dispatch = useDispatch();
@@ -42,6 +45,9 @@ export default function Page() {
 
       const { following } = await search.GetJsonFollowing(response.address);
       setFollowing(following);
+
+      const total = await feed.fetchCount(response.address);
+      setTotalPosts(total);
 
       dispatch(setFollows({ followers, following }));
     } catch (error: unknown | Error) {
@@ -78,6 +84,7 @@ export default function Page() {
   return (
     <AccountView
       user={user}
+      totalPosts={totalPosts}
       currentUser={currentUser}
       following={following}
       followers={followers}
