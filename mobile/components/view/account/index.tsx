@@ -5,7 +5,7 @@ import Layout from "@gno/components/layout";
 import { colors } from "@gno/styles/colors";
 import Button from "@gno/components/button";
 import { Following, User } from "@gno/types";
-import FeedView from "../feed";
+import FeedView from "../feed/feed-view";
 
 interface Props {
   onPressFollowing: () => void;
@@ -77,7 +77,7 @@ function AccountView(props: Props) {
         <View style={{ flex: 1, width: "100%", paddingHorizontal: 16, paddingTop: 8 }}>
           <Text.Body>Posts</Text.Body>
           <View style={{ height: 1, backgroundColor: colors.grayscale[200] }} />
-          <FeedView totalPosts={totalPosts} onPress={(e) => console.log(e)} address={user.address} />
+          <FeedView totalPosts={totalPosts} onPress={(e) => console.log(e)} address={user.address} type="userPosts" />
         </View>
       </View>
     </Layout.Container>

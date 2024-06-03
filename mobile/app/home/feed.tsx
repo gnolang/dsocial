@@ -5,10 +5,10 @@ import { useFeed } from "@gno/hooks/use-feed";
 import Layout from "@gno/components/layout";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import Button from "@gno/components/button";
-import FeedView from "@gno/components/view/feed";
 import { Post } from "@gno/types";
 import { selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
+import { FeedView } from "@gno/components/view";
 
 export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
@@ -85,7 +85,7 @@ export default function Page() {
   return (
     <Layout.Container>
       <View style={styles.container}>
-        <FeedView totalPosts={totalPosts} onPress={onPress} address={user.address} />
+        <FeedView totalPosts={totalPosts} onPress={onPress} address={user.address} type="userFeed" />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
     </Layout.Container>
