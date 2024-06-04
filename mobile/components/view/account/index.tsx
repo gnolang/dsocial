@@ -4,7 +4,7 @@ import Text from "@gno/components/text";
 import Layout from "@gno/components/layout";
 import { colors } from "@gno/styles/colors";
 import Button from "@gno/components/button";
-import { Following, User } from "@gno/types";
+import { Following, Post, User } from "@gno/types";
 import FeedView from "../feed/feed-view";
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
   onPressFollowers: () => void;
   onPressFollow: (address: string) => void;
   onPressUnfollow: (address: string) => void;
+  onPressPost: (post: Post) => void;
   user: User;
   currentUser: User;
   followers: Following[];
@@ -25,6 +26,7 @@ function AccountView(props: Props) {
     onPressFollowers,
     onPressFollow,
     onPressUnfollow,
+    onPressPost,
     user,
     following,
     followers,
@@ -77,7 +79,7 @@ function AccountView(props: Props) {
         <View style={{ flex: 1, width: "100%", paddingHorizontal: 16, paddingTop: 8 }}>
           <Text.Body>Posts</Text.Body>
           <View style={{ height: 1, backgroundColor: colors.grayscale[200] }} />
-          <FeedView totalPosts={totalPosts} onPress={(e) => console.log(e)} address={user.address} type="userPosts" />
+          <FeedView totalPosts={totalPosts} onPress={onPressPost} address={user.address} type="userPosts" />
         </View>
       </View>
     </Layout.Container>

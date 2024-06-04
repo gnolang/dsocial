@@ -51,9 +51,8 @@ export default function Page() {
   };
 
   const onPress = async (item: Post) => {
-    const thread = await feed.fetchThread(item.user.address, Number(item.id));
-    await dispatch(setPostToReply({ post: item, thread: thread.data }));
-    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id } });
+    await dispatch(setPostToReply({ post: item }));
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
   };
 
   if (isLoading)

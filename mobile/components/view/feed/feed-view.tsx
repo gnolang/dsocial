@@ -90,6 +90,7 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
   if (error) {
     return (
       <Layout.Container>
+        <Layout.Header title="Post" iconType="back" />
         <Layout.Body>
           <Alert severity="error" message="Error while fetching posts, please, check the logs." />
         </Layout.Body>

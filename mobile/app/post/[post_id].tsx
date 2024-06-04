@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Text from "@gno/components/text";
-import { selectPostToReply, selectReplyThread, useAppSelector } from "@gno/redux";
+import { selectPostToReply, useAppSelector } from "@gno/redux";
 import Layout from "@gno/components/layout";
 import TextInput from "@gno/components/textinput";
 import Button from "@gno/components/button";
@@ -9,41 +9,65 @@ import Spacer from "@gno/components/spacer";
 import Alert from "@gno/components/alert";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { Tweet } from "@gno/components/feed/tweet";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { Post } from "@gno/types";
+import { useFeed } from "@gno/hooks/use-feed";
 
 function Page() {
-  const [postContent, setPostContent] = useState("");
+  const [replyContent, setReplyContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
-  const [loading, setLoading] = useState(false);
-
+  const [loading, setLoading] = useState<string | undefined>(undefined);
+  const [thread, setThread] = useState<Post[]>([]);
   const post = useAppSelector(selectPostToReply);
-  const thread = useAppSelector(selectReplyThread);
+
+  const feed = useFeed();
   const router = useRouter();
   const gno = useGnoNativeContext();
+
+  const params = useLocalSearchParams();
+  const { post_id, address } = params;
+
+  console.log("yyyyy: ", post);
+  useEffect(() => {
+    fetchData();
+  }, [post_id]);
+
+  const fetchData = async () => {
+    if (!post) return;
+
+    try {
+      const thread = await feed.fetchThread(address as string, Number(post_id));
+      setThread(thread.data);
+      setLoading(undefined);
+    } catch (error) {
+      console.error("on post screen", error);
+      setError("" + error);
+    }
+  };
 
   const onPressReply = async () => {
     if (!post) return;
 
-    setLoading(true);
+    setLoading(undefined);
     setError(undefined);
 
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
 
-      const args: Array<string> = [post.user.address, String(post.id), String(post.id), postContent];
+      const args: Array<string> = [post.user.address, String(post.id), String(post.id), replyContent];
       for await (const response of await gno.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
         console.log("response ono post screen: ", response);
       }
 
-      setPostContent("");
-      router.back();
+      setReplyContent("");
+      await fetchData();
+      // router.back();
     } catch (error) {
       console.error("on post screen", error);
       setError("" + error);
     } finally {
-      setLoading(false);
+      setLoading(undefined);
     }
   };
 
@@ -51,9 +75,20 @@ function Page() {
     // TODO: on press a tweet inside the reply thread
   };
 
+  if (loading) {
+    return (
+      <Layout.Container>
+        <Layout.Body>
+          <Text.Title>{loading}</Text.Title>
+        </Layout.Body>
+      </Layout.Container>
+    );
+  }
+
   if (!post) {
     return (
       <Layout.Container>
+        <Layout.Header title="Post" iconType="back" />
         <Layout.Body>
           <Alert severity="error" message="Error while fetching posts, please, check the logs." />
         </Layout.Body>
@@ -67,31 +102,34 @@ function Page() {
       <Layout.Body>
         <Tweet post={post} highlighted />
 
-        <FlatList
-          scrollToOverflowEnabled
-          data={thread}
-          keyExtractor={(item) => `${item.id}`}
-          contentContainerStyle={{ flex: 1, height: 200, width: "100%" }}
-          renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} />}
-          onEndReachedThreshold={0.1}
-        />
+        <View style={{ flex: 1 }}>
+          <FlatList
+            scrollToOverflowEnabled
+            data={thread}
+            keyExtractor={(item) => `${item.id}`}
+            contentContainerStyle={{ width: "100%", paddingBottom: 20 }}
+            renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} />}
+            onEndReachedThreshold={0.1}
+          />
+        </View>
 
-        <Spacer />
         <Text.Body>Replying to {post?.user.name}</Text.Body>
         <Spacer />
         <TextInput
           placeholder="Post your reply here..."
-          onChangeText={setPostContent}
-          value={postContent}
+          onChangeText={setReplyContent}
+          value={replyContent}
+          autoCapitalize={"none"}
+          textAlign="left"
           multiline
-          numberOfLines={4}
-          style={{ height: 100 }}
+          numberOfLines={3}
+          style={{ height: 80 }}
         />
-        <Spacer space={16} />
-        <Button.TouchableOpacity loading={loading} title="Reply" variant="primary" onPress={onPressReply} />
+        <Button.TouchableOpacity loading={Boolean(loading)} title="Reply" variant="primary" onPress={onPressReply} />
         <Spacer space={16} />
         <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
         <Alert severity="error" message={error} />
+        <Spacer space={16} />
       </Layout.Body>
     </Layout.Container>
   );
