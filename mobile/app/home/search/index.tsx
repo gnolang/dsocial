@@ -14,7 +14,7 @@ export default function Search() {
   useEffect(() => {
     (async function () {
       if (params.q) {
-        const result = await search.searchUser(params.q);
+        const result = await search.searchUser(params.q, true);
         setData(result);
       } else {
         setData([]);

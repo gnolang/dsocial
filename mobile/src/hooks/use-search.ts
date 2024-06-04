@@ -72,13 +72,21 @@ export const useSearch = () => {
     return json;
   }
 
-  async function searchUser(q: string) {
+  async function searchUser(q: string, excludeActiveAccount?: boolean) {
     checkActiveAccount();
 
     const result = await gno.qEval("gno.land/r/berty/social", `ListJsonUsersByPrefix("${q}", ${MAX_RESULT})`);
-    const json = await convertToJson(result);
+    const usernames = await convertToJson(result);
+    if (excludeActiveAccount) {
+      // Remove the active account's own username.
+      const currentAccount = await gno.getActiveAccount();
+      const i = usernames.indexOf(currentAccount.key.name, 0);
+      if (i >= 0) {
+        usernames.splice(i, 1);
+      }
+    }
 
-    return json;
+    return usernames;
   }
 
   async function convertToJson(result: string | undefined) {
