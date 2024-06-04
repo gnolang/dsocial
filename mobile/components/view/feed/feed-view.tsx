@@ -72,6 +72,7 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
         return;
       } else {
         console.error(error);
+        setError("" + error);
       }
     } finally {
       setIsLoading(false);
@@ -98,6 +99,14 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
     );
   }
 
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <FlatList
       ref={ref}
@@ -118,6 +127,11 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
 const styles = StyleSheet.create({
   flatListContent: {
     paddingBottom: 60,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   footer: {
     paddingVertical: 20,
