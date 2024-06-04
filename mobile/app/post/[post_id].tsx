@@ -51,7 +51,15 @@ function Page() {
     // TODO: on press a tweet inside the reply thread
   };
 
-  if (!post) return <Text.Body>Error on loading Post</Text.Body>;
+  if (!post) {
+    return (
+      <Layout.Container>
+        <Layout.Body>
+          <Alert severity="error" message="Error while fetching posts, please, check the logs." />
+        </Layout.Body>
+      </Layout.Container>
+    );
+  }
 
   return (
     <Layout.Container>

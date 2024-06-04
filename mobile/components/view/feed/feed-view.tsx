@@ -11,11 +11,13 @@ import { Tweet } from "@gno/components/feed/tweet";
 type Props = {
   totalPosts: number;
   onPress: (item: Post) => void;
+  address: string;
+  type: "userPosts" | "userFeed";
 };
 
 const subtractOrZero = (a: number, b: number) => Math.max(0, a - b);
 
-export default function FeedView({ totalPosts, onPress }: Props) {
+export default function FeedView({ totalPosts, onPress, address, type }: Props) {
   const pageSize = 9;
   const [startIndex, setStartIndex] = useState(subtractOrZero(totalPosts, pageSize));
   const [endIndex, setEndIndex] = useState(totalPosts);
@@ -35,7 +37,7 @@ export default function FeedView({ totalPosts, onPress }: Props) {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
 
-    await fetchData();
+    await fetchData(address);
 
     setRefreshing(false);
   }, []);
@@ -44,15 +46,18 @@ export default function FeedView({ totalPosts, onPress }: Props) {
     console.log("end reached", isEndReached);
     if (!isEndReached) {
       setIsEndReached(true);
-      fetchData();
+      fetchData(address);
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = async (address: string) => {
     setIsLoading(true);
     try {
       console.log("fetching data from %d to %d", startIndex, endIndex);
-      const result = await feed.fetchFeed(startIndex, endIndex);
+      const result =
+        type === "userPosts"
+          ? await feed.fetchThreadPosts(address, startIndex, endIndex)
+          : await feed.fetchFeed(address, startIndex, endIndex);
       setLimit(result.n_posts);
       setStartIndex(subtractOrZero(startIndex, pageSize));
       setEndIndex(startIndex);

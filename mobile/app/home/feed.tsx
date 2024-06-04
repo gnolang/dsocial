@@ -1,13 +1,14 @@
-import { ActivityIndicator, FlatList, Platform, StyleSheet, View, Alert } from "react-native";
+import { ActivityIndicator, FlatList, Platform, StyleSheet, View, Alert as RNAlert } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
 import Layout from "@gno/components/layout";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import Button from "@gno/components/button";
-import FeedView from "@gno/components/view/feed";
 import { Post } from "@gno/types";
-import { setPostToReply, useAppDispatch } from "@gno/redux";
+import { selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
+import Alert from "@gno/components/alert";
+import { FeedView } from "@gno/components/view";
 
 export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
@@ -20,17 +21,23 @@ export default function Page() {
   const ref = useRef<FlatList>(null);
   const dispatch = useAppDispatch();
 
+  const user = useAppSelector(selectAccount);
+
   useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      if (!user) {
+        RNAlert.alert("No user found.");
+        return;
+      }
       setError(undefined);
       setIsLoading(true);
       try {
-        const total = await feed.fetchCount();
+        const total = await feed.fetchCount(user.address);
         setTotalPosts(total);
       } catch (error) {
-        Alert.alert("Error while fetching posts.", " " + error);
+        RNAlert.alert("Error while fetching posts.", " " + error);
         console.error(error);
       } finally {
         setIsLoading(false);
@@ -43,8 +50,9 @@ export default function Page() {
     router.push("/post");
   };
 
-  const onPress = (item: Post) => {
-    dispatch(setPostToReply(item));
+  const onPress = async (item: Post) => {
+    const thread = await feed.fetchThread(item.user.address, Number(item.id));
+    await dispatch(setPostToReply({ post: item, thread: thread.data }));
     router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id } });
   };
 
@@ -64,10 +72,20 @@ export default function Page() {
       </Layout.Container>
     );
 
+  if (!user) {
+    return (
+      <Layout.Container>
+        <Layout.Body>
+          <Alert severity="error" message="No user found." />
+        </Layout.Body>
+      </Layout.Container>
+    );
+  }
+
   return (
     <Layout.Container>
       <View style={styles.container}>
-        <FeedView totalPosts={totalPosts} onPress={onPress} />
+        <FeedView totalPosts={totalPosts} onPress={onPress} address={user.address} type="userFeed" />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
     </Layout.Container>
