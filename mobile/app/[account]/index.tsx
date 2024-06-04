@@ -78,7 +78,7 @@ export default function Page() {
   };
 
   const onPressPost = async (item: Post) => {
-    await setPostToReply({ post: item });
+    await dispatch(setPostToReply({ post: item }));
     router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
   };
 

@@ -17,6 +17,7 @@ function Page() {
   const [replyContent, setReplyContent] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<string | undefined>(undefined);
+  const [posting, setPosting] = useState<boolean>(false);
   const [thread, setThread] = useState<Post[]>([]);
   const post = useAppSelector(selectPostToReply);
 
@@ -27,7 +28,6 @@ function Page() {
   const params = useLocalSearchParams();
   const { post_id, address } = params;
 
-  console.log("yyyyy: ", post);
   useEffect(() => {
     fetchData();
   }, [post_id]);
@@ -50,6 +50,7 @@ function Page() {
 
     setLoading(undefined);
     setError(undefined);
+    setPosting(true);
 
     try {
       const gasFee = "1000000ugnot";
@@ -62,12 +63,11 @@ function Page() {
 
       setReplyContent("");
       await fetchData();
-      // router.back();
     } catch (error) {
       console.error("on post screen", error);
       setError("" + error);
     } finally {
-      setLoading(undefined);
+      setPosting(false);
     }
   };
 
@@ -125,7 +125,7 @@ function Page() {
           numberOfLines={3}
           style={{ height: 80 }}
         />
-        <Button.TouchableOpacity loading={Boolean(loading)} title="Reply" variant="primary" onPress={onPressReply} />
+        <Button.TouchableOpacity loading={posting} title="Reply" variant="primary" onPress={onPressReply} />
         <Spacer space={16} />
         <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
         <Alert severity="error" message={error} />
