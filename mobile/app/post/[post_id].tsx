@@ -35,13 +35,15 @@ function Page() {
   const fetchData = async () => {
     if (!post) return;
 
+    setLoading("Loading post...");
     try {
       const thread = await feed.fetchThread(address as string, Number(post_id));
       setThread(thread.data);
-      setLoading(undefined);
     } catch (error) {
       console.error("on post screen", error);
       setError("" + error);
+    } finally {
+      setLoading(undefined);
     }
   };
 
@@ -75,16 +77,6 @@ function Page() {
     // TODO: on press a tweet inside the reply thread
   };
 
-  if (loading) {
-    return (
-      <Layout.Container>
-        <Layout.Body>
-          <Text.Title>{loading}</Text.Title>
-        </Layout.Body>
-      </Layout.Container>
-    );
-  }
-
   if (!post) {
     return (
       <Layout.Container>
@@ -103,14 +95,18 @@ function Page() {
         <Tweet post={post} highlighted />
 
         <View style={{ flex: 1 }}>
-          <FlatList
-            scrollToOverflowEnabled
-            data={thread}
-            keyExtractor={(item) => `${item.id}`}
-            contentContainerStyle={{ width: "100%", paddingBottom: 20 }}
-            renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} />}
-            onEndReachedThreshold={0.1}
-          />
+          {loading ? (
+            <Text.Body style={{ flex: 1, textAlign: "center", paddingTop: 42 }}>{loading}</Text.Body>
+          ) : (
+            <FlatList
+              scrollToOverflowEnabled
+              data={thread}
+              keyExtractor={(item) => `${item.id}`}
+              contentContainerStyle={{ width: "100%", paddingBottom: 20 }}
+              renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} />}
+              onEndReachedThreshold={0.1}
+            />
+          )}
         </View>
 
         <Text.Body>Replying to {post?.user.name}</Text.Body>
