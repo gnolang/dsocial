@@ -9,7 +9,7 @@ import Spacer from "@gno/components/spacer";
 import Alert from "@gno/components/alert";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { Tweet } from "@gno/components/feed/tweet";
-import { FlatList, View } from "react-native";
+import { FlatList, KeyboardAvoidingView, View } from "react-native";
 import { Post } from "@gno/types";
 import { useFeed } from "@gno/hooks/use-feed";
 
@@ -111,21 +111,23 @@ function Page() {
 
         <Text.Body>Replying to {post?.user.name}</Text.Body>
         <Spacer />
-        <TextInput
-          placeholder="Post your reply here..."
-          onChangeText={setReplyContent}
-          value={replyContent}
-          autoCapitalize={"none"}
-          textAlign="left"
-          multiline
-          numberOfLines={3}
-          style={{ height: 80 }}
-        />
-        <Button.TouchableOpacity loading={posting} title="Reply" variant="primary" onPress={onPressReply} />
-        <Spacer space={16} />
-        <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
-        <Alert severity="error" message={error} />
-        <Spacer space={16} />
+        <KeyboardAvoidingView behavior="padding">
+          <TextInput
+            placeholder="Post your reply here..."
+            onChangeText={setReplyContent}
+            value={replyContent}
+            autoCapitalize={"none"}
+            textAlign="left"
+            multiline
+            numberOfLines={3}
+            style={{ height: 80 }}
+          />
+          <Button.TouchableOpacity loading={posting} title="Reply" variant="primary" onPress={onPressReply} />
+          <Spacer space={16} />
+          <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
+          <Alert severity="error" message={error} />
+          <Spacer space={16} />
+        </KeyboardAvoidingView>
       </Layout.Body>
     </Layout.Container>
   );
