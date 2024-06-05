@@ -4,8 +4,8 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Loading } from "@gno/components/loading";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
-import { Following, User } from "@gno/types";
-import { useAppSelector } from "@gno/redux";
+import { Following, Post, User } from "@gno/types";
+import { setPostToReply, useAppSelector } from "@gno/redux";
 import { selectAccount } from "redux/features/accountSlice";
 import { setFollows } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
@@ -17,10 +17,10 @@ export default function Page() {
   const [user, setUser] = useState<User | undefined>(undefined);
   const [following, setFollowing] = useState<Following[]>([]);
   const [followers, setFollowers] = useState<Following[]>([]);
-	const [totalPosts, setTotalPosts] = useState<number>(0);
+  const [totalPosts, setTotalPosts] = useState<number>(0);
 
   const navigation = useNavigation();
-	const feed = useFeed();
+  const feed = useFeed();
   const search = useSearch();
   const currentUser = useAppSelector(selectAccount);
   const dispatch = useDispatch();
@@ -77,6 +77,11 @@ export default function Page() {
     fetchData();
   };
 
+  const onPressPost = async (item: Post) => {
+    await dispatch(setPostToReply({ post: item }));
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
+  };
+
   if (!user || loading || !currentUser) {
     return <Loading message="Profile Loading..." />;
   }
@@ -88,6 +93,7 @@ export default function Page() {
       currentUser={currentUser}
       following={following}
       followers={followers}
+      onPressPost={onPressPost}
       onPressFollowing={onPressFollowing}
       onPressFollowers={onPressFollowers}
       onPressFollow={onPressFollow}

@@ -72,6 +72,7 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
         return;
       } else {
         console.error(error);
+        setError("" + error);
       }
     } finally {
       setIsLoading(false);
@@ -90,10 +91,19 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
   if (error) {
     return (
       <Layout.Container>
+        <Layout.Header title="Post" iconType="back" />
         <Layout.Body>
           <Alert severity="error" message="Error while fetching posts, please, check the logs." />
         </Layout.Body>
       </Layout.Container>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
     );
   }
 
@@ -117,6 +127,11 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
 const styles = StyleSheet.create({
   flatListContent: {
     paddingBottom: 60,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   footer: {
     paddingVertical: 20,
