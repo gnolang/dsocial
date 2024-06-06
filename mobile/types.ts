@@ -21,15 +21,14 @@ export interface User {
 }
 
 export interface Following {
-  name: string;
   address: string;
   started_following_at: string;
+  user?: User;
 }
 
 export interface GetJsonFollowersResult {
   followers: Following[];
   n_followers: number;
-
 }
 export interface GetJsonFollowingResult {
   following: Following[];

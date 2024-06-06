@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Following } from "@gno/types";
-import { useUserCache } from "@gno/hooks/use-user-cache";
 
 export interface ProfileState {
   following: Following[];
@@ -20,18 +19,6 @@ interface FollowsProps {
 }
 
 export const setFollows = createAsyncThunk("profile/setFollows", async ({ following, followers }: FollowsProps, _) => {
-  const cache = useUserCache();
-
-  const enrichFollows = async (follows: Following[]) => {
-    for await (const item of follows) {
-      const user = await cache.getUser(item.address);
-      item.name = user.name;
-    }
-  };
-
-  await enrichFollows(following);
-  await enrichFollows(followers);
-
   return { following, followers };
 });
 
@@ -48,6 +35,9 @@ export const profileSlice = createSlice({
     builder.addCase(setFollows.fulfilled, (state, action) => {
       state.following = action.payload.following;
       state.followers = action.payload.followers;
+    });
+    builder.addCase(setFollows.rejected, (state, action) => {
+      console.log("Error while fetching follows, please, check the logs. %s", action.error.message);
     });
   },
 });
