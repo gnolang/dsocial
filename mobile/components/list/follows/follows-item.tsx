@@ -12,7 +12,7 @@ function FollowsItem({ item, onPress }: Props) {
     <TouchableOpacity onPress={() => onPress(item)} style={styles.container}>
       <Image source={{ uri: "https://www.gravatar.com/avatar/tmp" }} style={{ width: 48, height: 48, borderRadius: 24 }} />
       <View style={styles.textBox}>
-        <Text.Body style={styles.name}>@{item.name}</Text.Body>
+        <Text.Body style={styles.name}>@{item.user?.name}</Text.Body>
         <Text.Caption1 numberOfLines={1} ellipsizeMode="tail" style={styles.caption}>
           {item.address}
         </Text.Caption1>

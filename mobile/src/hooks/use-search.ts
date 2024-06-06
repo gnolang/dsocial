@@ -80,7 +80,7 @@ export const useSearch = () => {
     if (excludeActiveAccount) {
       // Remove the active account's own username.
       const currentAccount = await gno.getActiveAccount();
-      const i = usernames.indexOf(currentAccount.key.name, 0);
+      const i = usernames.indexOf(currentAccount.key?.name, 0);
       if (i >= 0) {
         usernames.splice(i, 1);
       }

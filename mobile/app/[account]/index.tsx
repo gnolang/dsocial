@@ -9,6 +9,7 @@ import { setPostToReply, useAppSelector } from "@gno/redux";
 import { selectAccount } from "redux/features/accountSlice";
 import { setFollows } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
+import { useUserCache } from "@gno/hooks/use-user-cache";
 
 export default function Page() {
   const { accountName } = useLocalSearchParams<{ accountName: string }>();
@@ -22,8 +23,10 @@ export default function Page() {
   const navigation = useNavigation();
   const feed = useFeed();
   const search = useSearch();
-  const currentUser = useAppSelector(selectAccount);
+  const userCache = useUserCache();
   const dispatch = useDispatch();
+
+  const currentUser = useAppSelector(selectAccount);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -49,6 +52,15 @@ export default function Page() {
       const total = await feed.fetchCount(response.address);
       setTotalPosts(total);
 
+      const enrichFollows = async (follows: Following[]) => {
+        for await (const item of follows) {
+          item.user = await userCache.getUser(item.address);
+        }
+      };
+
+      await enrichFollows(following);
+      await enrichFollows(followers);
+
       dispatch(setFollows({ followers, following }));
     } catch (error: unknown | Error) {
       console.log(error);
@@ -61,7 +73,7 @@ export default function Page() {
     router.navigate({ pathname: "account/following" });
   };
 
-  const onPressFollowers = () => {
+  const onPressFollowers = async () => {
     router.navigate({ pathname: "account/followers" });
   };
 
