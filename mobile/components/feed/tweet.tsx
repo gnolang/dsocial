@@ -4,30 +4,52 @@ import { Post } from "../../types";
 import Text from "@gno/components/text";
 import RepliesLabel from "./replies-label";
 import TimeStampLabel from "./timestamp.label";
+import RepostButton from "./repost-button";
+import { setPostToReply, useAppDispatch } from "@gno/redux";
+import { useRouter } from "expo-router";
+import LikeButton from "./like-button";
 
 interface FeedProps {
-  post: Post;
+  post?: Post;
   onPress?: (post: Post) => void;
-  highlighted?: boolean;
+  showFooter?: boolean;
 }
 
-export function Tweet({ post, onPress = () => {}, highlighted }: FeedProps) {
+const func = () => {};
+
+export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const onPressRepost = async (item: Post) => {
+    await dispatch(setPostToReply({ post: item }));
+    router.navigate({ pathname: "/repost" });
+  };
+
+  if (!post) {
+    return null;
+  }
+
   return (
     <Pressable onPress={() => onPress(post)} style={styles.container}>
       <View style={styles.body}>
         <Image source={{ uri: post.user.image }} style={styles.image} />
         <View style={styles.content}>
-          <Pressable style={{ alignItems: "flex-start" }}>
-            <Text.Body style={[{ fontWeight: "bold", fontSize: 16 }]}>@{post.user.name}</Text.Body>
+          <Pressable style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text.Body style={[{ fontWeight: "bold", fontSize: 16, paddingRight: 8 }]}>@{post.user.name}</Text.Body>
+            <TimeStampLabel timestamp={post.date} />
           </Pressable>
 
           <Text.Body selectable>{post.post}</Text.Body>
         </View>
       </View>
-      <View style={[styles.footer, highlighted ? styles.footerHighlighted : null]}>
-        <TimeStampLabel timestamp={post.date} />
-        <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
-      </View>
+      {showFooter ? (
+        <View style={[styles.footer]}>
+          <LikeButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
+          <RepostButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
+          <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
+        </View>
+      ) : null}
     </Pressable>
   );
 }

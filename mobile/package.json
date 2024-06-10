@@ -20,6 +20,7 @@
     "@gnolang/gnonative": "^1.2.2",
     "@reduxjs/toolkit": "^2.1.0",
     "base-64": "^1.0.0",
+    "date-fns": "^3.6.0",
     "expo": "~51.0.8",
     "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.1",
