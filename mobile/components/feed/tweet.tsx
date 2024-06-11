@@ -3,11 +3,13 @@ import { Image, Pressable, StyleSheet, View } from "react-native";
 import { Post } from "../../types";
 import Text from "@gno/components/text";
 import RepliesLabel from "./replies-label";
-import TimeStampLabel from "./timestamp.label";
+import TimeStampLabel from "./timestamp-label";
 import RepostButton from "./repost-button";
 import { setPostToReply, useAppDispatch } from "@gno/redux";
 import { useRouter } from "expo-router";
 import LikeButton from "./like-button";
+import { colors } from "@gno/styles/colors";
+import RepostLabel from "./repost-label";
 
 interface FeedProps {
   post?: Post;
@@ -20,6 +22,7 @@ const func = () => {};
 export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const isRepost = Boolean(post && post.parent_id > 0);
 
   const onPressRepost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
@@ -36,6 +39,7 @@ export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
 
   return (
     <Pressable onPress={() => onPress(post)} style={styles.container}>
+      <RepostLabel visible={isRepost} />
       <View style={styles.body}>
         <Image source={{ uri: post.user.image }} style={styles.image} />
         <View style={styles.content}>

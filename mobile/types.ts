@@ -12,7 +12,7 @@ export type Post = {
   id: string;
   n_replies: number;
   n_replies_all: number;
-  parent_id: string;
+  parent_id: number;
 };
 
 export interface User {
