@@ -51,7 +51,7 @@ export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
       </View>
       {showFooter ? (
         <View style={[styles.footer]}>
-          <LikeButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
+          {/* <LikeButton style={styles.reply} onPressRepost={() => onPressRepost(post)} /> */}
           <RepostButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
           <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
         </View>

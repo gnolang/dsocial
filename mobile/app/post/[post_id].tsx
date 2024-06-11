@@ -92,7 +92,7 @@ function Page() {
     <Layout.Container>
       <Layout.Header title="Post" iconType="back" />
       <Layout.Body>
-        <Tweet post={post} highlighted />
+        <Tweet post={post} showFooter={false} />
 
         <View style={{ flex: 1 }}>
           {loading ? (
