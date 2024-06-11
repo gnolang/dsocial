@@ -39,10 +39,12 @@ export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
       <View style={styles.body}>
         <Image source={{ uri: post.user.image }} style={styles.image} />
         <View style={styles.content}>
-          <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={onPressName}>
-            <Text.Body style={[{ fontWeight: "bold", fontSize: 16, paddingRight: 8 }]}>@{post.user.name}</Text.Body>
-            <TimeStampLabel timestamp={post.date} />
-          </Pressable>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={onPressName}>
+              <Text.Body style={[{ fontWeight: "bold", fontSize: 16, paddingRight: 8 }]}>@{post.user.name}</Text.Body>
+              <TimeStampLabel timestamp={post.date} />
+            </Pressable>
+          </View>
 
           <Text.Body selectable>{post.post}</Text.Body>
         </View>
