@@ -131,7 +131,7 @@ func (userPosts *UserPosts) RenderUserPosts(includeFollowed bool) string {
 	} else {
 		posts = &userPosts.threads
 	}
-	posts.Iterate("", "", func(key string, postI interface{}) bool {
+	posts.ReverseIterate("", "", func(key string, postI interface{}) bool {
 		str += "----------------------------------------\n"
 		str += postI.(*Post).RenderSummary() + "\n"
 		return false
