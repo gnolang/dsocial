@@ -1,23 +1,25 @@
-export type Post = {
-  user: {
-    name: string;
-    address: string;
-    image: string;
-    followers: number;
-    url: string;
-    bio: string;
-  };
+type PostInterface = {
+  user: User;
   post: string;
   date: string;
   id: string;
   n_replies: number;
   n_replies_all: number;
   parent_id: number;
-};
+}
+export type ParentPost = PostInterface
+
+export type Post = {
+  parent_post?: ParentPost;
+} & PostInterface;
 
 export interface User {
   address: string;
   name: string;
+  image?: string;
+  followers?: number;
+  url?: string;
+  bio?: string;
 }
 
 export interface Following {

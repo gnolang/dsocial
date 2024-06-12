@@ -47,7 +47,7 @@ export default function Page() {
           loading={loading}
           style={{ flex: 1 }}
           variant="primary"
-          title="Post"
+          title="Repost"
           onPress={onPressRepost}
         ></Button.TouchableOpacity>
       </View>
