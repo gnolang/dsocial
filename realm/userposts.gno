@@ -243,7 +243,7 @@ func (userPosts *UserPosts) refreshHomePosts() {
 		startKey := minStartKey
 		if info.startedPostsCtr > userPosts.lastRefreshId {
 			// Started following after the last refresh. Ignore messages before started following.
-			startKey := postIDKey(info.startedPostsCtr + 1)
+			startKey = postIDKey(info.startedPostsCtr + 1)
 		}
 
 		followedUserPosts.threads.Iterate(startKey, "", func(id string, postI interface{}) bool {
