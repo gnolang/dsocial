@@ -1,4 +1,4 @@
-import { Post, User } from "@gno/types";
+import { ParentPost, Post, User } from "@gno/types";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
@@ -58,28 +58,50 @@ export const useFeed = () => {
       const post = isThread ? jsonPost.post : jsonPost;
       const creator = await cache.getUser(post.creator);
 
-      posts.push({
-        user: {
-          name: creator.name,
-          address: creator.address,
-          image: "https://www.gravatar.com/avatar/tmp",
-          followers: 0,
-          url: "string",
-          bio: "string",
-        },
-        id: post.id,
-        post: post.body,
-        date: post.createdAt,
-        n_replies: post.n_replies,
-        n_replies_all: post.n_replies_all,
-        parent_id: post.parent_id,
-      });
+      let parentPost: Post | undefined;
+
+      if (post.parent_id > 0) {
+        const parent_user = await cache.getUser(post.repost_user as string);
+        const parent_post = await fetchParentPost(post.parent_id, post.repost_user as string);
+        parentPost = convertToPost(parent_post, parent_user);
+      }
+
+      posts.push(convertToPost(post, creator, parentPost));
     }
 
     return {
       data: posts.reverse(),
       n_posts,
     };
+  }
+
+  function convertToPost(jsonPost: any, creator: User, parentPost?: ParentPost): Post {
+    const post: Post = {
+      user: {
+        name: creator.name,
+        address: creator.address,
+        image: "https://www.gravatar.com/avatar/tmp",
+        followers: 0,
+        url: "string",
+        bio: "string",
+      },
+      id: jsonPost.id,
+      post: jsonPost.body,
+      date: jsonPost.createdAt,
+      n_replies: jsonPost.n_replies,
+      n_replies_all: jsonPost.n_replies_all,
+      parent_id: jsonPost.parent_id,
+      parent_post: parentPost,
+    }
+
+    return post;
+  }
+
+  async function fetchParentPost(postId: number, address: string) {
+    const payload = `[]UserAndPostID{{\"${address}\", ${postId}},}`
+    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${payload})`);
+    const jsonResult = parser.toJson(result);
+    return jsonResult[0];
   }
 
   async function fetchCount(address: string) {

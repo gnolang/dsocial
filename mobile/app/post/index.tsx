@@ -1,5 +1,3 @@
-import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
-import Alert from "@gno/components/alert";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import Spacer from "@gno/components/spacer";
@@ -43,6 +41,11 @@ export default function Search() {
         console.log("response ono post screen: ", response);
       }
       setPostContent("");
+
+      // delay 3s to wait for the transaction to be mined
+      // TODO: replace with a better way to wait for the transaction to be mined
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       router.push("home");
     } catch (error) {
       console.error("on post screen", error);
@@ -82,11 +85,3 @@ export default function Search() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  centerScreen: {
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

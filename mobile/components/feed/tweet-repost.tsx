@@ -8,7 +8,6 @@ import RepostButton from "./repost-button";
 import { setPostToReply, useAppDispatch } from "@gno/redux";
 import { useRouter } from "expo-router";
 import RepostLabel from "./repost-label";
-import { TweetRepost } from "./tweet-repost";
 
 interface FeedProps {
   post?: Post;
@@ -18,7 +17,7 @@ interface FeedProps {
 
 const func = () => {};
 
-export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
+export function TweetRepost({ post, onPress = func, showFooter = true }: FeedProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isRepost = Boolean(post && post.parent_id > 0);
@@ -40,17 +39,16 @@ export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
     <Pressable onPress={() => onPress(post)} style={styles.container}>
       <RepostLabel post={post} />
       <View style={styles.body}>
-        <Image source={{ uri: post.user.image }} style={styles.image} />
         <View style={styles.content}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={onPressName}>
+            <Image source={{ uri: post.user.image }} style={styles.image} />
+            <Pressable style={{ flexDirection: "row", alignItems: "center", paddingLeft: 8 }} onPress={onPressName}>
               <Text.Body style={[{ fontWeight: "bold", fontSize: 16, paddingRight: 8 }]}>@{post.user.name}</Text.Body>
               <TimeStampLabel timestamp={post.date} />
             </Pressable>
           </View>
 
           <Text.Body selectable>{post.post}</Text.Body>
-          {isRepost ? <TweetRepost post={post.parent_post} onPress={onPress} showFooter={false} /> : null}
         </View>
       </View>
       {showFooter ? (
@@ -66,17 +64,17 @@ export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingTop: 8,
     borderBottomColor: "#ccc",
     borderBottomWidth: 1,
   },
   body: {
     flexDirection: "row",
-    gap: 16,
+    gap: 4,
   },
   image: {
-    width: 48,
-    height: 48,
+    width: 24,
+    height: 24,
     borderRadius: 24,
   },
   content: {
