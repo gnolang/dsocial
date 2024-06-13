@@ -44,6 +44,7 @@ func getOrCreateUserPosts(userAddr string) *UserPosts {
 }
 
 func getPostID(response string) (int, error) {
+	response = strings.TrimSpace(response)
 	const postIDSuffix = " gno.land/r/berty/social.PostID)"
 	if !strings.HasSuffix(response, postIDSuffix) {
 		return 0, errors.New("Expected PostID suffix: " + response)
