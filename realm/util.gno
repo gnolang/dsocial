@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"gno.land/p/demo/avl"
 	"gno.land/p/demo/ufmt"
 	p_users "gno.land/p/demo/users"
 	"gno.land/r/demo/users"
@@ -58,6 +59,24 @@ func padZero(u64 uint64, length int) string {
 
 func postIDKey(pid PostID) string {
 	return padZero(uint64(pid), 10)
+}
+
+func reactionKey(reaction Reaction) string {
+	return strconv.Itoa(int(reaction))
+}
+
+// If reactions has an value for the given reaction, then return it.
+// Otherwise, add the reaction key to reactions, set the value to an empty avl.Tree and return it.
+func getOrCreateReactionValue(reactions *avl.Tree, reaction Reaction) *avl.Tree {
+	key := reactionKey(reaction)
+	valueI, exists := reactions.Get(key)
+	if exists {
+		return valueI.(*avl.Tree)
+	} else {
+		value := avl.NewTree()
+		reactions.Set(key, value)
+		return value
+	}
 }
 
 func indentBody(indent string, body string) string {

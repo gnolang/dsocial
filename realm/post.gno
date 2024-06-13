@@ -22,6 +22,14 @@ func (pid PostID) String() string {
 	return strconv.Itoa(int(pid))
 }
 
+// Reaction is for the "enum" of ways to react to a post
+type Reaction int
+
+const (
+	Gnod Reaction = iota
+	MaxReaction
+)
+
 // A Post is a "thread" or a "reply" depending on context.
 // A thread is a Post of a UserPosts that holds other replies.
 // This is similar to boards.Post except that this doesn't have a title.
@@ -36,6 +44,7 @@ type Post struct {
 	threadID   PostID      // original PostID
 	parentID   PostID      // parent PostID (if reply or repost)
 	repostUser std.Address // UserPosts user std.Address of original post (if repost)
+	reactions  *avl.Tree   // Reaction -> *avl.Tree of std.Address -> "" (Use the avl.Tree keys as the "set" of addresses)
 	createdAt  time.Time
 }
 
@@ -51,6 +60,7 @@ func newPost(userPosts *UserPosts, id PostID, creator std.Address, body string, 
 		threadID:   threadID,
 		parentID:   parentID,
 		repostUser: repostUser,
+		reactions:  avl.NewTree(),
 		createdAt:  debugNow(),
 	}
 }
@@ -103,6 +113,60 @@ func (post *Post) GetReply(pid PostID) *Post {
 	}
 }
 
+// Add the userAddr to the posts.reactions for reaction.
+// Create the reaction key in post.reactions if needed.
+// If userAddr is already added, do nothing.
+// If the userAddr is the post's creator, do nothing. (Don't react to one's own posts.)
+// Return a boolean indicating whether the userAddr was added (false if it was already added).
+func (post *Post) AddReaction(userAddr std.Address, reaction Reaction) bool {
+	validateReaction(reaction)
+
+	if userAddr == post.creator {
+		// Don't react to one's own posts.
+		return false
+	}
+	value := getOrCreateReactionValue(post.reactions, reaction)
+	if value.Has(userAddr.String()) {
+		// Already added.
+		return false
+	}
+
+	value.Set(userAddr.String(), "")
+	return true
+}
+
+// Remove the userAddr from the posts.reactions for reaction.
+// If userAddr is already removed, do nothing.
+// Return a boolean indicating whether the userAddr was found and removed.
+func (post *Post) RemoveReaction(userAddr std.Address, reaction Reaction) bool {
+	validateReaction(reaction)
+
+	if !post.reactions.Has(reactionKey(reaction)) {
+		// There is no entry for reaction, so don't create one.
+		return false
+	}
+
+	_, removed := getOrCreateReactionValue(post.reactions, reaction).Remove(userAddr.String())
+	return removed
+}
+
+// Return the count of reactions for the reaction.
+func (post *Post) GetReactionCount(reaction Reaction) int {
+	key := reactionKey(reaction)
+	valueI, exists := post.reactions.Get(key)
+	if exists {
+		return valueI.(*avl.Tree).Size()
+	} else {
+		return 0
+	}
+}
+
+func validateReaction(reaction Reaction) {
+	if reaction < 0 || reaction >= MaxReaction {
+		panic("invalid Reaction value: " + strconv.Itoa(int(reaction)))
+	}
+}
+
 func (post *Post) GetSummary() string {
 	return summaryOf(post.body, 80)
 }
@@ -115,6 +179,14 @@ func (post *Post) GetURL() string {
 		return post.userPosts.GetURLFromThreadAndReplyID(
 			post.threadID, post.id)
 	}
+}
+
+func (post *Post) GetGnodFormURL() string {
+	return "/r/berty/social?help&__func=AddReaction" +
+		"&userPostsAddr=" + post.userPosts.userAddr.String() +
+		"&threadid=" + post.threadID.String() +
+		"&postid=" + post.id.String() +
+		"&reaction=" + strconv.Itoa(int(Gnod))
 }
 
 func (post *Post) GetReplyFormURL() string {
@@ -149,6 +221,7 @@ func (post *Post) RenderSummary() string {
 	str += post.GetSummary() + "\n"
 	str += "\\- " + displayAddressMD(post.creator) + ","
 	str += " [" + post.createdAt.Format("2006-01-02 3:04pm MST") + "](" + post.GetURL() + ")"
+	str += " (" + strconv.Itoa(post.GetReactionCount(Gnod)) + " gnods)"
 	str += " (" + strconv.Itoa(post.replies.Size()) + " replies)"
 	str += " (" + strconv.Itoa(post.reposts.Size()) + " reposts)" + "\n"
 	return str
@@ -162,6 +235,8 @@ func (post *Post) RenderPost(indent string, levels int) string {
 	str += indentBody(indent, post.body) + "\n" // TODO: indent body lines.
 	str += indent + "\\- " + displayAddressMD(post.creator) + ", "
 	str += "[" + post.createdAt.Format("2006-01-02 3:04pm (MST)") + "](" + post.GetURL() + ")"
+	str += " - (" + strconv.Itoa(post.GetReactionCount(Gnod)) + " gnods) - "
+	str += " \\[[gnod](" + post.GetGnodFormURL() + ")]"
 	str += " \\[[reply](" + post.GetReplyFormURL() + ")]"
 	if post.IsThread() {
 		str += " \\[[repost](" + post.GetRepostFormURL() + ")]"
@@ -217,8 +292,9 @@ func (post *Post) MarshalJSON() ([]byte, error) {
 
 	json := new(bytes.Buffer)
 
-	json.WriteString(ufmt.Sprintf(`{"id": %d, "createdAt": %s, "creator": "%s", "n_replies": %d, "n_replies_all": %d, "parent_id": %d`,
-		uint64(post.id), string(createdAt), post.creator.String(), post.replies.Size(), post.repliesAll.Size(), uint64(post.parentID)))
+	json.WriteString(ufmt.Sprintf(`{"id": %d, "createdAt": %s, "creator": "%s", "n_gnods": %d, "n_replies": %d, "n_replies_all": %d, "parent_id": %d`,
+		uint64(post.id), string(createdAt), post.creator.String(), post.GetReactionCount(Gnod), post.replies.Size(), post.repliesAll.Size(),
+		uint64(post.parentID)))
 	if post.repostUser != "" {
 		json.WriteString(ufmt.Sprintf(`, "repost_user": %s`, strconv.Quote(post.repostUser.String())))
 	}
