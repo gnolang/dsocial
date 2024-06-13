@@ -291,7 +291,7 @@ func AddReaction(userPostsAddr std.Address, threadid, postid PostID, reaction Re
 // from a top-level post for the threadid, otherwise remove the reaction from the postid "sub reply".
 // (This function's arguments are similar to PostReply.)
 // The caller must already be registered with /r/demo/users Register.
-// Return a boolean indicating whether the userAddr was added. See Post.RemoveReaction.
+// Return a boolean indicating whether the userAddr was removed. See Post.RemoveReaction.
 func RemoveReaction(userPostsAddr std.Address, threadid, postid PostID, reaction Reaction) bool {
 	caller := std.GetOrigCaller()
 	if usernameOf(caller) == "" {
