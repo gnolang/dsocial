@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, Platform, StyleSheet, View, Alert as RNAlert } from "react-native";
+import { ActivityIndicator, FlatList, Platform, StyleSheet, View, Alert as RNAlert, SafeAreaView } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigation, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
@@ -82,12 +82,12 @@ export default function Page() {
   }
 
   return (
-    <Layout.Container>
+    <SafeAreaView style={{ flex: 1, paddingTop: Platform.select({ ios: 0, default: 20 }) }}>
       <View style={styles.container}>
         <FeedView totalPosts={totalPosts} onPress={onPress} address={user.address} type="userFeed" />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
-    </Layout.Container>
+    </SafeAreaView>
   );
 }
 
