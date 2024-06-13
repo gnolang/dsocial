@@ -256,6 +256,66 @@ func Unfollow(followedAddr std.Address) {
 	userPosts.Unfollow(followedAddr)
 }
 
+// Add the reaction by the caller to the post of userPostsAddr, where threadid is the ID
+// returned by the original call to PostMessage. If postid == threadid then add the reaction
+// to a top-level post for the threadid, otherwise add the reaction to the postid "sub reply".
+// (This function's arguments are similar to PostReply.)
+// The caller must already be registered with /r/demo/users Register.
+// Return a boolean indicating whether the userAddr was added. See Post.AddReaction.
+func AddReaction(userPostsAddr std.Address, threadid, postid PostID, reaction Reaction) bool {
+	caller := std.GetOrigCaller()
+	if usernameOf(caller) == "" {
+		panic("please register")
+	}
+	userPosts := getUserPosts(userPostsAddr)
+	if userPosts == nil {
+		panic("posts for userPostsAddr do not exist")
+	}
+	thread := userPosts.GetThread(threadid)
+	if thread == nil {
+		panic("threadid in user posts does not exist")
+	}
+	if postid == threadid {
+		return thread.AddReaction(caller, reaction)
+	} else {
+		post := thread.GetReply(postid)
+		if post == nil {
+			panic("postid does not exist")
+		}
+		return post.AddReaction(caller, reaction)
+	}
+}
+
+// Remove the reaction by the caller to the post of userPostsAddr, where threadid is the ID
+// returned by the original call to PostMessage. If postid == threadid then remove the reaction
+// from a top-level post for the threadid, otherwise remove the reaction from the postid "sub reply".
+// (This function's arguments are similar to PostReply.)
+// The caller must already be registered with /r/demo/users Register.
+// Return a boolean indicating whether the userAddr was removed. See Post.RemoveReaction.
+func RemoveReaction(userPostsAddr std.Address, threadid, postid PostID, reaction Reaction) bool {
+	caller := std.GetOrigCaller()
+	if usernameOf(caller) == "" {
+		panic("please register")
+	}
+	userPosts := getUserPosts(userPostsAddr)
+	if userPosts == nil {
+		panic("posts for userPostsAddr do not exist")
+	}
+	thread := userPosts.GetThread(threadid)
+	if thread == nil {
+		panic("threadid in user posts does not exist")
+	}
+	if postid == threadid {
+		return thread.RemoveReaction(caller, reaction)
+	} else {
+		post := thread.GetReply(postid)
+		if post == nil {
+			panic("postid does not exist")
+		}
+		return post.RemoveReaction(caller, reaction)
+	}
+}
+
 // Call users.GetUserByAddress and return the result as JSON, or "" if not found.
 // (This is a temporary utility until gno.land supports returning structured data directly.)
 func GetJsonUserByAddress(addr std.Address) string {
