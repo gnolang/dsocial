@@ -29,7 +29,11 @@ export default function Page() {
         console.log("response ono post screen: ", response);
       }
 
-      router.back();
+      // delay 3s to wait for the transaction to be mined
+      // TODO: replace with a better way to wait for the transaction to be mined
+      await new Promise((resolve) => setTimeout(resolve, 6000));
+
+      router.push("home");
     } catch (error) {
       console.error("on post screen", error);
       Alert.alert("Failed to repost", "" + error);

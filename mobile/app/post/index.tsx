@@ -41,6 +41,11 @@ export default function Search() {
         console.log("response ono post screen: ", response);
       }
       setPostContent("");
+
+      // delay 3s to wait for the transaction to be mined
+      // TODO: replace with a better way to wait for the transaction to be mined
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+
       router.push("home");
     } catch (error) {
       console.error("on post screen", error);
