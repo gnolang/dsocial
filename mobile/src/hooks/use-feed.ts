@@ -60,7 +60,7 @@ export const useFeed = () => {
 
       let parentPost: Post | undefined;
 
-      if (post.parent_id > 0) {
+      if (post.repost_user && post.parent_id) {
         const parent_user = await cache.getUser(post.repost_user as string);
         const parent_post = await fetchParentPost(post.parent_id, post.repost_user as string);
         parentPost = convertToPost(parent_post, parent_user);
