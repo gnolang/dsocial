@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
@@ -11,6 +11,7 @@ import { loggedIn, useAppDispatch } from "@gno/redux";
 import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import Spacer from "@gno/components/spacer";
+import * as Application from "expo-application";
 
 export default function Root() {
   const route = useRouter();
@@ -22,6 +23,8 @@ export default function Root() {
   const gno = useGnoNativeContext();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+
+  const appVersion = Application.nativeApplicationVersion;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -83,21 +86,30 @@ export default function Root() {
     <>
       <Layout.Container>
         <Layout.BodyAlignedBotton>
-          <ScrollView>
+          <View style={{ alignItems: "center" }}>
+            <Text.Title>dSocial</Text.Title>
+            <Text.Body>Decentralized Social Network</Text.Body>
+            <Text.Body>Powered by GnoNative</Text.Body>
+            <Text.Caption1>v{appVersion}</Text.Caption1>
+          </View>
+
+          <ScrollView style={{ marginTop: 24 }}>
             {accounts && accounts.length > 0 && (
               <>
-                <Text.Body>Please, select one of the existing accounts to start:</Text.Body>
+                <Text.Caption1>Please, select one of the existing accounts to start:</Text.Caption1>
+                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
+                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
+                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
                 <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
                 <Spacer />
-                <Ruller />
-                <Spacer />
-                <Text.Body>Or use one of these options:</Text.Body>
               </>
             )}
-
             <Spacer />
-            <Button.Link title="Sign up" href="sign-up" />
           </ScrollView>
+          <Ruller />
+          <Spacer />
+          <Text.Caption1>Or create a new account:</Text.Caption1>
+          <Button.Link title="Sign up" href="sign-up" />
         </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (

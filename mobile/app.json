@@ -34,7 +34,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "tech.berty.dsocial.android"
+      "package": "tech.berty.dsocial.android",
+      "versionCode": 7
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
