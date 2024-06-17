@@ -73,10 +73,14 @@ clean_install: clean node_modules
 	cd ios && pod install
 .PHONY: clean_install
 
-release: node_modules
+release.ios: node_modules
 	npm run build
 	eas build --platform ios --profile production
-.PHONY: release
+.PHONY: release.ios
+
+release.android: node_modules
+	eas build --platform android --profile production
+.PHONY: elease.android
 
 help:
 	@echo "Usage: make [target]"
