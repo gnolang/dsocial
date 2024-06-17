@@ -3,6 +3,7 @@ import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Text from "@gno/components/text";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useSearch } from "@gno/hooks/use-search";
+import * as Application from "expo-application";
 
 interface Props {
   activeAccount: KeyInfo | undefined;
@@ -47,6 +48,8 @@ export function AccountBalance({ activeAccount }: Props) {
 
   return (
     <>
+      <Text.Subheadline>Version:</Text.Subheadline>
+      <Text.Body>{Application.nativeApplicationVersion}</Text.Body>
       <Text.Subheadline>Active Account:</Text.Subheadline>
       <Text.Body>{activeAccount.name}</Text.Body>
       <Text.Subheadline>Address:</Text.Subheadline>
