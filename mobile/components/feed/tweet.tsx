@@ -23,7 +23,7 @@ const func = () => {};
 export function Tweet({ post, onPress = func, onGnod = func, showFooter = true }: FeedProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const isRepost = Boolean(post && post.parent_id > 0);
+  const isRepost = post?.repost_parent;
 
   const onPressRepost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
@@ -52,7 +52,7 @@ export function Tweet({ post, onPress = func, onGnod = func, showFooter = true }
           </View>
 
           <Text.Body selectable>{post.post}</Text.Body>
-          {isRepost ? <TweetRepost post={post.parent_post} onPress={onPress} showFooter={false} /> : null}
+          {isRepost ? <TweetRepost post={post.repost_parent} onPress={onPress} showFooter={false} /> : null}
         </View>
       </View>
       {showFooter ? (

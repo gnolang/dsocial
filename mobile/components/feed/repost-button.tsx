@@ -12,8 +12,8 @@ interface Props {
 
 function RepostButton({ style, onPressRepost, post }: Props) {
   const onPress = () => {
-    if (post.parent_post) {
-      onPressRepost(post.parent_post);
+    if (post.repost_parent) {
+      onPressRepost(post.repost_parent);
     } else {
       onPressRepost(post);
     }
