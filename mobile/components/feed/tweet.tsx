@@ -57,8 +57,8 @@ export function Tweet({ post, onPress = func, onGnod = func, showFooter = true }
       </View>
       {showFooter ? (
         <View style={[styles.footer]}>
-          <GnodLabel style={styles.reply} gnodsCount={post.n_gnods} onPress={() => onGnod(post)} />
-          <RepostButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
+          <GnodLabel style={styles.reply} post={post} onGnod={onGnod} />
+          <RepostButton style={styles.reply} post={post} onPressRepost={onPressRepost} />
           <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
         </View>
       ) : null}

@@ -10,7 +10,6 @@ import { selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@
 import Alert from "@gno/components/alert";
 import { FeedView } from "@gno/components/view";
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import base64 from "base-64";
 
 export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
