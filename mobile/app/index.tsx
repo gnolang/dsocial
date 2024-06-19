@@ -98,9 +98,6 @@ export default function Root() {
               <>
                 <Text.Caption1>Please, select one of the existing accounts to start:</Text.Caption1>
                 <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
-                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
-                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
-                <SideMenuAccountList accounts={accounts} changeAccount={onChangeAccountHandler} />
                 <Spacer />
               </>
             )}
