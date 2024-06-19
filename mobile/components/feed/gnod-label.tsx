@@ -11,12 +11,12 @@ interface Props {
 }
 
 function GnodLabel({ post, style, onGnod }: Props) {
-  const isRepost = post.parent_post;
-  const gnodsCount = isRepost ? post.parent_post?.n_gnods : post.n_gnods;
+  const isRepost = post.repost_parent;
+  const gnodsCount = isRepost ? post.repost_parent?.n_gnods : post.n_gnods;
 
   const onPress = () => {
-    if (post.parent_post) {
-      onGnod(post.parent_post);
+    if (post.repost_parent) {
+      onGnod(post.repost_parent);
     } else {
       onGnod(post);
     }

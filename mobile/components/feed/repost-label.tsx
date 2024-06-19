@@ -3,7 +3,7 @@ import Text from "../text";
 import { Post } from "@gno/types";
 
 function RepostLabel({ post }: { post: Post }) {
-  if (!post.parent_post) return null;
+  if (!post.repost_parent) return null;
 
   return (
     <Text.Caption1
@@ -13,7 +13,7 @@ function RepostLabel({ post }: { post: Post }) {
         paddingBottom: 8,
       }}
     >
-      reposted from @{post.parent_post?.user.name}
+      reposted from @{post.repost_parent?.user.name}
     </Text.Caption1>
   );
 }

@@ -11,7 +11,7 @@ type PostInterface = {
 export type ParentPost = PostInterface
 
 export type Post = {
-  parent_post?: ParentPost;
+  repost_parent?: ParentPost;
 } & PostInterface;
 
 export interface User {

@@ -58,15 +58,15 @@ export const useFeed = () => {
       const post = isThread ? jsonPost.post : jsonPost;
       const creator = await cache.getUser(post.creator);
 
-      let parentPost: Post | undefined;
+      let repost_parent: Post | undefined;
 
       if (post.repost_user && post.parent_id) {
         const parent_user = await cache.getUser(post.repost_user as string);
-        const parent_post = await fetchParentPost(post.parent_id, post.repost_user as string);
-        parentPost = convertToPost(parent_post, parent_user);
+        const repost = await fetchParentPost(post.parent_id, post.repost_user as string);
+        repost_parent = convertToPost(repost, parent_user);
       }
 
-      posts.push(convertToPost(post, creator, parentPost));
+      posts.push(convertToPost(post, creator, repost_parent));
     }
 
     return {
@@ -75,7 +75,7 @@ export const useFeed = () => {
     };
   }
 
-  function convertToPost(jsonPost: any, creator: User, parentPost?: ParentPost): Post {
+  function convertToPost(jsonPost: any, creator: User, repost_parent?: ParentPost): Post {
     console.log("jsonPost: ", jsonPost);
     const post: Post = {
       user: {
@@ -93,7 +93,7 @@ export const useFeed = () => {
       n_gnods: jsonPost.n_gnods,
       n_replies_all: jsonPost.n_replies_all,
       parent_id: jsonPost.parent_id,
-      parent_post: parentPost,
+      repost_parent,
     }
 
     return post;
