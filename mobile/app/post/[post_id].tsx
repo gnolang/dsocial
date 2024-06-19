@@ -9,7 +9,7 @@ import Spacer from "@gno/components/spacer";
 import Alert from "@gno/components/alert";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { Tweet } from "@gno/components/feed/tweet";
-import { FlatList, KeyboardAvoidingView, View } from "react-native";
+import { FlatList, KeyboardAvoidingView, View, Alert as RNAlert } from "react-native";
 import { Post } from "@gno/types";
 import { useFeed } from "@gno/hooks/use-feed";
 
@@ -77,6 +77,19 @@ function Page() {
     // TODO: on press a tweet inside the reply thread
   };
 
+  const onGnod = async (post: Post) => {
+    console.log("gnodding post: ", post);
+    setLoading("Gnoding...");
+    try {
+      await feed.onGnod(post);
+      await fetchData();
+    } catch (error) {
+      RNAlert.alert("Error", "Error while adding reaction: " + error);
+    } finally {
+      setLoading(undefined);
+    }
+  };
+
   if (!post) {
     return (
       <Layout.Container>
@@ -103,7 +116,7 @@ function Page() {
               data={thread}
               keyExtractor={(item) => `${item.id}`}
               contentContainerStyle={{ width: "100%", paddingBottom: 20 }}
-              renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} />}
+              renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} onGnod={onGnod} />}
               onEndReachedThreshold={0.1}
             />
           )}

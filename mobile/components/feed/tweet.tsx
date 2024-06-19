@@ -9,16 +9,18 @@ import { setPostToReply, useAppDispatch } from "@gno/redux";
 import { useRouter } from "expo-router";
 import RepostLabel from "./repost-label";
 import { TweetRepost } from "./tweet-repost";
+import GnodLabel from "./gnod-label";
 
 interface FeedProps {
   post?: Post;
   onPress?: (post: Post) => void;
+  onGnod?: (post: Post) => void;
   showFooter?: boolean;
 }
 
 const func = () => {};
 
-export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
+export function Tweet({ post, onPress = func, onGnod = func, showFooter = true }: FeedProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isRepost = Boolean(post && post.parent_id > 0);
@@ -55,7 +57,7 @@ export function Tweet({ post, onPress = func, showFooter = true }: FeedProps) {
       </View>
       {showFooter ? (
         <View style={[styles.footer]}>
-          {/* <LikeButton style={styles.reply} onPressRepost={() => onPressRepost(post)} /> */}
+          <GnodLabel style={styles.reply} gnodsCount={post.n_gnods} onPress={() => onGnod(post)} />
           <RepostButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
           <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
         </View>
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     paddingTop: 12,
-    paddingLeft: 64,
+    paddingLeft: 44,
     gap: 16,
   },
   footerHighlighted: {

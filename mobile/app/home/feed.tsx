@@ -9,6 +9,8 @@ import { Post } from "@gno/types";
 import { selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import { FeedView } from "@gno/components/view";
+import { useGnoNativeContext } from "@gnolang/gnonative";
+import base64 from "base-64";
 
 export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
@@ -17,6 +19,7 @@ export default function Page() {
 
   const router = useRouter();
   const feed = useFeed();
+  const gno = useGnoNativeContext();
   const navigation = useNavigation();
   const ref = useRef<FlatList>(null);
   const dispatch = useAppDispatch();
@@ -55,11 +58,25 @@ export default function Page() {
     router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
   };
 
+  const onGnod = async (post: Post) => {
+    setIsLoading(true);
+
+    try {
+      await feed.onGnod(post);
+    } catch (error) {
+      RNAlert.alert("Error", "Error while adding reaction: " + error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading)
     return (
-      <View style={styles.footer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <Layout.Container>
+        <Layout.Body>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </Layout.Body>
+      </Layout.Container>
     );
 
   if (error)
@@ -84,7 +101,7 @@ export default function Page() {
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: Platform.select({ ios: 0, default: 20 }) }}>
       <View style={styles.container}>
-        <FeedView totalPosts={totalPosts} onPress={onPress} address={user.address} type="userFeed" />
+        <FeedView totalPosts={totalPosts} onPress={onPress} onGnod={onGnod} address={user.address} type="userFeed" />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
     </SafeAreaView>

@@ -4,6 +4,7 @@ type PostInterface = {
   date: string;
   id: string;
   n_replies: number;
+  n_gnods: number;
   n_replies_all: number;
   parent_id: number;
 }

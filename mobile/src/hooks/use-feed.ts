@@ -4,7 +4,7 @@ import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
 import { useIndexerContext } from "@gno/provider/indexer-provider";
 import { Alert } from "react-native";
-
+import base64 from "base-64";
 interface ThreadPosts {
   data: Post[];
   n_posts: number;
@@ -76,6 +76,7 @@ export const useFeed = () => {
   }
 
   function convertToPost(jsonPost: any, creator: User, parentPost?: ParentPost): Post {
+    console.log("jsonPost: ", jsonPost);
     const post: Post = {
       user: {
         name: creator.name,
@@ -89,6 +90,7 @@ export const useFeed = () => {
       post: jsonPost.body,
       date: jsonPost.createdAt,
       n_replies: jsonPost.n_replies,
+      n_gnods: jsonPost.n_gnods,
       n_replies_all: jsonPost.n_replies_all,
       parent_id: jsonPost.parent_id,
       parent_post: parentPost,
@@ -121,5 +123,23 @@ export const useFeed = () => {
     return user;
   }
 
-  return { fetchFeed, fetchCount, fetchThread, fetchThreadPosts, checkActiveAccount };
+  async function onGnod(post: Post) {
+    await checkActiveAccount();
+
+    try {
+      const gasFee = "1000000ugnot";
+      const gasWanted = 2000000;
+
+      const args: Array<string> = [post.user.address, String(post.id), String(post.id), String("0")];
+      console.log("AddReaction args: ", args.join(", "));
+      for await (const response of await gno.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted)) {
+        const result = JSON.parse(JSON.stringify(response)).result;
+        // Alert.alert("AddReaction Result", base64.decode(result));
+      }
+    } catch (error) {
+      Alert.alert("Error", "Error while adding reaction: " + error);
+    }
+  }
+
+  return { fetchFeed, fetchCount, fetchThread, fetchThreadPosts, checkActiveAccount, onGnod };
 };

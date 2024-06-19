@@ -5,6 +5,8 @@ import CheckMark from "./CheckMark";
 import Home from "./Home";
 import Search from "./Search";
 import Profile from "./Profile";
+import Gnod from "./Gnod";
+import Gnoded from "./Gnoded";
 
 const Icons = {
   ArrowLeft,
@@ -14,6 +16,8 @@ const Icons = {
   Home,
   Search,
   Profile,
+  Gnod,
+  Gnoded
 };
 
 export default Icons;
