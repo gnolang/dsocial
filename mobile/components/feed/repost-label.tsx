@@ -3,7 +3,7 @@ import Text from "../text";
 import { Post } from "@gno/types";
 
 function RepostLabel({ post }: { post: Post }) {
-  if (!post.parent_id || post.parent_id === 0) return null;
+  if (!post.parent_post) return null;
 
   return (
     <Text.Caption1

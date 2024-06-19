@@ -23,7 +23,7 @@ const func = () => {};
 export function Tweet({ post, onPress = func, onGnod = func, showFooter = true }: FeedProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const isRepost = Boolean(post && post.parent_id > 0);
+  const isRepost = post?.parent_post;
 
   const onPressRepost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));

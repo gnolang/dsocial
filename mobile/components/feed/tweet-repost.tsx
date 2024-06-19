@@ -20,7 +20,6 @@ const func = () => {};
 export function TweetRepost({ post, onPress = func, showFooter = true }: FeedProps) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const isRepost = Boolean(post && post.parent_id > 0);
 
   const onPressRepost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
@@ -54,7 +53,7 @@ export function TweetRepost({ post, onPress = func, showFooter = true }: FeedPro
       {showFooter ? (
         <View style={[styles.footer]}>
           {/* <LikeButton style={styles.reply} onPressRepost={() => onPressRepost(post)} /> */}
-          <RepostButton style={styles.reply} onPressRepost={() => onPressRepost(post)} />
+          <RepostButton style={styles.reply} post={post} onPressRepost={onPressRepost} />
           <RepliesLabel replyCount={post.n_replies} style={styles.reply} />
         </View>
       ) : null}

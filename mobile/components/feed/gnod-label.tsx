@@ -1,6 +1,5 @@
 import { StyleProp, TextStyle, TouchableOpacity } from "react-native";
 import { colors } from "@gno/styles/colors";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Text from "../text";
 import Icons from "../icons";
 import { Post } from "@gno/types";
@@ -12,7 +11,7 @@ interface Props {
 }
 
 function GnodLabel({ post, style, onGnod }: Props) {
-  const isRepost = Boolean(post && post.parent_id > 0);
+  const isRepost = post.parent_post;
   const gnodsCount = isRepost ? post.parent_post?.n_gnods : post.n_gnods;
 
   const onPress = () => {
