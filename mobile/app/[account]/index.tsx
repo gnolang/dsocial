@@ -89,6 +89,19 @@ export default function Page() {
     fetchData();
   };
 
+  const onGnod = async (post: Post) => {
+    console.log("gnodding post: ", post);
+    setLoading("Gnoding...");
+    try {
+      await feed.onGnod(post);
+      await fetchData();
+    } catch (error) {
+      console.error("Error while adding reaction: " + error);
+    } finally {
+      setLoading(undefined);
+    }
+  };
+
   const onPressPost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
     router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
@@ -105,6 +118,7 @@ export default function Page() {
       currentUser={currentUser}
       following={following}
       followers={followers}
+      onGnod={onGnod}
       onPressPost={onPressPost}
       onPressFollowing={onPressFollowing}
       onPressFollowers={onPressFollowers}

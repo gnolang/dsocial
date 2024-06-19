@@ -11,13 +11,14 @@ import { Tweet } from "@gno/components/feed/tweet";
 type Props = {
   totalPosts: number;
   onPress: (item: Post) => void;
+  onGnod: (item: Post) => void;
   address: string;
   type: "userPosts" | "userFeed";
 };
 
 const subtractOrZero = (a: number, b: number) => Math.max(0, a - b);
 
-export default function FeedView({ totalPosts, onPress, address, type }: Props) {
+export default function FeedView({ totalPosts, onPress, onGnod, address, type }: Props) {
   const pageSize = 9;
   const [startIndex, setStartIndex] = useState(subtractOrZero(totalPosts, pageSize));
   const [endIndex, setEndIndex] = useState(totalPosts);
@@ -117,7 +118,7 @@ export default function FeedView({ totalPosts, onPress, address, type }: Props) 
       ListEmptyComponent={<EmptyFeedList />}
       keyExtractor={(item) => `${item.id}`}
       contentContainerStyle={styles.flatListContent}
-      renderItem={({ item }) => <Tweet post={item} onPress={onPress} />}
+      renderItem={({ item }) => <Tweet post={item} onPress={onPress} onGnod={onGnod} />}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.1}
     />
