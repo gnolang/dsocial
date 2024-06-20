@@ -8,7 +8,7 @@ import Button from "@gno/components/button";
 import Spacer from "@gno/components/spacer";
 import Alert from "@gno/components/alert";
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import { Tweet } from "@gno/components/feed/tweet";
+import { PostRow } from "@gno/components/feed/post-row";
 import { FlatList, KeyboardAvoidingView, View, Alert as RNAlert } from "react-native";
 import { Post } from "@gno/types";
 import { useFeed } from "@gno/hooks/use-feed";
@@ -73,8 +73,8 @@ function Page() {
     }
   };
 
-  const onPressTweet = (item: Post) => {
-    // TODO: on press a tweet inside the reply thread
+  const onPressPost = (post: Post) => {
+    // TODO: on press a post inside the reply thread
   };
 
   const onGnod = async (post: Post) => {
@@ -105,7 +105,7 @@ function Page() {
     <Layout.Container>
       <Layout.Header title="Post" iconType="back" />
       <Layout.Body>
-        <Tweet post={post} showFooter={false} />
+        <PostRow post={post} showFooter={false} />
 
         <View style={{ flex: 1 }}>
           {loading ? (
@@ -116,7 +116,7 @@ function Page() {
               data={thread}
               keyExtractor={(item) => `${item.id}`}
               contentContainerStyle={{ width: "100%", paddingBottom: 20 }}
-              renderItem={({ item }) => <Tweet post={item} onPress={onPressTweet} onGnod={onGnod} />}
+              renderItem={({ item }) => <PostRow post={item} onPress={onPressPost} onGnod={onGnod} />}
               onEndReachedThreshold={0.1}
             />
           )}

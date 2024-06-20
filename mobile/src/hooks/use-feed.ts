@@ -4,7 +4,7 @@ import { useUserCache } from "./use-user-cache";
 import useGnoJsonParser from "./use-gno-json-parser";
 import { useIndexerContext } from "@gno/provider/indexer-provider";
 import { Alert } from "react-native";
-import base64 from "base-64";
+
 interface ThreadPosts {
   data: Post[];
   n_posts: number;
