@@ -1,5 +1,5 @@
 import Button from "@gno/components/button";
-import { Tweet } from "@gno/components/feed/tweet";
+import { PostRow } from "@gno/components/feed/post-row";
 import Layout from "@gno/components/layout";
 import TextInput from "@gno/components/textinput";
 import { selectPostToReply, useAppSelector } from "@gno/redux";
@@ -67,7 +67,7 @@ export default function Page() {
           style={{ height: 80 }}
         />
 
-        <Tweet post={post} showFooter={false} />
+        <PostRow post={post} showFooter={false} />
       </Layout.Body>
     </Layout.Container>
   );

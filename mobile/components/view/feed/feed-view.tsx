@@ -6,7 +6,7 @@ import Layout from "@gno/components/layout";
 import { Post } from "@gno/types";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import EmptyFeedList from "@gno/components/feed/empty-feed-list";
-import { Tweet } from "@gno/components/feed/tweet";
+import { PostRow } from "@gno/components/feed/post-row";
 
 type Props = {
   totalPosts: number;
@@ -118,7 +118,7 @@ export default function FeedView({ totalPosts, onPress, onGnod, address, type }:
       ListEmptyComponent={<EmptyFeedList />}
       keyExtractor={(item) => `${item.id}`}
       contentContainerStyle={styles.flatListContent}
-      renderItem={({ item }) => <Tweet post={item} onPress={onPress} onGnod={onGnod} />}
+      renderItem={({ item }) => <PostRow post={item} onPress={onPress} onGnod={onGnod} />}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.1}
     />
