@@ -63,6 +63,54 @@ export default function Page() {
 
     try {
       setLoading(true);
+
+      const result = await gno.qEval("gno.land/r/demo/users", `GetUserByName("${name}")`);
+      // The result contains something like ("g1cv7yjukd8d3236fwjndztrfj0kej8323lc8rt9" std.Address)
+      const demoUsersMatch = result.match(/\("(\w+)" std\.Address\)/);
+
+      var keystoreInfoByName = null;
+      try {
+        keystoreInfoByName = await gno.getKeyInfoByNameOrAddress(name);
+      } catch (e) {
+        // TODO: Check for error other than ErrCryptoKeyNotFound(#151)
+      }
+
+      if (keystoreInfoByName) {
+        if (demoUsersMatch) {
+          const demoUsersAddr = demoUsersMatch[1];
+          if (demoUsersAddr == await gno.addressToBech32(keystoreInfoByName.address)) {
+            // TODO: Offer to do normal signin, or choose new name
+            return;
+          }
+          else {
+            // TODO: Bad case. Choose new name. (Delete name in keystore?)
+            return;
+          }
+        }
+        else {
+          // TODO: Offer to onboard existing account, replace it, or choose new name
+          return;
+        }
+      }
+      else {
+        if (demoUsersMatch) {
+          const demoUsersAddr = demoUsersMatch[1];
+          try {
+            const keystoreInfoByAddr = await gno.getKeyInfoByNameOrAddress(demoUsersAddr);
+            console.log("This name is already registered on the blockchain. The same key has a different name on this phone: " + keystoreInfoByAddr.name);
+            // TODO: Offer to rename keystoreInfoByAddr.name to name in keystore (password check), and do signin
+            return;
+          } catch (e) {
+            // TODO: Check for error other than ErrCryptoKeyNotFound(#151)
+          }
+
+          setError("This name is already registered on the blockchain. Please choose another.");
+          return;
+        }
+        
+        // Proceed to create the account.
+      }
+
       const newAccount = await gno.createAccount(name, phrase, password);
       if (!newAccount) throw new Error("Failed to create account");
       console.log("createAccount response: " + JSON.stringify(newAccount));
