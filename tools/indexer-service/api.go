@@ -7,7 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"go.uber.org/zap"
 
-	api_gen "github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go"
+	api_gen "github.com/gnolang/dsocial/tools/indexer-service/api/gen/go"
 )
 
 func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[api_gen.GetHomePostsRequest]) (*connect.Response[api_gen.GetHomePostsResponse], error) {
@@ -28,6 +28,24 @@ func (s *indexerService) GetHomePosts(ctx context.Context, req *connect.Request[
 		NPosts:    uint64(nPosts),
 		HomePosts: data,
 	}), nil
+}
+
+// StreamPostReply return a stream of post replies
+func (s *indexerService) StreamPostReply(ctx context.Context, req *connect.Request[api_gen.StreamPostReplyRequest], stream *connect.ServerStream[api_gen.StreamPostReplyResponse]) error {
+	s.logger.Debug("StreamPostReply called")
+
+	for {
+		select {
+		case <-ctx.Done():
+			s.logger.Debug("StreamPostReply context done", zap.String("ctx.Err()", ctx.Err().Error()))
+			return nil
+		case msg := <-s.cPostReply:
+			if err := stream.Send(msg); err != nil {
+				s.logger.Error("StreamPostReply returned error", zap.Error(err))
+				return err
+			}
+		}
+	}
 }
 
 // Hello is for debug purposes

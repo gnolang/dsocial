@@ -9,13 +9,14 @@ import (
 	"os/signal"
 	"strings"
 
-	"github.com/gnolang/gnonative/api/gen/go/_goconnect"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"github.com/pkg/errors"
 )
 
-var remote string
-var listen string
+var (
+	remote string
+	listen string
+)
 
 func main() {
 	err := runMain(os.Args[1:])
@@ -29,7 +30,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 		os.Exit(1)
 	}
-
 }
 
 func runMain(args []string) error {
@@ -86,8 +86,4 @@ func startService() (IndexerService, error) {
 	}
 
 	return service, nil
-}
-
-func run(client _goconnect.GnoNativeServiceClient) error {
-	return nil
 }

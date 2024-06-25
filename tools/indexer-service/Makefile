@@ -2,11 +2,11 @@ src := $(wildcard ./*.go) go.mod go.sum
 
 #### API ####
 
-api: api/indexerservice.proto
+api/gen: api/indexerservice.proto
 	buf generate api
-	touch api
+	touch api/gen
 
-api.build: api
+api.build: api/gen
 .PHONY: api.build
 
 api.push: api.build

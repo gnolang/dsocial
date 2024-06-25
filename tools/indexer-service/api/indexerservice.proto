@@ -1,13 +1,15 @@
 syntax = "proto3";
 
-package land.gno.gnosocial.indexerservice.v1;
+package land.gno.dsocial.indexerservice.v1;
 
-option go_package = "github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go";
+option go_package = "github.com/gnolang/dsocial/tools/indexer-service/api/gen/go";
 option objc_class_prefix = "RTG";
 
-// IndexerService is the service to interact with the Gnosocial Indexer
+// IndexerService is the service to interact with the dSocial Indexer
 service IndexerService {
   rpc GetHomePosts(GetHomePostsRequest) returns (GetHomePostsResponse);
+  // StreamPostReply returns a stream of PostReply functions that are called in the blockchain
+  rpc StreamPostReply(StreamPostReplyRequest) returns (stream StreamPostReplyResponse);
   // Hello is for debug purposes
   rpc Hello(HelloRequest) returns (HelloResponse);
   // HelloStream is for debug purposes
@@ -28,6 +30,17 @@ message UserAndPostID {
 message GetHomePostsResponse {
   uint64 nPosts = 1 [json_name = "nPosts"];
   repeated UserAndPostID homePosts = 2 [json_name = "homePosts"];
+}
+
+message StreamPostReplyRequest {}
+
+message StreamPostReplyResponse {
+  string userReplyAddr = 1 [json_name = "userReplyAddr"];
+  string userPostAddr = 2 [json_name = "userPostAddr"];
+  string threadID = 3 [json_name = "threadID"];
+  string postID = 4 [json_name = "postID"];
+  string message = 5 [json_name = "message"];
+  string newPostID = 6 [json_name = "newPostID"];
 }
 
 message HelloRequest {

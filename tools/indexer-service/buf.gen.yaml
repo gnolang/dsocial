@@ -2,10 +2,10 @@ version: v1
 plugins:
   - plugin: buf.build/protocolbuffers/go
     out: ./api/gen/go
-    opt: module=github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go
+    opt: module=github.com/gnolang/dsocial/tools/indexer-service/api/gen/go
   - plugin: buf.build/connectrpc/go
     out: ./api/gen/go
-    opt: module=github.com/gnolang/gnosocial/tools/indexer-service/api/gen/go
+    opt: module=github.com/gnolang/dsocial/tools/indexer-service/api/gen/go
   - plugin: buf.build/bufbuild/es
     out: ./api/gen/es
   - plugin: buf.build/connectrpc/es

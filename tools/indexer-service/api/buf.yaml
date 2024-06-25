@@ -1,5 +1,5 @@
 version: v1
-name: buf.build/gnolang/dsocial
+name: buf.build/gnolang/dsocial-indexer
 breaking:
   use:
     - FILE

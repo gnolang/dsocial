@@ -8,27 +8,30 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
+	api_gen "github.com/gnolang/dsocial/tools/indexer-service/api/gen/go"
 	"github.com/gorilla/websocket"
+	"go.uber.org/zap"
 )
 
 var gUserPostsByAddress = make(map[string]*UserPosts) // user's std.Address -> *UserPosts
 
 type UserAndPostID struct {
 	UserPostAddr string
-	PostID       int
+	PostID       uint64
 }
 
 type UserPosts struct {
-	homePosts []*UserAndPostID // Includes this user's threads posts plus posts of users being followed.
-	followers map[string]int   // std.Address -> startedPostsCtr of the follower
+	homePosts []*UserAndPostID  // Includes this user's threads posts plus posts of users being followed.
+	followers map[string]uint64 // std.Address -> startedPostsCtr of the follower
 }
 
 func newUserPosts() *UserPosts {
 	return &UserPosts{
 		homePosts: []*UserAndPostID{},
-		followers: make(map[string]int),
+		followers: make(map[string]uint64),
 	}
 }
 
@@ -43,27 +46,40 @@ func getOrCreateUserPosts(userAddr string) *UserPosts {
 	return userPosts
 }
 
-func getPostID(response string) (int, error) {
+func getPostIDStr(response string) (string, error) {
 	response = strings.TrimSpace(response)
 	const postIDSuffix = " gno.land/r/berty/social.PostID)"
+
 	if !strings.HasSuffix(response, postIDSuffix) {
-		return 0, errors.New("Expected PostID suffix: " + response)
+		return "", errors.New("Expected PostID suffix: " + response)
 	}
-	postID, err := strconv.Atoi(response[1 : len(response)-len(postIDSuffix)])
+
+	return response[1 : len(response)-len(postIDSuffix)], nil
+}
+
+func getPostID(response string) (uint64, error) {
+	postIDStr, err := getPostIDStr(response)
 	if err != nil {
 		return 0, err
 	}
+
+	postID, err := strconv.ParseUint(postIDStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+
 	return postID, nil
 }
 
-func processCallInfo(messages []CallInfoMessagesTransactionMessage, response CallInfoResponseTransactionResponse) {
+func (s *indexerService) processCallInfo(messages []CallInfoMessagesTransactionMessage, response CallInfoResponseTransactionResponse, streaming bool) {
 	for _, m := range messages {
 		msgCall, ok := m.Value.(*CallInfoMessagesTransactionMessageValueMsgCall)
 		if !ok {
 			continue
 		}
 
-		if msgCall.Func == "Follow" {
+		switch msgCall.Func {
+		case "Follow":
 			followedUserPosts := getOrCreateUserPosts(msgCall.Args[0])
 			startedPostsCtr, err := getPostID(response.Data)
 			if err != nil {
@@ -76,11 +92,11 @@ func processCallInfo(messages []CallInfoMessagesTransactionMessage, response Cal
 			}
 
 			followedUserPosts.followers[msgCall.Caller] = startedPostsCtr
-		} else if msgCall.Func == "PostMessage" || msgCall.Func == "RepostThread" {
+		case "PostMessage", "RepostThread":
 			userPosts := getOrCreateUserPosts(msgCall.Caller)
 			postID, err := getPostID(response.Data)
 			if err != nil {
-				fmt.Printf("Error getting PostID: %s\n", err.Error())
+				s.logger.Error("Error getting PostID", zap.Error(err))
 				continue
 			}
 			userAndPostID := &UserAndPostID{
@@ -95,6 +111,43 @@ func processCallInfo(messages []CallInfoMessagesTransactionMessage, response Cal
 					followerUserPosts.homePosts = append(followerUserPosts.homePosts, userAndPostID)
 				}
 			}
+		case "PostReply":
+			// we want to filter out the PostReply to only handle new PostReply calls
+			if !streaming {
+				continue
+			}
+
+			go func(msgCall *CallInfoMessagesTransactionMessageValueMsgCall, response CallInfoResponseTransactionResponse) {
+				if len(msgCall.Args) < 4 {
+					s.logger.Error("Not enought argument in the PostReply transaction")
+					return
+				}
+
+				newPostID, err := getPostIDStr(response.Data)
+				if err != nil {
+					s.logger.Error("Error getting newPostID", zap.Error(err))
+					return
+				}
+
+				reply := &api_gen.StreamPostReplyResponse{
+					UserReplyAddr: msgCall.Caller,
+					UserPostAddr:  msgCall.Args[0],
+					ThreadID:      msgCall.Args[1],
+					PostID:        msgCall.Args[2],
+					Message:       msgCall.Args[3],
+					NewPostID:     newPostID,
+				}
+
+				// set a timeout for sending into channel
+				ctx, cancel := context.WithTimeout(s.ctx, 2*time.Second)
+				defer cancel()
+
+				select {
+				case s.cPostReply <- reply:
+				case <-ctx.Done():
+					s.logger.Error("Timeout sending into channel", zap.String("UserPostAddr", msgCall.Args[0]))
+				}
+			}(msgCall, response)
 		}
 	}
 }
@@ -106,7 +159,7 @@ func (s *indexerService) createGraphQLClient() error {
 		return err
 	}
 	for _, t := range resp.Transactions {
-		processCallInfo(t.Messages, t.Response)
+		s.processCallInfo(t.Messages, t.Response, false)
 	}
 
 	clientAddr, err := websocketURL(s.remoteAddr)
@@ -138,7 +191,7 @@ func (s *indexerService) createGraphQLClient() error {
 				break
 			}
 			if msg.Data != nil {
-				processCallInfo(msg.Data.Transactions.Messages, msg.Data.Transactions.Response)
+				s.processCallInfo(msg.Data.Transactions.Messages, msg.Data.Transactions.Response, true)
 			}
 			if msg.Errors != nil {
 				fmt.Println("error:", msg.Errors)
