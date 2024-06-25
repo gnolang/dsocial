@@ -3,8 +3,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import * as Grpc from "@gno/grpc/client";
 import { PromiseClient } from "@connectrpc/connect";
 
-import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@buf/gnolang_dsocial.bufbuild_es/indexerservice_pb";
-import { IndexerService } from "@buf/gnolang_dsocial.connectrpc_es/indexerservice_connect";
+import { HelloResponse, HelloStreamResponse, UserAndPostID } from "@buf/gnolang_dsocial-indexer.bufbuild_es/indexerservice_pb";
+import { IndexerService } from "@buf/gnolang_dsocial-indexer.connectrpc_es/indexerservice_connect";
 
 export interface IndexerContextProps {
   getHomePosts: (userPostAddr: string, startIndex: bigint, endIndex: bigint) => Promise<[number, string]>;
@@ -37,19 +37,12 @@ const IndexerProvider: React.FC<IndexerProviderProps> = ({ children, config }) =
       return clientInstance;
     }
 
-    // FIXME: Remove this test code.
-    // const greeting = await clientIndexerInstance.hello({name: 'gno'});
-    // console.log('Greeting:', greeting);
-    //   for await (const response of clientIndexerInstance.helloStream({name: 'gno'})) {
-    //     console.log('response: ', response);
-    //   }
-
     return Grpc.createIndexerClient(config.remote);
   };
 
   const getClient = () => {
     if (!clientInstance) {
-      throw new Error("Indexer client instance not initialized.");
+      throw new Error("indexer client instance not initialized.");
     }
 
     return clientInstance;

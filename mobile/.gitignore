@@ -37,3 +37,7 @@ yarn-error.*
 # native folders
 android/
 ios/
+
+# Firebase config files
+google-services.json
+GoogleService-Info.plist
