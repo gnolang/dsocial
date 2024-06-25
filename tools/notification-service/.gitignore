@@ -1,0 +1,4 @@
+build
+
+# default database path
+data.db

@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package land.gno.dsocial.notificationservice.v1;
+
+option go_package = "github.com/gnolang/dsocial/tools/notification-service/api/gen/go";
+option objc_class_prefix = "RTG";
+
+// NotificationService is the service to manage Push Notifications in your app.
+service NotificationService {
+  rpc RegisterDevice(RegisterDeviceRequest) returns (RegisterDeviceResponse);
+  // Hello is for debug purposes
+  rpc Hello(HelloRequest) returns (HelloResponse);
+  // HelloStream is for debug purposes
+  rpc HelloStream(HelloStreamRequest) returns (stream HelloStreamResponse);
+}
+
+message RegisterDeviceRequest {
+  string address = 1 [json_name = "address"];
+  string token = 2 [json_name = "token"];
+}
+
+message RegisterDeviceResponse {}
+
+message HelloRequest {
+  string name = 1 [json_name = "name"];
+}
+
+message HelloResponse {
+  string greeting = 1 [json_name = "greeting"];
+}
+
+message HelloStreamRequest {
+  string name = 1 [json_name = "name"];
+}
+
+message HelloStreamResponse {
+  string greeting = 1 [json_name = "greeting"];
+}
+
+// The ErrCode enum defines errors for gRPC API functions. These are converted
+// from the Go error types returned by gnoclient.
+enum ErrCode {
+  //----------------
+  // Special errors
+  //----------------
+
+  // Undefined is the default value. It should never be set manually
+  Undefined = 0;
+
+  // TODO indicates that you plan to create an error later
+  TODO = 1;
+  // ErrNotImplemented indicates that a method is not implemented yet
+  ErrNotImplemented = 2;
+  // ErrInternal indicates an unknown error (without Code), i.e. in gRPC
+  ErrInternal = 3;
+
+  //----------------
+  // Generic errors
+  //----------------
+
+  // Parameters and I/O errors
+
+  ErrInvalidInput = 100;
+  ErrMissingInput = 101;
+  ErrSerialization = 102;
+  ErrDeserialization = 103;
+  ErrInitService = 104;
+  ErrRunGRPCServer = 105;
+
+  ErrDB = 200;
+  ErrDBNotFound = 201;
+}
+
+message ErrDetails {
+  repeated ErrCode codes = 1;
+}
