@@ -106,7 +106,7 @@ func (s *indexerService) runGRPCServer(listener net.Listener) error {
 		),
 		ReadHeaderTimeout: time.Second,
 		ReadTimeout:       5 * time.Minute,
-		WriteTimeout:      5 * time.Minute,
+		WriteTimeout:      0,        // disable write timeout to avoid gRPC stream timeout
 		MaxHeaderBytes:    8 * 1024, // 8KiB
 	}
 
