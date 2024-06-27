@@ -10,7 +10,7 @@ import { Alert, View } from "react-native";
 
 export default function Page() {
   const post = useAppSelector(selectPostToReply);
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const router = useRouter();
 
   const [replyContent, setReplyContent] = useState("");
@@ -25,7 +25,7 @@ export default function Page() {
       const gasWanted = 10000000;
 
       const args: Array<string> = [post.user.address, String(post.id), replyContent];
-      for await (const response of await gno.call("gno.land/r/berty/social", "RepostThread", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "RepostThread", args, gasFee, gasWanted)) {
         console.log("response ono post screen: ", response);
       }
 

@@ -11,7 +11,7 @@ interface ThreadPosts {
 }
 
 export const useFeed = () => {
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const cache = useUserCache();
   const parser = useGnoJsonParser();
   const indexer = useIndexerContext();
@@ -19,7 +19,7 @@ export const useFeed = () => {
   async function fetchThreadPosts(address: string, startIndex: number, endIndex: number): Promise<ThreadPosts> {
     await checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",0, 0, ${startIndex}, ${endIndex})`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",0, 0, ${startIndex}, ${endIndex})`);
     const json = await enrichData(result);
 
     return json;
@@ -28,7 +28,7 @@ export const useFeed = () => {
   async function fetchThread(address: string, postId: number): Promise<ThreadPosts> {
     await checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",${postId},0, 0, 100)`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",${postId},0, 0, 100)`);
     const json = await enrichData(result);
 
     return json;
@@ -37,7 +37,7 @@ export const useFeed = () => {
   async function fetchFeed(address: string, startIndex: number, endIndex: number): Promise<ThreadPosts> {
     try {
       const [nHomePosts, addrAndIDs] = await indexer.getHomePosts(address, BigInt(startIndex), BigInt(endIndex));
-      const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${addrAndIDs})`);
+      const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${addrAndIDs})`);
       return await enrichData(result, nHomePosts);
     } catch (error) {
       Alert.alert("Error while fetching posts", " " + error);
@@ -101,7 +101,7 @@ export const useFeed = () => {
 
   async function fetchParentPost(postId: number, address: string) {
     const payload = `[]UserAndPostID{{\"${address}\", ${postId}},}`
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${payload})`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonTopPostsByID(${payload})`);
     const jsonResult = parser.toJson(result);
     return jsonResult[0];
   }
@@ -113,10 +113,10 @@ export const useFeed = () => {
   }
 
   async function checkActiveAccount() {
-    const currentAccount = await gno.getActiveAccount();
+    const currentAccount = await gnonative.getActiveAccount();
     if (!currentAccount.key) throw new Error("No active account");
 
-    const bech32 = await gno.addressToBech32(currentAccount.key.address);
+    const bech32 = await gnonative.addressToBech32(currentAccount.key.address);
 
     const user: User = { address: bech32, name: currentAccount.key.name };
 
@@ -132,7 +132,7 @@ export const useFeed = () => {
 
       const args: Array<string> = [post.user.address, String(post.id), String(post.id), String("0")];
       console.log("AddReaction args: ", args.join(", "));
-      for await (const response of await gno.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted)) {
         const result = JSON.parse(JSON.stringify(response)).result;
         // Alert.alert("AddReaction Result", base64.decode(result));
       }

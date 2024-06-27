@@ -4,7 +4,7 @@ import { useGnoNativeContext } from "@gnolang/gnonative";
 const MAX_RESULT = 10;
 
 export const useSearch = () => {
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
 
   async function Follow(address: string) {
     checkActiveAccount();
@@ -13,7 +13,7 @@ export const useSearch = () => {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
       const args: Array<string> = [address];
-      for await (const response of await gno.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
@@ -28,7 +28,7 @@ export const useSearch = () => {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
       const args: Array<string> = [address];
-      for await (const response of await gno.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
@@ -48,7 +48,7 @@ export const useSearch = () => {
   async function GetJsonFollowers(address: string | Uint8Array) {
     checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}", 0, 1000)`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}", 0, 1000)`);
     const json = (await convertToJson(result)) as GetJsonFollowersResult;
 
     return json;
@@ -57,7 +57,7 @@ export const useSearch = () => {
   async function GetJsonFollowing(address: string | Uint8Array) {
     checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}", 0, 1000)`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}", 0, 1000)`);
     const json = (await convertToJson(result)) as GetJsonFollowingResult;
 
     return json;
@@ -66,7 +66,7 @@ export const useSearch = () => {
   async function getJsonUserByName(username: string) {
     checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonUserByName("${username}")`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonUserByName("${username}")`);
     const json = (await convertToJson(result)) as User;
 
     return json;
@@ -75,11 +75,11 @@ export const useSearch = () => {
   async function searchUser(q: string, excludeActiveAccount?: boolean) {
     checkActiveAccount();
 
-    const result = await gno.qEval("gno.land/r/berty/social", `ListJsonUsersByPrefix("${q}", ${MAX_RESULT})`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `ListJsonUsersByPrefix("${q}", ${MAX_RESULT})`);
     const usernames = await convertToJson(result);
     if (excludeActiveAccount) {
       // Remove the active account's own username.
-      const currentAccount = await gno.getActiveAccount();
+      const currentAccount = await gnonative.getActiveAccount();
       const i = usernames.indexOf(currentAccount.key?.name, 0);
       if (i >= 0) {
         usernames.splice(i, 1);
@@ -101,7 +101,7 @@ export const useSearch = () => {
   }
 
   async function checkActiveAccount() {
-    const currentAccount = await gno.getActiveAccount();
+    const currentAccount = await gnonative.getActiveAccount();
     if (!currentAccount.key) throw new Error("No active account");
   }
 

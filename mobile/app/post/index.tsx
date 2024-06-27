@@ -13,7 +13,7 @@ export default function Search() {
   const [error, setError] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const navigation = useNavigation();
   const router = useRouter();
 
@@ -21,7 +21,7 @@ export default function Search() {
     const unsubscribe = navigation.addListener("focus", async () => {
       setPostContent("");
       try {
-        const response = await gno.getActiveAccount();
+        const response = await gnonative.getActiveAccount();
         if (!response.key) throw new Error("No active account");
       } catch (error: unknown | Error) {
         console.log(error);
@@ -37,7 +37,7 @@ export default function Search() {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
       const args: Array<string> = [postContent];
-      for await (const response of await gno.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted)) {
         console.log("response ono post screen: ", response);
       }
       setPostContent("");

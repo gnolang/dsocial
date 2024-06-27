@@ -4,14 +4,13 @@ import { User } from "@gno/types";
 import RemoveAccountContent from "@gno/components/view/account/remove-account.tsx";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 
-
 export default function Page() {
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const dispatch = useAppDispatch();
   const data = useAppSelector(selectFollowers);
 
   const onConfirm = async (item: User) => {
-    await gno.deleteAccount(item.address, undefined, true);
+    await gnonative.deleteAccount(item.address, undefined, true);
 
     dispatch(logedOut());
   };

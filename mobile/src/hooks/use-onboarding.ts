@@ -3,11 +3,10 @@ import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useNotificationContext } from "@gno/provider/notification-provider";
 
 const useOnboarding = () => {
-  const gno = useGnoNativeContext();
   const push = useNotificationContext();
-
+  const { gnonative } = useGnoNativeContext();
   const onboard = async (name: string, address: Uint8Array) => {
-    const address_bech32 = await gno.addressToBech32(address);
+    const address_bech32 = await gnonative.addressToBech32(address);
     console.log("onboarding %s, with address: %s", name, address_bech32);
 
     try {
@@ -37,8 +36,8 @@ const useOnboarding = () => {
       const gasWanted = 20000000;
       const send = "200000000ugnot";
       const args: Array<string> = ["", name, "Profile description"];
-      for await (const response of await gno.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, send)) {
-        console.log("registerAccount response: ", JSON.stringify(response));
+      for await (const response of await gnonative.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, send)) {
+        console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
       RNAlert.alert("Error on registering account", "" + error);
@@ -49,7 +48,7 @@ const useOnboarding = () => {
   const hasCoins = async (address: Uint8Array) => {
     try {
       console.log("checking if user has balance");
-      const balance = await gno.queryAccount(address);
+      const balance = await gnonative.queryAccount(address);
       console.log("account balance: %s", balance.accountInfo?.coins);
 
       if (!balance.accountInfo) return false;

@@ -20,7 +20,7 @@ export default function Page() {
   const [remote, setRemote] = useState("");
   const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
 
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const search = useSearch();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
@@ -73,15 +73,15 @@ export default function Page() {
   };
 
   const fetchAccountData = async () => {
-    const account = await gno.getActiveAccount();
-    const chainId = await gno.getChainID();
-    const remote = await gno.getRemote();
+    const account = await gnonative.getActiveAccount();
+    const chainId = await gnonative.getChainID();
+    const remote = await gnonative.getRemote();
     setActiveAccount(account.key);
     setChainID(chainId);
     setRemote(remote);
 
     try {
-      const address = await gno.addressToBech32(account?.key?.address!);
+      const address = await gnonative.addressToBech32(account?.key?.address!);
       const followersCount = await search.GetJsonFollowersCount(address);
 
       setFollowersCount(followersCount);

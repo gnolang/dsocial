@@ -23,7 +23,7 @@ function Page() {
 
   const feed = useFeed();
   const router = useRouter();
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
 
   const params = useLocalSearchParams();
   const { post_id, address } = params;
@@ -59,7 +59,7 @@ function Page() {
       const gasWanted = 10000000;
 
       const args: Array<string> = [post.user.address, String(post.id), String(post.id), replyContent];
-      for await (const response of await gno.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
         console.log("response ono post screen: ", response);
       }
 
