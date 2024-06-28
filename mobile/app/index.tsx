@@ -31,7 +31,7 @@ export default function Root() {
       try {
         setLoading("Loading accounts...");
 
-        const response = await gno.listKeyInfo();
+        const response = await gnonative.listKeyInfo();
         setAccounts(response);
       } catch (error: unknown | Error) {
         console.error(error);

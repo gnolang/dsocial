@@ -62,7 +62,7 @@ export default function Page() {
     }
     setLoading(true);
     try {
-      const address_bech32 = await gno.addressToBech32(activeAccount?.address);
+      const address_bech32 = await gnonative.addressToBech32(activeAccount?.address);
       await push.registerDevice(address_bech32);
       Alert.alert("Push notification", "You have successfully registered for push notification!");
     } catch (error) {
