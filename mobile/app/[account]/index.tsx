@@ -49,8 +49,15 @@ export default function Page() {
       const { following } = await search.GetJsonFollowing(response.address);
       setFollowing(following);
 
-      const total = await feed.fetchCount(response.address);
-      setTotalPosts(total);
+      const isUserFeed = response.address === currentUser.address
+      if (isUserFeed) {
+        const total = await feed.fetchCount(response.address);
+        setTotalPosts(total);
+      } else {
+        // Set startIndex and endIndex to 0 to just get the n_posts.
+        const r = await feed.fetchThreadPosts(response.address, 0, 0);
+        setTotalPosts(r.n_posts);
+      }
 
       const enrichFollows = async (follows: Following[]) => {
         for await (const item of follows) {
