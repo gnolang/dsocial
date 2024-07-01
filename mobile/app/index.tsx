@@ -20,7 +20,7 @@ export default function Root() {
   const [loading, setLoading] = useState<string | undefined>(undefined);
   const [reenterPassword, setReenterPassword] = useState<KeyInfo | undefined>(undefined);
 
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
@@ -31,7 +31,7 @@ export default function Root() {
       try {
         setLoading("Loading accounts...");
 
-        const response = await gno.listKeyInfo();
+        const response = await gnonative.listKeyInfo();
         setAccounts(response);
       } catch (error: unknown | Error) {
         console.error(error);
@@ -45,7 +45,7 @@ export default function Root() {
   const onChangeAccountHandler = async (keyInfo: KeyInfo) => {
     try {
       setLoading("Changing account...");
-      const response = await gno.selectAccount(keyInfo.name);
+      const response = await gnonative.selectAccount(keyInfo.name);
 
       setLoading(undefined);
 
@@ -54,7 +54,7 @@ export default function Root() {
         return;
       }
 
-      const bech32 = await gno.addressToBech32(keyInfo.address);
+      const bech32 = await gnonative.addressToBech32(keyInfo.address);
       await dispatch(loggedIn({ keyInfo, bech32 }));
       setTimeout(() => route.replace("/home"), 500);
     } catch (error: unknown | Error) {
@@ -65,7 +65,7 @@ export default function Root() {
 
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
-      const bech32 = await gno.addressToBech32(reenterPassword.address);
+      const bech32 = await gnonative.addressToBech32(reenterPassword.address);
       await dispatch(loggedIn({ keyInfo: reenterPassword, bech32 }));
       setTimeout(() => route.replace("/home"), 500);
     }

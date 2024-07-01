@@ -25,7 +25,7 @@ export type Props = {
 };
 
 const ReenterPassword = ({ visible, accountName, onClose }: Props) => {
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
 
@@ -44,7 +44,7 @@ const ReenterPassword = ({ visible, accountName, onClose }: Props) => {
 
     try {
       setError(undefined);
-      await gno.setPassword(password);
+      await gnonative.setPassword(password);
       onClose(true);
     } catch (error: any) {
       const err = new GRPCError(error);

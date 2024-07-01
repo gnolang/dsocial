@@ -21,7 +21,7 @@ export default function Page() {
   const inputRef = useRef<RNTextInput>(null);
 
   const navigation = useNavigation();
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const dispatch = useAppDispatch();
   const onboarding = useOnboarding();
 
@@ -32,7 +32,7 @@ export default function Page() {
       setConfirmPassword("");
       inputRef.current?.focus();
       try {
-        setPhrase(await gno.generateRecoveryPhrase());
+        setPhrase(await gnonative.generateRecoveryPhrase());
       } catch (error) {
         console.log(error);
       }
@@ -63,14 +63,14 @@ export default function Page() {
 
     try {
       setLoading(true);
-      const newAccount = await gno.createAccount(name, phrase, password);
+      const newAccount = await gnonative.createAccount(name, phrase, password);
       if (!newAccount) throw new Error("Failed to create account");
       console.log("createAccount response: " + JSON.stringify(newAccount));
 
-      await gno.selectAccount(name);
-      await gno.setPassword(password);
+      await gnonative.selectAccount(name);
+      await gnonative.setPassword(password);
       await onboarding.onboard(newAccount.name, newAccount.address);
-      const bech32 = await gno.addressToBech32(newAccount.address);
+      const bech32 = await gnonative.addressToBech32(newAccount.address);
       await dispatch(loggedIn({ keyInfo: newAccount, bech32 }));
       router.push("/home");
     } catch (error) {

@@ -13,7 +13,7 @@ export function AccountBalance({ activeAccount }: Props) {
   const [address, setAddress] = useState<string | undefined>(undefined);
   const [balance, setBalance] = useState<string | undefined>(undefined);
 
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
   const account = useSearch();
 
   useEffect(() => {
@@ -22,10 +22,10 @@ export function AccountBalance({ activeAccount }: Props) {
         return;
       }
 
-      gno.addressToBech32(activeAccount.address).then((address) => {
+      gnonative.addressToBech32(activeAccount.address).then((address) => {
         setAddress(address);
       });
-      gno
+      gnonative
         .queryAccount(activeAccount.address)
         .then((balance) => {
           setBalance(balance.accountInfo?.coins.reduce((acc, coin) => acc + coin.amount.toString() + coin.denom + " ", ""));

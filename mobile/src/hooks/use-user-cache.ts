@@ -4,7 +4,7 @@ import { useGnoNativeContext } from "@gnolang/gnonative";
 const usersCache = new Map<string, User>();
 
 export const useUserCache = () => {
-  const gno = useGnoNativeContext();
+  const { gnonative } = useGnoNativeContext();
 
   async function getUser(bech32: string): Promise<User> {
     if (usersCache.has(bech32)) {
@@ -12,7 +12,7 @@ export const useUserCache = () => {
       return usersCache.get(bech32) as User;
     }
 
-    const result = await gno.qEval("gno.land/r/berty/social", `GetJsonUserByAddress("${bech32}")`);
+    const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonUserByAddress("${bech32}")`);
     if (!result || !(result.startsWith("(") && result.endsWith(" string)")))
       throw new Error("Malformed GetJsonUserByAddress response");
     const quoted = result.substring(1, result.length - " string)".length);

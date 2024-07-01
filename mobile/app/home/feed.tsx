@@ -9,7 +9,6 @@ import { Post } from "@gno/types";
 import { selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import { FeedView } from "@gno/components/view";
-import { useGnoNativeContext } from "@gnolang/gnonative";
 
 export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
@@ -18,7 +17,6 @@ export default function Page() {
 
   const router = useRouter();
   const feed = useFeed();
-  const gno = useGnoNativeContext();
   const navigation = useNavigation();
   const ref = useRef<FlatList>(null);
   const dispatch = useAppDispatch();
