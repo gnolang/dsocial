@@ -2,7 +2,7 @@ src := $(wildcard ./*.go) go.mod go.sum
 
 #### API ####
 
-api/gen: api/indexerservice.proto
+api/gen: api/notificationservice.proto
 	buf generate api
 	touch api/gen
 
@@ -15,11 +15,11 @@ api.push: api.build
 
 #### BUILD ####
 
-build/indexer: $(src)
+build/notification: $(src)
 	mkdir -p build
-	go build -o build/indexer .
+	go build -o build/notification .
 
-build: build/indexer
+build: build/notification
 .PHONY: build
 
 #### CLEAN ####

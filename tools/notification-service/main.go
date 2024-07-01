@@ -13,9 +13,16 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	DEFAULT_LISTEN_ADDR  = ":26661"
+	DEFAULT_DB_PATH      = "./data.db"
+	DEFAULT_INDEXER_ADDR = "http://localhost:26660"
+)
+
 var (
-	remote string
-	listen string
+	listen      string
+	dbPath      string
+	indexerAddr string
 )
 
 func main() {
@@ -39,17 +46,18 @@ func runMain(args []string) error {
 	// setup flags
 	var fs *flag.FlagSet
 	{
-		fs = flag.NewFlagSet("indexer", flag.ContinueOnError)
+		fs = flag.NewFlagSet("notification", flag.ContinueOnError)
 	}
 
-	fs.StringVar(&remote, "remote", "https://txindexer.gno.berty.io/graphql/query", "address of the GraphQL tx-indexer")
-	fs.StringVar(&listen, "listen", "localhost:26660", "gRPC listening address")
+	fs.StringVar(&listen, "listen", DEFAULT_LISTEN_ADDR, "gRPC listening address")
+	fs.StringVar(&dbPath, "db-path", DEFAULT_DB_PATH, "path of the database")
+	fs.StringVar(&indexerAddr, "indexer-addr", DEFAULT_INDEXER_ADDR, "address of the indexer")
 
 	var root *ffcli.Command
 	{
 		root = &ffcli.Command{
-			ShortUsage: "indexer [flag]",
-			ShortHelp:  "start an indexer service",
+			ShortUsage: "notification [flag]",
+			ShortHelp:  "start an notification service",
 			FlagSet:    fs,
 			Exec: func(ctx context.Context, args []string) error {
 				service, err := startService()
@@ -74,13 +82,14 @@ func runMain(args []string) error {
 	return nil
 }
 
-func startService() (IndexerService, error) {
+func startService() (NotificationService, error) {
 	options := []ServiceOption{
-		WithRemoteAddr(remote),
 		WithListen(listen),
+		WithDBPath(dbPath),
+		WithIndexerAddr(indexerAddr),
 	}
 
-	service, err := NewIndexerService(options...)
+	service, err := NewNotificationService(options...)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to create bridge service")
 	}

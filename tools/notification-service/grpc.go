@@ -10,8 +10,8 @@ import (
 	"connectrpc.com/connect"
 	"connectrpc.com/grpchealth"
 	"connectrpc.com/grpcreflect"
-	api_gen "github.com/gnolang/dsocial/tools/indexer-service/api/gen/go"
-	"github.com/gnolang/dsocial/tools/indexer-service/api/gen/go/_goconnect"
+	api_gen "github.com/gnolang/dsocial/tools/notification-service/api/gen/go"
+	"github.com/gnolang/dsocial/tools/notification-service/api/gen/go/_goconnect"
 	"github.com/rs/cors"
 	"go.uber.org/zap"
 	"golang.org/x/net/http2"
@@ -19,7 +19,7 @@ import (
 	"moul.io/u"
 )
 
-func (s *indexerService) createGrpcServer() error {
+func (s *notificationService) createGrpcServer() error {
 	s.logger.Debug("createGrpcServer called")
 
 	listener, err := net.Listen("tcp", s.listen)
@@ -78,24 +78,24 @@ func newCORS() *cors.Cors {
 	})
 }
 
-func (s *indexerService) runGRPCServer(listener net.Listener) error {
+func (s *notificationService) runGRPCServer(listener net.Listener) error {
 	mux := http.NewServeMux()
 
 	compress1KB := connect.WithCompressMinBytes(1024)
-	mux.Handle(_goconnect.NewIndexerServiceHandler(
+	mux.Handle(_goconnect.NewNotificationServiceHandler(
 		s,
 		compress1KB,
 	))
 	mux.Handle(grpchealth.NewHandler(
-		grpchealth.NewStaticChecker(_goconnect.IndexerServiceName),
+		grpchealth.NewStaticChecker(_goconnect.NotificationServiceName),
 		compress1KB,
 	))
 	mux.Handle(grpcreflect.NewHandlerV1(
-		grpcreflect.NewStaticReflector(_goconnect.IndexerServiceName),
+		grpcreflect.NewStaticReflector(_goconnect.NotificationServiceName),
 		compress1KB,
 	))
 	mux.Handle(grpcreflect.NewHandlerV1Alpha(
-		grpcreflect.NewStaticReflector(_goconnect.IndexerServiceName),
+		grpcreflect.NewStaticReflector(_goconnect.NotificationServiceName),
 		compress1KB,
 	))
 

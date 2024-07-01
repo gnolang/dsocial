@@ -1,47 +1,25 @@
 syntax = "proto3";
 
-package land.gno.dsocial.indexerservice.v1;
+package land.gno.dsocial.notificationservice.v1;
 
-option go_package = "github.com/gnolang/dsocial/tools/indexer-service/api/gen/go";
+option go_package = "github.com/gnolang/dsocial/tools/notification-service/api/gen/go";
 option objc_class_prefix = "RTG";
 
-// IndexerService is the service to interact with the dSocial Indexer
-service IndexerService {
-  rpc GetHomePosts(GetHomePostsRequest) returns (GetHomePostsResponse);
-  // StreamPostReply returns a stream of PostReply functions that are called in the blockchain
-  rpc StreamPostReply(StreamPostReplyRequest) returns (stream StreamPostReplyResponse);
+// NotificationService is the service to manage Push Notifications in your app.
+service NotificationService {
+  rpc RegisterDevice(RegisterDeviceRequest) returns (RegisterDeviceResponse);
   // Hello is for debug purposes
   rpc Hello(HelloRequest) returns (HelloResponse);
   // HelloStream is for debug purposes
   rpc HelloStream(HelloStreamRequest) returns (stream HelloStreamResponse);
 }
 
-message GetHomePostsRequest {
-  string userPostAddr = 1 [json_name = "userPostAddr"];
-  uint64 startIndex = 2 [json_name = "startIndex"];
-  uint64 endIndex = 3 [json_name = "endIndex"];
+message RegisterDeviceRequest {
+  string address = 1 [json_name = "address"];
+  string token = 2 [json_name = "token"];
 }
 
-message UserAndPostID {
-  string userPostAddr = 1 [json_name = "userPostAddr"];
-  uint64 postID = 2 [json_name = "postID"];
-}
-
-message GetHomePostsResponse {
-  uint64 nPosts = 1 [json_name = "nPosts"];
-  repeated UserAndPostID homePosts = 2 [json_name = "homePosts"];
-}
-
-message StreamPostReplyRequest {}
-
-message StreamPostReplyResponse {
-  string userReplyAddr = 1 [json_name = "userReplyAddr"];
-  string userPostAddr = 2 [json_name = "userPostAddr"];
-  string threadID = 3 [json_name = "threadID"];
-  string postID = 4 [json_name = "postID"];
-  string message = 5 [json_name = "message"];
-  string newPostID = 6 [json_name = "newPostID"];
-}
+message RegisterDeviceResponse {}
 
 message HelloRequest {
   string name = 1 [json_name = "name"];
@@ -88,6 +66,9 @@ enum ErrCode {
   ErrDeserialization = 103;
   ErrInitService = 104;
   ErrRunGRPCServer = 105;
+
+  ErrDB = 200;
+  ErrDBNotFound = 201;
 }
 
 message ErrDetails {

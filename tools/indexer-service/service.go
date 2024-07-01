@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/Khan/genqlient/graphql"
+	api_gen "github.com/gnolang/dsocial/tools/indexer-service/api/gen/go"
 	"go.uber.org/zap"
 )
 
@@ -24,8 +25,10 @@ type indexerService struct {
 	server   *http.Server
 
 	graphQLClient graphql.Client
+	cPostReply    chan *api_gen.StreamPostReplyResponse
 
 	ctx       context.Context
+	ctxCancel context.CancelFunc
 	closeFunc func()
 
 	lock sync.Mutex
@@ -39,12 +42,20 @@ func NewIndexerService(opts ...ServiceOption) (IndexerService, error) {
 		return nil, err
 	}
 
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan *api_gen.StreamPostReplyResponse, 100)
+
 	s := &indexerService{
 		logger:     cfg.Logger,
 		remoteAddr: cfg.RemoteAddr,
 		listen:     cfg.Listen,
-		ctx:        context.Background(),
-		closeFunc:  func() {},
+		ctx:        ctx,
+		ctxCancel:  cancel,
+		cPostReply: c,
+		closeFunc: func() {
+			close(c)
+			cancel()
+		},
 	}
 
 	if err := s.createGrpcServer(); err != nil {

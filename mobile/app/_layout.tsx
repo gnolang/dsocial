@@ -12,6 +12,7 @@ import { store } from "@gno/redux";
 import { Guard } from "@gno/components/auth/guard";
 import { GnoNativeProvider } from "@gnolang/gnonative";
 import { IndexerProvider } from "@gno/provider/indexer-provider";
+import { NotificationProvider } from "@gno/provider/notification-provider";
 
 const gnoDefaultConfig = {
   remote: process.env.EXPO_PUBLIC_GNO_REMOTE!,
@@ -22,24 +23,30 @@ const indexerDefaultConfig = {
   remote: process.env.EXPO_PUBLIC_INDEXER_REMOTE!,
 };
 
+const notificationDefaultConfig = {
+  remote: process.env.EXPO_PUBLIC_NOTIFICATION_REMOTE!,
+};
+
 export default function AppLayout() {
   return (
     <GnoNativeProvider config={gnoDefaultConfig}>
-      <IndexerProvider config={indexerDefaultConfig}>
-        <Provider store={store}>
-          <ThemeProvider value={DefaultTheme}>
-            <Guard>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  headerLargeTitle: true,
-                  headerBackVisible: false,
-                }}
-              />
-            </Guard>
-          </ThemeProvider>
-        </Provider>
-      </IndexerProvider>
+      <NotificationProvider config={notificationDefaultConfig}>
+        <IndexerProvider config={indexerDefaultConfig}>
+          <Provider store={store}>
+            <ThemeProvider value={DefaultTheme}>
+              <Guard>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    headerLargeTitle: true,
+                    headerBackVisible: false,
+                  }}
+                />
+              </Guard>
+            </ThemeProvider>
+          </Provider>
+        </IndexerProvider>
+      </NotificationProvider>
     </GnoNativeProvider>
   );
 }

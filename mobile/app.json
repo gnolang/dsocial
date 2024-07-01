@@ -27,7 +27,8 @@
             }
           }
         }
-      }
+      },
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +36,8 @@
         "backgroundColor": "#ffffff"
       },
       "package": "tech.berty.dsocial.android",
-      "versionCode": 8
+      "versionCode": 8,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
@@ -49,9 +51,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "40710094-d25f-4c27-9e2f-752938bd2a3d"
+        "projectId": "90cf25eb-7332-4489-83b4-65a9e1d9f9a2"
       }
     },
-    "owner": "iuriberty"
+    "owner": "bertytechnologies"
   }
 }

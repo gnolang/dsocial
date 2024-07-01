@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { useGnoNativeContext } from "@gnolang/gnonative";
@@ -11,18 +11,20 @@ import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
 import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
+import { useNotificationContext } from "@gno/provider/notification-provider";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
-	const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
+  const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
 
   const gno = useGnoNativeContext();
-	const search = useSearch();
+  const search = useSearch();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const push = useNotificationContext();
 
   const onboarding = useOnboarding();
 
@@ -53,19 +55,36 @@ export default function Page() {
     }
   };
 
+  const onPressNotification = async () => {
+    if (!activeAccount) {
+      console.log("No active account");
+      return;
+    }
+    setLoading(true);
+    try {
+      const address_bech32 = await gno.addressToBech32(activeAccount?.address);
+      await push.registerDevice(address_bech32);
+      Alert.alert("Push notification", "You have successfully registered for push notification!");
+    } catch (error) {
+      console.log("Error on onPressNotification", JSON.stringify(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchAccountData = async () => {
-		const account = await gno.getActiveAccount();
-		const chainId = await gno.getChainID();
-		const remote = await gno.getRemote();
-		setActiveAccount(account.key);
-		setChainID(chainId);
-		setRemote(remote);
+    const account = await gno.getActiveAccount();
+    const chainId = await gno.getChainID();
+    const remote = await gno.getRemote();
+    setActiveAccount(account.key);
+    setChainID(chainId);
+    setRemote(remote);
 
     try {
-			const address = await gno.addressToBech32(account?.key?.address!);
-			const followersCount = await search.GetJsonFollowersCount(address);
+      const address = await gno.addressToBech32(account?.key?.address!);
+      const followersCount = await search.GetJsonFollowersCount(address);
 
-			setFollowersCount(followersCount);
+      setFollowersCount(followersCount);
 
       console.log("remote: %s chainId %s " + remote, chainId);
     } catch (error: unknown | Error) {
@@ -74,7 +93,7 @@ export default function Page() {
   };
 
   const onRemoveAccount = async () => {
-		router.navigate({ pathname: "account/remove" });
+    router.navigate({ pathname: "account/remove" });
   };
 
   const onPressLogout = async () => {
@@ -91,14 +110,19 @@ export default function Page() {
             <Text.Body>{chainID}</Text.Body>
             <Text.Subheadline>Remote:</Text.Subheadline>
             <Text.Body>{remote}</Text.Body>
-						<Text.Subheadline>Followers:</Text.Subheadline>
-						<Text.Body>{followersCount.n_followers}</Text.Body>
-						<Text.Subheadline>Following:</Text.Subheadline>
-						<Text.Body>{followersCount.n_following}</Text.Body>
+            <Text.Subheadline>Followers:</Text.Subheadline>
+            <Text.Body>{followersCount.n_followers}</Text.Body>
+            <Text.Subheadline>Following:</Text.Subheadline>
+            <Text.Body>{followersCount.n_following}</Text.Body>
             <View></View>
           </>
           <Layout.Footer>
             <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
+            <Button.TouchableOpacity
+              title="Register to the notification service"
+              onPress={onPressNotification}
+              variant="primary"
+            />
             <Button.TouchableOpacity title="Logout" onPress={onPressLogout} style={styles.logout} variant="primary-red" />
             <Button.TouchableOpacity
               title="Remove Account"

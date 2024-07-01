@@ -1,8 +1,10 @@
 import { Alert as RNAlert } from "react-native";
 import { useGnoNativeContext } from "@gnolang/gnonative";
+import { useNotificationContext } from "@gno/provider/notification-provider";
 
 const useOnboarding = () => {
   const gno = useGnoNativeContext();
+  const push = useNotificationContext();
 
   const onboard = async (name: string, address: Uint8Array) => {
     const address_bech32 = await gno.addressToBech32(address);
@@ -21,6 +23,8 @@ const useOnboarding = () => {
       console.log("sent coins %s", response);
 
       await registerAccount(name);
+
+      await push.registerDevice(address_bech32);
     } catch (error) {
       console.error("onboard error", error);
     }
@@ -34,10 +38,10 @@ const useOnboarding = () => {
       const send = "200000000ugnot";
       const args: Array<string> = ["", name, "Profile description"];
       for await (const response of await gno.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, send)) {
-        console.log("response: ", JSON.stringify(response));
+        console.log("registerAccount response: ", JSON.stringify(response));
       }
     } catch (error) {
-      RNAlert.alert("Erro on registering account", "" + error);
+      RNAlert.alert("Error on registering account", "" + error);
       console.error("error registering account", error);
     }
   };
