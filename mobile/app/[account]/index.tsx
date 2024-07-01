@@ -49,7 +49,7 @@ export default function Page() {
       const { following } = await search.GetJsonFollowing(response.address);
       setFollowing(following);
 
-      const isUserFeed = response.address === currentUser.address
+      const isUserFeed = response.address === currentUser?.address;
       if (isUserFeed) {
         const total = await feed.fetchCount(response.address);
         setTotalPosts(total);
