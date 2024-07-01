@@ -85,15 +85,7 @@ release.android: node_modules
 .PHONY: elease.android
 
 help:
-	@echo "Usage: make [target]"
-	@echo ""
-	@echo "Targets:"
-	@echo "  ios            - Build the iOS app"
-	@echo "  ios.release    - Build the iOS app in release mode"
-	@echo "  android        - Build the Android app"
-	@echo "  start          - Start the metro server"
-	@echo "  clean          - Clean the project"
-	@echo "  clean_install  - Clean the project and install dependencies"
-	@echo "  release        - Build the app for production"
-	@echo "  help           - Show this help message"
+	@echo "Available make commands:"
+	@cat Makefile | grep '^[a-z]' | grep -v '=' | cut -d: -f1 | sort | sed 's/^/  /'
 .PHONY: help
+

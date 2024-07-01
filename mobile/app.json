@@ -27,17 +27,14 @@
             }
           }
         }
-      },
-      "googleServicesFile": "./GoogleService-Info.plist"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "tech.berty.dsocial.android",
-      "versionCode": 8,
-      "googleServicesFile": "./google-services.json"
+      "package": "tech.berty.dsocial.android"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
