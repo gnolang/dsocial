@@ -11,6 +11,7 @@ import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
 import ErrorView from "@gno/components/view/account/no-account-view";
 import Layout from "@gno/components/layout";
+import { colors } from "@gno/styles/colors";
 
 export default function Page() {
   const { accountName } = useLocalSearchParams<{ accountName: string }>();
@@ -121,26 +122,26 @@ export default function Page() {
     router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
   };
 
-  if (error || loading || !user || !currentUser) {
-    return <ErrorView message={error} />;
-  }
-
   return (
     <Layout.Container>
-      <Layout.Header />
-      <AccountView
-        user={user}
-        currentUser={currentUser}
-        totalPosts={totalPosts}
-        following={following}
-        followers={followers}
-        onGnod={onGnod}
-        onPressPost={onPressPost}
-        onPressFollowing={onPressFollowing}
-        onPressFollowers={onPressFollowers}
-        onPressFollow={onPressFollow}
-        onPressUnfollow={onPressUnfollow}
-      />
+      <Layout.Header style={{ backgroundColor: colors.grayscale[200] }} />
+      {error || loading || !user || !currentUser ? (
+        <ErrorView message={error} />
+      ) : (
+        <AccountView
+          user={user}
+          currentUser={currentUser}
+          totalPosts={totalPosts}
+          following={following}
+          followers={followers}
+          onGnod={onGnod}
+          onPressPost={onPressPost}
+          onPressFollowing={onPressFollowing}
+          onPressFollowers={onPressFollowers}
+          onPressFollow={onPressFollow}
+          onPressUnfollow={onPressUnfollow}
+        />
+      )}
     </Layout.Container>
   );
 }

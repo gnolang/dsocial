@@ -1,7 +1,6 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import Icons from "../icons";
-import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
 type Props = {
@@ -26,7 +25,7 @@ const Header: React.FC<Props> = ({ iconType = "close", onCloseHandler, title = "
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity style={styles.closeButton} onPress={onCloseHandler}>
         {iconType === "close" ? <Icons.Close /> : <Icons.ArrowLeft />}
       </TouchableOpacity>

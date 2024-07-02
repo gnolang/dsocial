@@ -32,7 +32,7 @@ export function PostRow({ post, onPress = func, onGnod = func, showFooter = true
   };
 
   const nativgateToAccount = async (accountName: string) => {
-    router.replace({ pathname: "account", params: { accountName } });
+    router.navigate({ pathname: "account", params: { accountName } });
   };
 
   if (!post) {
