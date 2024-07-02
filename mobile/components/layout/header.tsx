@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import Icons from "../icons";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 type Props = {
   iconType?: "close" | "back";
@@ -12,11 +13,15 @@ type Props = {
 };
 
 const Header: React.FC<Props> = ({ iconType = "close", onCloseHandler, title = "", subtitle = "", style }) => {
-  const navigate = useNavigation();
+  const router = useRouter();
 
   if (!onCloseHandler) {
     onCloseHandler = () => {
-      navigate.goBack();
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.navigate({ pathname: "/home" });
+      }
     };
   }
 
@@ -43,15 +48,15 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
   },
   contentArea: { flex: 1, alignItems: "center", paddingRight: 36 },
-	title: {
-		fontSize: 16,
-		fontWeight: "bold",
-		color: "#000000",
-	},
-	subtitle: {
-		fontSize: 12,
-		color: "#000000",
-	},
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000000",
+  },
+  subtitle: {
+    fontSize: 12,
+    color: "#000000",
+  },
 });
 
 export default Header;

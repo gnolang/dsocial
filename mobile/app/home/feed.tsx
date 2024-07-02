@@ -16,8 +16,8 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
-  const feed = useFeed();
   const navigation = useNavigation();
+  const feed = useFeed();
   const ref = useRef<FlatList>(null);
   const dispatch = useAppDispatch();
 
@@ -47,7 +47,7 @@ export default function Page() {
   }, [navigation]);
 
   const onPressPost = () => {
-    router.push("/post");
+    router.navigate({ pathname: "/post" });
   };
 
   const onPress = async (item: Post) => {
