@@ -51,8 +51,9 @@ export default function Page() {
       return;
     }
 
-    if (name.length < 6) {
-      setError("Account name must be at least 6 characters");
+    // Use the same regex and error message as r/demo/users
+    if (!name.match(/^[a-z]+[_a-z0-9]{5,16}$/)) {
+      setError("Account name must be at least 6 characters, lowercase alphanumeric with underscore");
       return;
     }
 
