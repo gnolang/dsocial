@@ -10,6 +10,7 @@ import { useRouter } from "expo-router";
 import RepostLabel from "./repost-label";
 import { RepostRow } from "./repost-row";
 import GnodLabel from "./gnod-label";
+import PostContentLabel from "./post-content-label";
 
 interface FeedProps {
   post?: Post;
@@ -30,8 +31,8 @@ export function PostRow({ post, onPress = func, onGnod = func, showFooter = true
     router.navigate({ pathname: "/repost" });
   };
 
-  const onPressName = async () => {
-    router.navigate({ pathname: "account", params: { accountName: post?.user.name } });
+  const nativgateToAccount = async (accountName: string) => {
+    router.navigate({ pathname: "account", params: { accountName } });
   };
 
   if (!post) {
@@ -45,13 +46,13 @@ export function PostRow({ post, onPress = func, onGnod = func, showFooter = true
         <Image source={{ uri: post.user.image }} style={styles.image} />
         <View style={styles.content}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={onPressName}>
+            <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={() => nativgateToAccount(post?.user.name)}>
               <Text.Body style={[{ fontWeight: "bold", fontSize: 16, paddingRight: 8 }]}>@{post.user.name}</Text.Body>
               <TimeStampLabel timestamp={post.date} />
             </Pressable>
           </View>
 
-          <Text.Body selectable>{post.post}</Text.Body>
+          <PostContentLabel onMentionPress={(value) => nativgateToAccount(value)}>{post.post}</PostContentLabel>
           {isRepost ? <RepostRow post={post.repost_parent} onPress={onPress} showFooter={false} /> : null}
         </View>
       </View>

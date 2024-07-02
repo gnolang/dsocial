@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { Loading } from "@gno/components/loading";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, Post, User } from "@gno/types";
@@ -10,11 +9,15 @@ import { selectAccount } from "redux/features/accountSlice";
 import { setFollows } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
+import ErrorView from "@gno/components/view/account/no-account-view";
+import Layout from "@gno/components/layout";
+import { colors } from "@gno/styles/colors";
 
 export default function Page() {
   const { accountName } = useLocalSearchParams<{ accountName: string }>();
 
   const [loading, setLoading] = useState<string | undefined>(undefined);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [user, setUser] = useState<User | undefined>(undefined);
   const [following, setFollowing] = useState<Following[]>([]);
   const [followers, setFollowers] = useState<Following[]>([]);
@@ -43,13 +46,18 @@ export default function Page() {
       const response = await search.getJsonUserByName(accountName);
       setUser(response);
 
+      if (!response) {
+        setError(`The account '${accountName}' does not exist.`);
+        return;
+      }
+
       const { followers } = await search.GetJsonFollowers(response.address);
       setFollowers(followers);
 
       const { following } = await search.GetJsonFollowing(response.address);
       setFollowing(following);
 
-      const isUserFeed = response.address === currentUser.address
+      const isUserFeed = response.address === currentUser?.address;
       if (isUserFeed) {
         const total = await feed.fetchCount(response.address);
         setTotalPosts(total);
@@ -114,23 +122,26 @@ export default function Page() {
     router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
   };
 
-  if (!user || loading || !currentUser) {
-    return <Loading message="Profile Loading..." />;
-  }
-
   return (
-    <AccountView
-      user={user}
-      totalPosts={totalPosts}
-      currentUser={currentUser}
-      following={following}
-      followers={followers}
-      onGnod={onGnod}
-      onPressPost={onPressPost}
-      onPressFollowing={onPressFollowing}
-      onPressFollowers={onPressFollowers}
-      onPressFollow={onPressFollow}
-      onPressUnfollow={onPressUnfollow}
-    />
+    <Layout.Container>
+      <Layout.Header style={{ backgroundColor: colors.grayscale[200] }} />
+      {error || loading || !user || !currentUser ? (
+        <ErrorView message={error} />
+      ) : (
+        <AccountView
+          user={user}
+          currentUser={currentUser}
+          totalPosts={totalPosts}
+          following={following}
+          followers={followers}
+          onGnod={onGnod}
+          onPressPost={onPressPost}
+          onPressFollowing={onPressFollowing}
+          onPressFollowers={onPressFollowers}
+          onPressFollow={onPressFollow}
+          onPressUnfollow={onPressUnfollow}
+        />
+      )}
+    </Layout.Container>
   );
 }

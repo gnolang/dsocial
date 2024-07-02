@@ -40,8 +40,7 @@ function AccountView(props: Props) {
   const isFollowed = useMemo(() => followers.find((f) => f.address === currentUser.address) != null, [user, followers]);
 
   return (
-    <Layout.Container>
-      <Layout.Header style={styles.headerButton} />
+    <>
       <View style={styles.container}>
         <View style={styles.banner}>
           <Image source={{ uri: "https://www.gravatar.com/avatar/tmp" }} style={styles.avatar} />
@@ -84,12 +83,11 @@ function AccountView(props: Props) {
           <FeedView totalPosts={totalPosts} onPress={onPressPost} onGnod={onGnod} address={user.address} type="userPosts" />
         </View>
       </View>
-    </Layout.Container>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  headerButton: { backgroundColor: colors.grayscale[200] },
   avatar: {
     width: 120,
     height: 120,
