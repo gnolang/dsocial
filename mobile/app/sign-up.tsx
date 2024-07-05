@@ -71,8 +71,7 @@ export default function Page() {
       await gnonative.selectAccount(name);
       await gnonative.setPassword(password);
       await onboarding.onboard(newAccount.name, newAccount.address);
-      const bech32 = await gnonative.addressToBech32(newAccount.address);
-      await dispatch(loggedIn({ keyInfo: newAccount, bech32 }));
+      await dispatch(loggedIn({ keyInfo: newAccount }));
       router.push("/home");
     } catch (error) {
       RNAlert.alert("Error", "" + error);

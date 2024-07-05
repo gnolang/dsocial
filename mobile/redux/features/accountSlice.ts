@@ -1,6 +1,8 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { AsyncThunkOptions, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "@gno/types";
 import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
+import { GnoNativeApi } from "@gnolang/gnonative";
+import { ThunkExtra } from "redux/redux-provider";
 
 export interface CounterState {
   account?: User;
@@ -10,9 +12,16 @@ const initialState: CounterState = {
   account: undefined,
 };
 
-export const loggedIn = createAsyncThunk("user/loggedIn", async (param: { keyInfo: KeyInfo; bech32: string }, _) => {
-  const { keyInfo, bech32 } = param;
+interface LoginParam {
+  keyInfo: KeyInfo;
+}
 
+export const loggedIn = createAsyncThunk<User, LoginParam, ThunkExtra>("user/loggedIn", async (param, config) => {
+  const { keyInfo } = param;
+
+  const gnonative = config.extra.gnonative as GnoNativeApi;
+
+  const bech32 = await gnonative.addressToBech32(keyInfo.address);
   const user: User = { address: bech32, name: keyInfo.name };
 
   return user;
