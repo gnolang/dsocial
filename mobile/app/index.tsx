@@ -54,8 +54,7 @@ export default function Root() {
         return;
       }
 
-      const bech32 = await gnonative.addressToBech32(keyInfo.address);
-      await dispatch(loggedIn({ keyInfo, bech32 }));
+      await dispatch(loggedIn({ keyInfo }));
       setTimeout(() => route.replace("/home"), 500);
     } catch (error: unknown | Error) {
       setLoading(error?.toString());
@@ -65,8 +64,7 @@ export default function Root() {
 
   const onCloseReenterPassword = async (sucess: boolean) => {
     if (sucess && reenterPassword) {
-      const bech32 = await gnonative.addressToBech32(reenterPassword.address);
-      await dispatch(loggedIn({ keyInfo: reenterPassword, bech32 }));
+      await dispatch(loggedIn({ keyInfo: reenterPassword }));
       setTimeout(() => route.replace("/home"), 500);
     }
     setReenterPassword(undefined);
