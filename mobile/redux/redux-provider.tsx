@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { accountSlice, profileSlice, replySlice } from "./features";
 import { GnoNativeApi, useGnoNativeContext } from "@gnolang/gnonative";
+import { signUpSlice } from "./features/signupSlice";
 
 interface Props {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ const ReduxProvider: React.FC<Props> = ({ children }) => {
       [accountSlice.reducerPath]: accountSlice.reducer,
       [profileSlice.reducerPath]: profileSlice.reducer,
       [replySlice.reducerPath]: replySlice.reducer,
+      [signUpSlice.reducerPath]: signUpSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
