@@ -5,11 +5,13 @@ import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
-import { useAppDispatch, loggedIn } from "@gno/redux";
+import { useAppDispatch, loggedIn, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
+import { SignUpState, selectProgress, signUpCheck, signUpStateSelector } from "redux/features/signupSlice";
+import ProgressView from "@gno/components/view/progress";
 
 export default function Page() {
   const [name, setName] = useState("");
@@ -24,6 +26,7 @@ export default function Page() {
   const { gnonative } = useGnoNativeContext();
   const dispatch = useAppDispatch();
   const onboarding = useOnboarding();
+  const signUpState = useAppSelector(signUpStateSelector);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -39,6 +42,16 @@ export default function Page() {
     });
     return unsubscribe;
   }, [navigation]);
+
+  useEffect(() => {
+    console.log("signUpState", signUpState);
+    if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
+      setError("This name is already registered on the blockchain. Please choose another name.");
+    }
+    if (signUpState === SignUpState.create_account) {
+      router.push("/home");
+    }
+  }, [signUpState]);
 
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(phrase || "");
@@ -64,15 +77,7 @@ export default function Page() {
 
     try {
       setLoading(true);
-      const newAccount = await gnonative.createAccount(name, phrase, password);
-      if (!newAccount) throw new Error("Failed to create account");
-      console.log("createAccount response: " + JSON.stringify(newAccount));
-
-      await gnonative.selectAccount(name);
-      await gnonative.setPassword(password);
-      await onboarding.onboard(newAccount.name, newAccount.address);
-      await dispatch(loggedIn({ keyInfo: newAccount }));
-      router.push("/home");
+      await dispatch(signUpCheck({ name, password, phrase }));
     } catch (error) {
       RNAlert.alert("Error", "" + error);
       setError("" + error);
@@ -121,6 +126,7 @@ export default function Page() {
             </View>
           </View>
         </ScrollView>
+        <ProgressView />
       </Layout.Body>
     </Layout.Container>
   );
