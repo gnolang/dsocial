@@ -11,7 +11,7 @@ import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { SignUpState, signUp, signUpStateSelector } from "redux/features/signupSlice";
-import ProgressView from "@gno/components/view/progress";
+import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
   const [name, setName] = useState("");
@@ -129,7 +129,7 @@ export default function Page() {
             </View>
           </View>
         </ScrollView>
-        <ProgressView />
+        <ProgressViewModal />
       </Layout.Body>
     </Layout.Container>
   );
