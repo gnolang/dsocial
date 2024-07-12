@@ -48,6 +48,9 @@ export default function Page() {
     if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
       setError("This name is already registered on the blockchain. Please choose another name.");
     }
+    if (signUpState === SignUpState.user_exists_only_on_local_storage) {
+      setError("This name is already registered locally on this device. Please choose another name.");
+    }
     if (signUpState === SignUpState.create_account) {
       router.push("/home");
     }
