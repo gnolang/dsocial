@@ -10,7 +10,7 @@ import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import { SignUpState, selectProgress, signUpCheck, signUpStateSelector } from "redux/features/signupSlice";
+import { SignUpState, signUp, signUpStateSelector } from "redux/features/signupSlice";
 import ProgressView from "@gno/components/view/progress";
 
 export default function Page() {
@@ -80,7 +80,7 @@ export default function Page() {
 
     try {
       setLoading(true);
-      await dispatch(signUpCheck({ name, password, phrase }));
+      await dispatch(signUp({ name, password, phrase }));
     } catch (error) {
       RNAlert.alert("Error", "" + error);
       setError("" + error);

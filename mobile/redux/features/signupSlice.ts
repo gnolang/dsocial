@@ -45,7 +45,7 @@ interface SignUpParam {
  *
  * ref: https://github.com/gnolang/dsocial/issues/72
  */
-export const signUpCheck = createAsyncThunk<void, SignUpParam, ThunkExtra>("user/signUp", async (param, config) => {
+export const signUp = createAsyncThunk<void, SignUpParam, ThunkExtra>("user/signUp", async (param, config) => {
 
   const { name, password, phrase } = param;
   const gnonative = config.extra.gnonative as GnoNativeApi;
@@ -144,12 +144,12 @@ export const signUpSlice = createSlice({
     clearProgress: (state) => { state.progress = []; }
   },
   extraReducers(builder) {
-    builder.addCase(signUpCheck.fulfilled, (state, action) => {
+    builder.addCase(signUp.fulfilled, (state, action) => {
       // state.account = action.payload;
     });
-    builder.addCase(signUpCheck.rejected, (state, action) => {
+    builder.addCase(signUp.rejected, (state, action) => {
       action.error.message ? state.progress = [...state.progress, action.error.message] : null;
-      console.error("signUpCheck.rejected", action);
+      console.error("signUp.rejected", action);
     });
   },
 
