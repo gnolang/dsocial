@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Share,
 } from "react-native";
 import { useState } from "react";
 import Button from "@gno/components/button";
@@ -31,6 +32,12 @@ function ProgressView({}: Props) {
     await dispatch(clearProgress());
   };
 
+  const share = async () => {
+    await Share.share({
+      message: progress.join("\n"),
+    });
+  };
+
   if (!visible) {
     return <Button.TouchableOpacity title="Console" variant="common" onPress={() => setVisible(true)} />;
   }
@@ -50,7 +57,7 @@ function ProgressView({}: Props) {
               }}
             />
             <View style={styles.bottom}>
-              <EvilIcons name="share-apple" size={24} color="black" />
+              <EvilIcons name="share-apple" size={24} color="black" onPress={share} />
               <TouchableOpacity>
                 <EvilIcons name="trash" size={24} color="black" onPress={clear} />
               </TouchableOpacity>
