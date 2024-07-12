@@ -1,6 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice, loggedIn } from "@reduxjs/toolkit";
 import { GnoNativeApi } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
+import { Alert } from "react-native";
 
 export enum SignUpState {
   user_exists_on_blockchain_and_local_storage = 'user_exists_on_blockchain_and_local_storage',
@@ -122,13 +123,96 @@ export const signUp = createAsyncThunk<void, SignUpParam, ThunkExtra>("user/sign
 
     await gnonative.selectAccount(name);
     await gnonative.setPassword(password);
-    // await onboarding.onboard(newAccount.name, newAccount.address);
+    await onboard(gnonative, newAccount.name, newAccount.address);
     await config.dispatch(loggedIn({ keyInfo: newAccount }));
 
     config.dispatch(signUpState(SignUpState.account_created))
   }
-
 })
+
+const onboard = async (gnonative: GnoNativeApi, name: string, address: Uint8Array) => {
+  const address_bech32 = await gnonative.addressToBech32(address);
+  console.log("onboarding %s, with address: %s", name, address_bech32);
+
+  try {
+    const hasBalance = await hasCoins(gnonative, address);
+
+    if (hasBalance) {
+      console.log("user %s already has a balance", name);
+      await registerAccount(gnonative, name);
+      return;
+    }
+
+    const response = await sendCoins(address_bech32);
+    console.log("sent coins %s", response);
+
+    await registerAccount(gnonative, name);
+
+    // await push.registerDevice(address_bech32);
+  } catch (error) {
+    console.error("onboard error", error);
+  }
+};
+
+const registerAccount = async (gnonative: GnoNativeApi, name: string) => {
+  console.log("Registering account %s", name);
+  try {
+    const gasFee = "10000000ugnot";
+    const gasWanted = 20000000;
+    const send = "200000000ugnot";
+    const args: Array<string> = ["", name, "Profile description"];
+    for await (const response of await gnonative.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, send)) {
+      console.log("response: ", JSON.stringify(response));
+    }
+  } catch (error) {
+    Alert.alert("Error on registering account", "" + error);
+    console.error("error registering account", error);
+  }
+};
+
+const hasCoins = async (gnonative: GnoNativeApi, address: Uint8Array) => {
+  try {
+    console.log("checking if user has balance");
+    const balance = await gnonative.queryAccount(address);
+    console.log("account balance: %s", balance.accountInfo?.coins);
+
+    if (!balance.accountInfo) return false;
+
+    const hasCoins = balance.accountInfo.coins.length > 0;
+    const hasBalance = hasCoins && balance.accountInfo.coins[0].amount > 0;
+
+    return hasBalance;
+  } catch (error: any) {
+    console.error("error on hasBalance", error["rawMessage"]);
+    if (error["rawMessage"] === "invoke bridge method error: unknown: ErrUnknownAddress(#206)") return false;
+    return false;
+  }
+};
+
+const sendCoins = async (address: string) => {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  const raw = JSON.stringify({
+    To: address,
+  });
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: raw,
+    reactNative: { textStreaming: true },
+  };
+
+  const faucetRemote = process.env.EXPO_PUBLIC_FAUCET_REMOTE;
+  if (!faucetRemote) {
+    throw new Error("faucet remote address is undefined");
+  }
+
+  console.log("sending coins to %s on %s", address, faucetRemote);
+
+  return fetch(faucetRemote, requestOptions);
+};
 
 export const signUpSlice = createSlice({
   name: "signUp",
@@ -141,12 +225,11 @@ export const signUpSlice = createSlice({
       console.log("progress--->", action.payload);
       state.progress = [...state.progress, action.payload];
     },
-    clearProgress: (state) => { state.progress = []; }
+    clearProgress: (state) => {
+      state.progress = [];
+    }
   },
   extraReducers(builder) {
-    builder.addCase(signUp.fulfilled, (state, action) => {
-      // state.account = action.payload;
-    });
     builder.addCase(signUp.rejected, (state, action) => {
       action.error.message ? state.progress = [...state.progress, action.error.message] : null;
       console.error("signUp.rejected", action);
@@ -160,6 +243,6 @@ export const signUpSlice = createSlice({
   },
 });
 
-export const { addProgress, signUpState } = signUpSlice.actions;
+export const { addProgress, signUpState, clearProgress } = signUpSlice.actions;
 
 export const { selectLoading, selectProgress, signUpStateSelector } = signUpSlice.selectors;
