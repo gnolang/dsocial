@@ -3,7 +3,7 @@
     "name": "dsocial",
     "slug": "dsocial",
     "platforms": ["ios", "android"],
-    "version": "1.6.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "tech.berty.dsocial",
     "icon": "./assets/images/icon.png",
@@ -27,14 +27,16 @@
             }
           }
         }
-      }
+      },
+      "buildNumber": 9
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "tech.berty.dsocial.android"
+      "package": "tech.berty.dsocial.android",
+      "version-code": 9
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

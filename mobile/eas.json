@@ -1,7 +1,6 @@
 {
   "cli": {
-    "version": ">= 7.8.2",
-    "appVersionSource": "remote"
+    "version": ">= 7.8.2"
   },
   "build": {
     "development": {
@@ -21,7 +20,6 @@
       }
     },
     "production": {
-      "autoIncrement": true,
       "env": {
         "MY_ENVIRONMENT": "production"
       }
