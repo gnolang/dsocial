@@ -36,7 +36,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "tech.berty.dsocial.android",
-      "version-code": "9"
+      "versionCode": "9"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
