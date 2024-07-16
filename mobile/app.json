@@ -28,7 +28,7 @@
           }
         }
       },
-      "buildNumber": 9
+      "buildNumber": "9"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,7 +36,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "tech.berty.dsocial.android",
-      "version-code": 9
+      "version-code": "9"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
