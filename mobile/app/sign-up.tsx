@@ -32,6 +32,7 @@ export default function Page() {
       setName("");
       setPassword("");
       setConfirmPassword("");
+      setError(undefined);
       inputRef.current?.focus();
       try {
         setPhrase(await gnonative.generateRecoveryPhrase());
