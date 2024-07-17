@@ -59,6 +59,10 @@ export default function Page() {
         );
         return;
       }
+      if (signUpState === SignUpState.user_already_exists_on_blockchain) {
+        setError("This name is already registered on the blockchain but not on this device.");
+        return;
+      }
       if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
         setError(
           "This name is already registered on the blockchain under different name. Please choose another name or press Back for a normal sign in."

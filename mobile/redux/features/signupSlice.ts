@@ -83,17 +83,22 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
   if (userOnLocalStorage) {
     if (blockchainUsersAddr) {
       const localAddress = await gnonative.addressToBech32(userOnLocalStorage.address);
+      thunkAPI.dispatch(addProgress(`localAddress "${localAddress}" blockchainUsersAddr "${blockchainUsersAddr}"`))
+
       if (blockchainUsersAddr == localAddress) {
+        thunkAPI.dispatch(addProgress(`SignUpState.user_exists_on_blockchain_and_local_storage`))
         // CASE 1.0: Offer to do normal signin, or choose new name
         return { newAccount: undefined, state: SignUpState.user_exists_on_blockchain_and_local_storage }
 
       }
       else {
+        thunkAPI.dispatch(addProgress(`SignUpState.user_exists_under_differente_key`))
         // CASE 1.1: Bad case. Choose new name. (Delete name in keystore?)
         return { newAccount: undefined, state: SignUpState.user_exists_under_differente_key }
       }
     }
     else {
+      thunkAPI.dispatch(addProgress(`SignUpState.user_exists_only_on_local_storage`))
       // CASE 1.2: Offer to onboard existing account, replace it, or choose new name
       return { newAccount: undefined, state: SignUpState.user_exists_only_on_local_storage, existingAccount: userOnLocalStorage }
     }
@@ -112,6 +117,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
         // TODO: Check for error other than ErrCryptoKeyNotFound(#151)
       }
 
+      thunkAPI.dispatch(addProgress(`SignUpState.user_already_exists_on_blockchain`))
       // CASE 2.1: "This name is already registered on the blockchain. Please choose another name."
       return { newAccount: undefined, state: SignUpState.user_already_exists_on_blockchain }
     }
