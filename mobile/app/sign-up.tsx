@@ -45,14 +45,27 @@ export default function Page() {
 
   useEffect(() => {
     (async () => {
+      if (signUpState === SignUpState.user_exists_on_blockchain_and_local_storage) {
+        setError(
+          "This name is already registered on the blockchain and on this device. Please choose another name or press Back for a normal sign in."
+        );
+        return;
+      }
       if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
-        setError("This name is already registered on the blockchain. Please choose another name or press Back for a normal sign in.");
+        setError(
+          "This name is already registered on the blockchain under different name. Please choose another name or press Back for a normal sign in."
+        );
+        return;
       }
       if (signUpState === SignUpState.user_exists_only_on_local_storage) {
         setError("This name is already registered locally on this device. Please choose another name.");
+        return;
       }
       if (signUpState === SignUpState.user_exists_under_differente_key) {
-        setError("This name is already registered locally an on the blockchain under a different key. Please choose another name.");
+        setError(
+          "This name is already registered locally and on the blockchain under a different key. Please choose another name."
+        );
+        return;
       }
       if (signUpState === SignUpState.account_created && newAccount) {
         await dispatch(loggedIn({ keyInfo: newAccount })).unwrap();
