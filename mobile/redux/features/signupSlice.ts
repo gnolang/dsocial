@@ -55,20 +55,14 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
 
   const { name, password, phrase } = param;
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
+  const search = thunkAPI.extra.search;
   let blockchainResult;
 
   thunkAPI.dispatch(addProgress(`checking if "${name}" is already registered on the blockchain.`))
-  const result = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}")`);
-  thunkAPI.dispatch(addProgress(`response: "${result}"`))
+  const result = await search.getJsonUserByName(name);
+  thunkAPI.dispatch(addProgress(`response: "${JSON.stringify(result)}"`))
 
-  const existingOnChain = result !== "(nil *gno.land/p/demo/users.User)";
-  if (existingOnChain) {
-    blockchainResult = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}").Address`);
-  }
-
-  // The result contains something like ("g1cv7yjukd8d3236fwjndztrfj0kej8323lc8rt9" std.Address)
-  const blockchainUsersMatch = blockchainResult?.match(/\("(\w+)" std\.Address\)/);
-  const blockchainUsersAddr = blockchainUsersMatch ? blockchainUsersMatch[1] : null;
+  const blockchainUsersAddr = result?.address;
 
   let userOnLocalStorage: KeyInfo | undefined = undefined;
   try {
