@@ -56,11 +56,12 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
 
   thunkAPI.dispatch(addProgress(`checking if "${name}" is already registered on the blockchain.`))
 
-  const blockchainResult = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}")`);
+  const blockchainResult = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}").Address`);
+  thunkAPI.dispatch(addProgress(`response: "${blockchainResult}"`))
+
   // The result contains something like ("g1cv7yjukd8d3236fwjndztrfj0kej8323lc8rt9" std.Address)
   const blockchainUsersMatch = blockchainResult.match(/\("(\w+)" std\.Address\)/);
   const blockchainUsersAddr = blockchainUsersMatch ? blockchainUsersMatch[1] : null;
-  thunkAPI.dispatch(addProgress(`response for "${name}": "${blockchainUsersAddr}"`))
 
   let userOnLocalStorage = null;
   try {
@@ -76,7 +77,8 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
 
   if (userOnLocalStorage) {
     if (blockchainUsersAddr) {
-      if (blockchainUsersAddr == await gnonative.addressToBech32(userOnLocalStorage.address)) {
+      const localAddress = await gnonative.addressToBech32(userOnLocalStorage.address);
+      if (blockchainUsersAddr == localAddress) {
         // CASE 1.0: Offer to do normal signin, or choose new name
         return { newAccount: undefined, state: SignUpState.user_exists_on_blockchain_and_local_storage }
 

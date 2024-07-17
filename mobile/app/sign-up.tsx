@@ -7,7 +7,6 @@ import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
 import { loggedIn, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
-import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { SignUpState, newAccountSelector, signUp, signUpStateSelector } from "redux/features/signupSlice";
@@ -25,7 +24,6 @@ export default function Page() {
   const navigation = useNavigation();
   const { gnonative } = useGnoNativeContext();
   const dispatch = useAppDispatch();
-  const onboarding = useOnboarding();
   const signUpState = useAppSelector(signUpStateSelector);
   const newAccount = useAppSelector(newAccountSelector);
 
@@ -46,19 +44,21 @@ export default function Page() {
 
   useEffect(() => {
     (async () => {
-      console.log("signUpState", signUpState);
       if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
         setError("This name is already registered on the blockchain. Please choose another name or press Back for a normal sign in.");
       }
       if (signUpState === SignUpState.user_exists_only_on_local_storage) {
         setError("This name is already registered locally on this device. Please choose another name.");
       }
+      if (signUpState === SignUpState.user_exists_under_differente_key) {
+        setError("This name is already registered locally an on the blockchain under a different key. Please choose another name.");
+      }
       if (signUpState === SignUpState.account_created && newAccount) {
         await dispatch(loggedIn({ keyInfo: newAccount })).unwrap();
         router.push("/home");
       }
     })();
-  }, [signUpState]);
+  }, [signUpState, newAccount]);
 
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(phrase || "");
