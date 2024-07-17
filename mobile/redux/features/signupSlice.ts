@@ -109,6 +109,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
         const keystoreInfoByAddr = await gnonative.getKeyInfoByNameOrAddress(blockchainUsersAddr);
         console.log("This name is already registered on the blockchain. The same key has a different name on this phone: " + keystoreInfoByAddr?.name);
 
+        thunkAPI.dispatch(addProgress(`SignUpState.user_already_exists_on_blockchain_under_different_name`))
         // CASE 2.0: Offer to rename keystoreInfoByAddr.name to name in keystore (password check), and do signin
         return { newAccount: undefined, state: SignUpState.user_already_exists_on_blockchain_under_different_name }
 

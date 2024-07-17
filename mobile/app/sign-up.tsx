@@ -53,6 +53,8 @@ export default function Page() {
 
   useEffect(() => {
     (async () => {
+      console.log("signUpState ->", signUpState);
+
       if (signUpState === SignUpState.user_exists_on_blockchain_and_local_storage) {
         setError(
           "This name is already registered on the blockchain and on this device. Please choose another name or press Back for a normal sign in."
@@ -60,7 +62,7 @@ export default function Page() {
         return;
       }
       if (signUpState === SignUpState.user_already_exists_on_blockchain) {
-        setError("This name is already registered on the blockchain but not on this device.");
+        setError("This name is already registered on the blockchain. Please, choose another name.");
         return;
       }
       if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
