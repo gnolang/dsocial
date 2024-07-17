@@ -2,6 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
 import { Alert } from "react-native";
+import { UseNotificationReturnType } from "@gno/provider/notification-provider";
 
 export enum SignUpState {
   user_exists_on_blockchain_and_local_storage = 'user_exists_on_blockchain_and_local_storage',
@@ -56,7 +57,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
   const { name, password, phrase } = param;
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
   const search = thunkAPI.extra.search;
-  let blockchainResult;
+  const push = thunkAPI.extra.push;
 
   thunkAPI.dispatch(addProgress(`checking if "${name}" is already registered on the blockchain.`))
   const result = await search.getJsonUserByName(name);
@@ -131,7 +132,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
     await gnonative.setPassword(password);
 
     thunkAPI.dispatch(addProgress(`onboarding "${name}"`))
-    await onboard(gnonative, newAccount.name, newAccount.address);
+    await onboard(gnonative, push, newAccount);
 
     thunkAPI.dispatch(addProgress(`SignUpState.account_created`))
     return { newAccount, state: SignUpState.account_created };
@@ -141,15 +142,18 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
 export const onboarding = createAsyncThunk<SignUpResponse, { account: KeyInfo }, ThunkExtra>("user/onboarding", async (param, thunkAPI) => {
   thunkAPI.dispatch(addProgress(`onboarding "${param.account.name}"`))
 
+  const push = thunkAPI.extra.push;
+
   const { account } = param;
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
-  await onboard(gnonative, account.name, account.address);
+  await onboard(gnonative, push, account);
 
   thunkAPI.dispatch(addProgress(`SignUpState.account_created`))
   return { newAccount: account, state: SignUpState.account_created };
 })
 
-const onboard = async (gnonative: GnoNativeApi, name: string, address: Uint8Array) => {
+const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType, account: KeyInfo) => {
+  const { name, address } = account
   const address_bech32 = await gnonative.addressToBech32(address);
   console.log("onboarding %s, with address: %s", name, address_bech32);
 
@@ -167,7 +171,7 @@ const onboard = async (gnonative: GnoNativeApi, name: string, address: Uint8Arra
 
     await registerAccount(gnonative, name);
 
-    // await push.registerDevice(address_bech32);
+    push.registerDevice(address_bech32);
   } catch (error) {
     console.error("onboard error", error);
   }

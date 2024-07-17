@@ -5,19 +5,21 @@ import { accountSlice, profileSlice, replySlice } from "./features";
 import { GnoNativeApi, useGnoNativeContext } from "@gnolang/gnonative";
 import { signUpSlice } from "./features/signupSlice";
 import { useSearch, UseSearchReturnType } from "@gno/hooks/use-search";
+import { useNotificationContext, UseNotificationReturnType } from "@gno/provider/notification-provider";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export interface ThunkExtra {
-  extra: { gnonative: GnoNativeApi; search: UseSearchReturnType };
+  extra: { gnonative: GnoNativeApi; search: UseSearchReturnType; push: UseNotificationReturnType };
 }
 
 const ReduxProvider: React.FC<Props> = ({ children }) => {
   // Exposing GnoNative API to reduxjs/toolkit
   const { gnonative } = useGnoNativeContext();
   const search = useSearch();
+  const push = useNotificationContext();
 
   const store = configureStore({
     reducer: {
@@ -36,6 +38,7 @@ const ReduxProvider: React.FC<Props> = ({ children }) => {
           extraArgument: {
             gnonative,
             search,
+            push,
           },
         },
       }),
