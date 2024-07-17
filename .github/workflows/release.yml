@@ -31,6 +31,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
+        working-directory: mobile
         run: npm ci
 
       - name: Semantic Release
@@ -44,5 +45,6 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build on EAS
+        working-directory: mobile
         if: steps.semantic.outputs.new_release_version == true
         run: eas build --platform all --non-interactive --no-wait
