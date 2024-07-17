@@ -6,17 +6,5 @@
     "@semantic-release/release-notes-generator",
     "@semantic-release/npm",
     "@semantic-release/github"
-  ],
-  "prepare": [
-    "semantic-release-expo",
-    "@semantic-release/npm",
-    {
-        "path": "@semantic-release/github",
-        "assets": [
-            "package.json",
-            "package-lock.json",
-            "app.json"
-        ]
-    }
   ]
 }
