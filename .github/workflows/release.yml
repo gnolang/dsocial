@@ -46,5 +46,5 @@ jobs:
 
       - name: Build on EAS
         working-directory: mobile
-        if: steps.semantic.outputs.new_release_version == true
+        if: steps.semantic.outputs.new_release_version == 'true'
         run: eas build --platform all --non-interactive --no-wait
