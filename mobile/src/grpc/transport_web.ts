@@ -1,6 +1,10 @@
-import type { AnyMessage, MethodInfo, PartialMessage, ServiceType } from '@bufbuild/protobuf';
+import { polyfill as polyfillReadableStream } from "react-native-polyfill-globals/src/readable-stream";
+polyfillReadableStream();
+import { fetch as fetchPolyfill, Headers as HeadersPolyfill } from "react-native-fetch-api";
 
-import type { StreamResponse, Transport, UnaryRequest, UnaryResponse } from '@connectrpc/connect';
+import type { AnyMessage, MethodInfo, PartialMessage, ServiceType } from "@bufbuild/protobuf";
+import type { ContextValues, StreamResponse, Transport, UnaryRequest, UnaryResponse } from "@connectrpc/connect";
+import { createContextValues } from "@connectrpc/connect";
 import {
   createClientMethodSerializers,
   createEnvelopeReadableStream,
@@ -8,20 +12,37 @@ import {
   encodeEnvelope,
   runStreamingCall,
   runUnaryCall,
-} from '@connectrpc/connect/protocol';
-import { endStreamFlag, endStreamFromJson, requestHeader, validateResponse } from '@connectrpc/connect/protocol-connect';
+} from "@connectrpc/connect/protocol";
+import {
+  headerTimeout,
+  headerContentType,
+  contentTypeUnaryProto,
+  contentTypeUnaryJson,
+  contentTypeStreamJson,
+  headerUserAgent,
+  headerProtocolVersion,
+  protocolVersion,
+  contentTypeStreamProto,
+  endStreamFlag,
+  endStreamFromJson,
+  validateResponse,
+} from "@connectrpc/connect/protocol-connect";
 import {
   requestHeader as webRequestHeader,
   trailerFlag,
   trailerParse,
   validateResponse as webValidateResponse,
   validateTrailer,
-} from '@connectrpc/connect/protocol-grpc-web';
-import { GrpcWebTransportOptions } from '@connectrpc/connect-web';
-import { Message, MethodKind } from '@bufbuild/protobuf';
+} from "@connectrpc/connect/protocol-grpc-web";
+import { GrpcWebTransportOptions } from "@connectrpc/connect-web";
+import { Message, MethodKind } from "@bufbuild/protobuf";
+
+// Polyfill async.Iterator. For some reason, the Babel presets and plugins are not doing the trick.
+// Code from here: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#caveats
+(Symbol as any).asyncIterator = Symbol.asyncIterator || Symbol.for("Symbol.asyncIterator");
 
 class AbortError extends Error {
-  name = 'AbortError';
+  name = "AbortError";
 }
 
 interface FetchXHRResponse {
@@ -35,7 +56,7 @@ function parseHeaders(allHeaders: string): Headers {
     .trim()
     .split(/[\r\n]+/)
     .reduce((memo, header) => {
-      const [key, value] = header.split(': ');
+      const [key, value] = header.split(": ");
       memo.append(key, value);
       return memo;
     }, new Headers());
@@ -71,8 +92,14 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
       timeoutMs: number | undefined,
       header: Headers,
       message: PartialMessage<I>,
+      contextValues?: ContextValues
     ): Promise<UnaryResponse<I, O>> {
-      const { serialize, parse } = createClientMethodSerializers(method, useBinaryFormat, options.jsonOptions, options.binaryOptions);
+      const { serialize, parse } = createClientMethodSerializers(
+        method,
+        useBinaryFormat,
+        options.jsonOptions,
+        options.binaryOptions
+      );
 
       return await runUnaryCall<I, O>({
         signal,
@@ -83,10 +110,11 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
           method,
           url: createMethodUrl(options.baseUrl, service, method),
           init: {
-            method: 'POST',
-            mode: 'cors',
+            method: "POST",
+            mode: "cors",
           },
-          header: webRequestHeader(useBinaryFormat, timeoutMs, header),
+          header: webRequestHeader(useBinaryFormat, timeoutMs, header, false),
+          contextValues: contextValues ?? createContextValues(),
           message,
         },
         next: async (req: UnaryRequest<I, O>): Promise<UnaryResponse<I, O>> => {
@@ -94,19 +122,19 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
             return new Promise((resolve, reject) => {
               const xhr = new XMLHttpRequest();
 
-              xhr.open(req.init.method ?? 'POST', req.url);
+              xhr.open(req.init.method ?? "POST", req.url);
 
               function onAbort() {
                 xhr.abort();
               }
 
-              req.signal.addEventListener('abort', onAbort);
+              req.signal.addEventListener("abort", onAbort);
 
-              xhr.addEventListener('abort', () => {
-                reject(new AbortError('Request aborted'));
+              xhr.addEventListener("abort", () => {
+                reject(new AbortError("Request aborted"));
               });
 
-              xhr.addEventListener('load', () => {
+              xhr.addEventListener("load", () => {
                 resolve({
                   status: xhr.status,
                   headers: parseHeaders(xhr.getAllResponseHeaders()),
@@ -114,15 +142,15 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
                 });
               });
 
-              xhr.addEventListener('error', () => {
-                reject(new Error('Network Error'));
+              xhr.addEventListener("error", () => {
+                reject(new Error("Network Error"));
               });
 
-              xhr.addEventListener('loadend', () => {
-                req.signal.removeEventListener('abort', onAbort);
+              xhr.addEventListener("loadend", () => {
+                req.signal.removeEventListener("abort", onAbort);
               });
 
-              xhr.responseType = 'arraybuffer';
+              xhr.responseType = "arraybuffer";
 
               req.header.forEach((value: string, key: string) => xhr.setRequestHeader(key, value));
 
@@ -141,7 +169,7 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
           chunks.forEach(({ flags, data }) => {
             if (flags === trailerFlag) {
               if (trailer !== undefined) {
-                throw 'extra trailer';
+                throw "extra trailer";
               }
 
               // Unary responses require exactly one response message, but in
@@ -152,20 +180,20 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
             }
 
             if (message !== undefined) {
-              throw 'extra message';
+              throw "extra message";
             }
 
             message = parse(data);
           });
 
           if (trailer === undefined) {
-            throw 'missing trailer';
+            throw "missing trailer";
           }
 
-          validateTrailer(trailer);
+          validateTrailer(trailer, response.headers);
 
           if (message === undefined) {
-            throw 'missing message';
+            throw "missing message";
           }
 
           return <UnaryResponse<I, O>>{
@@ -185,10 +213,16 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
       timeoutMs: number | undefined,
       header: HeadersInit | undefined,
       input: AsyncIterable<PartialMessage<I>>,
+      contextValues?: ContextValues
     ): Promise<StreamResponse<I, O>> {
-      const { serialize, parse } = createClientMethodSerializers(method, useBinaryFormat, options.jsonOptions, options.binaryOptions);
+      const { serialize, parse } = createClientMethodSerializers(
+        method,
+        useBinaryFormat,
+        options.jsonOptions,
+        options.binaryOptions
+      );
 
-      async function* parseResponseBody(body: ReadableStream<Uint8Array>, trailerTarget: Headers) {
+      async function* parseResponseBody(body: ReadableStream<Uint8Array>, trailerTarget: HeadersPolyfill) {
         const reader = createEnvelopeReadableStream(body).getReader();
         let endStreamReceived = false;
 
@@ -215,21 +249,51 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
         }
 
         if (!endStreamReceived) {
-          throw 'missing EndStreamResponse';
+          throw "missing EndStreamResponse";
         }
       }
 
       async function createRequestBody(input: AsyncIterable<I>): Promise<Uint8Array> {
         if (method.kind != MethodKind.ServerStreaming) {
-          throw 'The fetch API does not support streaming request bodies';
+          throw "The fetch API does not support streaming request bodies";
         }
 
         const r = await input[Symbol.asyncIterator]().next();
         if (r.done == true) {
-          throw 'missing request message';
+          throw "missing request message";
         }
 
         return encodeEnvelope(0, serialize(r.value));
+      }
+
+      function requestHeader(
+        methodKind: MethodKind,
+        useBinaryFormat: boolean,
+        timeoutMs: number | undefined,
+        userProvidedHeaders: HeadersInit | undefined,
+        setUserAgent: boolean
+      ): HeadersPolyfill {
+        const result = new HeadersPolyfill(
+          userProvidedHeaders !== null && userProvidedHeaders !== void 0 ? userProvidedHeaders : {}
+        );
+        if (timeoutMs !== undefined) {
+          result.set(headerTimeout, `${timeoutMs}`);
+        }
+        result.set(
+          headerContentType,
+          methodKind == MethodKind.Unary
+            ? useBinaryFormat
+              ? contentTypeUnaryProto
+              : contentTypeUnaryJson
+            : useBinaryFormat
+              ? contentTypeStreamProto
+              : contentTypeStreamJson
+        );
+        result.set(headerProtocolVersion, protocolVersion);
+        if (setUserAgent) {
+          result.set(headerUserAgent, "connect-es/1.4.0");
+        }
+        return result;
       }
 
       return await runStreamingCall<I, O>({
@@ -242,16 +306,16 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
           method,
           url: createMethodUrl(options.baseUrl, service, method),
           init: {
-            method: 'POST',
-            credentials: options.credentials ?? 'same-origin',
-            mode: 'cors',
+            method: "POST",
+            credentials: options.credentials ?? "same-origin",
+            mode: "cors",
           },
-          header: requestHeader(method.kind, useBinaryFormat, timeoutMs, header),
+          header: requestHeader(method.kind, useBinaryFormat, timeoutMs, header, false),
+          contextValues: contextValues ?? createContextValues(),
           message: input,
         },
         next: async (req) => {
-          const fetch = options.fetch ?? globalThis.fetch;
-          const fRes = await fetch(req.url, {
+          const fRes = await fetchPolyfill(req.url, {
             ...req.init,
             headers: req.header,
             signal: req.signal,
@@ -261,10 +325,10 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
 
           validateResponse(method.kind, fRes.status, fRes.headers);
           if (fRes.body === null) {
-            throw 'missing response body';
+            throw "missing response body";
           }
 
-          const trailer = new Headers();
+          const trailer = new HeadersPolyfill();
 
           // We have to implement the `*[Symbol.asyncIterator]()` of the object we give to the StreamResponse.message field.
           // It seems that react-native lacks the feature.
