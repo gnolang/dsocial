@@ -9,7 +9,14 @@ import { loggedIn, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import { SignUpState, newAccountSelector, signUp, signUpStateSelector } from "redux/features/signupSlice";
+import {
+  SignUpState,
+  existingAccountSelector,
+  newAccountSelector,
+  onboarding,
+  signUp,
+  signUpStateSelector,
+} from "redux/features/signupSlice";
 import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
@@ -26,6 +33,7 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const signUpState = useAppSelector(signUpStateSelector);
   const newAccount = useAppSelector(newAccountSelector);
+  const existingAccount = useAppSelector(existingAccountSelector);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -58,7 +66,9 @@ export default function Page() {
         return;
       }
       if (signUpState === SignUpState.user_exists_only_on_local_storage) {
-        setError("This name is already registered locally on this device. Please choose another name.");
+        setError(
+          "This name is already registered locally on this device but NOT on chain. If you want to register your account on the Gno Blockchain, please press Create again."
+        );
         return;
       }
       if (signUpState === SignUpState.user_exists_under_differente_key) {
@@ -93,6 +103,11 @@ export default function Page() {
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
+      return;
+    }
+
+    if (signUpState === SignUpState.user_exists_only_on_local_storage && existingAccount) {
+      await dispatch(onboarding({ account: existingAccount })).unwrap();
       return;
     }
 

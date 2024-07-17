@@ -15,6 +15,7 @@ export enum SignUpState {
 export interface CounterState {
   signUpState?: SignUpState
   newAccount?: KeyInfo;
+  existingAccount?: KeyInfo;
   loading: boolean;
   progress: string[];
 }
@@ -22,6 +23,7 @@ export interface CounterState {
 const initialState: CounterState = {
   signUpState: undefined,
   newAccount: undefined,
+  existingAccount: undefined,
   loading: false,
   progress: [],
 };
@@ -32,7 +34,7 @@ interface SignUpParam {
   phrase: string;
 }
 
-type SignUpResponse = { newAccount?: KeyInfo, state: SignUpState };
+type SignUpResponse = { newAccount?: KeyInfo, existingAccount?: KeyInfo, state: SignUpState };
 
 /**
  * This thunk checks if the user is already registered on the blockchain and/or local storage.
@@ -68,7 +70,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
   const blockchainUsersMatch = blockchainResult?.match(/\("(\w+)" std\.Address\)/);
   const blockchainUsersAddr = blockchainUsersMatch ? blockchainUsersMatch[1] : null;
 
-  let userOnLocalStorage = null;
+  let userOnLocalStorage: KeyInfo | undefined = undefined;
   try {
     thunkAPI.dispatch(addProgress(`checking if "${name}" is already on local storage`))
     userOnLocalStorage = await gnonative.getKeyInfoByNameOrAddress(name);
@@ -93,7 +95,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
     }
     else {
       // CASE 1.2: Offer to onboard existing account, replace it, or choose new name
-      return { newAccount: undefined, state: SignUpState.user_exists_only_on_local_storage }
+      return { newAccount: undefined, state: SignUpState.user_exists_only_on_local_storage, existingAccount: userOnLocalStorage }
     }
   } else {
     if (blockchainUsersAddr) {
@@ -133,6 +135,17 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
     thunkAPI.dispatch(addProgress(`SignUpState.account_created`))
     return { newAccount, state: SignUpState.account_created };
   }
+})
+
+export const onboarding = createAsyncThunk<SignUpResponse, { account: KeyInfo }, ThunkExtra>("user/onboarding", async (param, thunkAPI) => {
+  thunkAPI.dispatch(addProgress(`onboarding "${param.account.name}"`))
+
+  const { account } = param;
+  const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
+  await onboard(gnonative, account.name, account.address);
+
+  thunkAPI.dispatch(addProgress(`SignUpState.account_created`))
+  return { newAccount: account, state: SignUpState.account_created };
 })
 
 const onboard = async (gnonative: GnoNativeApi, name: string, address: Uint8Array) => {
@@ -241,6 +254,12 @@ export const signUpSlice = createSlice({
     }).addCase(signUp.fulfilled, (state, action) => {
       state.loading = false;
       state.newAccount = action.payload?.newAccount;
+      state.existingAccount = action.payload?.existingAccount;
+      state.signUpState = action.payload?.state;
+    }).addCase(onboarding.fulfilled, (state, action) => {
+      state.loading = false;
+      state.newAccount = action.payload?.newAccount;
+      state.existingAccount = action.payload?.existingAccount;
       state.signUpState = action.payload?.state;
     })
   },
@@ -250,9 +269,10 @@ export const signUpSlice = createSlice({
     selectProgress: (state) => state.progress,
     signUpStateSelector: (state) => state.signUpState,
     newAccountSelector: (state) => state.newAccount,
+    existingAccountSelector: (state) => state.existingAccount,
   },
 });
 
 export const { addProgress, signUpState, clearProgress } = signUpSlice.actions;
 
-export const { selectLoading, selectProgress, signUpStateSelector, newAccountSelector } = signUpSlice.selectors;
+export const { selectLoading, selectProgress, signUpStateSelector, newAccountSelector, existingAccountSelector } = signUpSlice.selectors;
