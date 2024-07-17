@@ -56,11 +56,17 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
 
   thunkAPI.dispatch(addProgress(`checking if "${name}" is already registered on the blockchain.`))
 
-  const blockchainResult = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}").Address`);
-  thunkAPI.dispatch(addProgress(`response: "${blockchainResult}"`))
+  let blockchainResult;
+  try {
+    blockchainResult = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}").Address`);
+  } catch (error) {
+    console.error("Error on qEval", error);
+    // TODO: find a better way to handle this error
+  }
 
+  thunkAPI.dispatch(addProgress(`response: "${blockchainResult}"`))
   // The result contains something like ("g1cv7yjukd8d3236fwjndztrfj0kej8323lc8rt9" std.Address)
-  const blockchainUsersMatch = blockchainResult.match(/\("(\w+)" std\.Address\)/);
+  const blockchainUsersMatch = blockchainResult?.match(/\("(\w+)" std\.Address\)/);
   const blockchainUsersAddr = blockchainUsersMatch ? blockchainUsersMatch[1] : null;
 
   let userOnLocalStorage = null;
