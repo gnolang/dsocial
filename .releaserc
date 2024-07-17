@@ -9,8 +9,6 @@
   ],
   "prepare": [
     "semantic-release-expo",
-    "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
     "@semantic-release/npm",
     {
         "path": "@semantic-release/github",
