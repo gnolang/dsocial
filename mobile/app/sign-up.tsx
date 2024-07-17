@@ -5,12 +5,12 @@ import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
-import { useAppDispatch, loggedIn, useAppSelector } from "@gno/redux";
+import { loggedIn, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import { SignUpState, signUp, signUpStateSelector } from "redux/features/signupSlice";
+import { SignUpState, newAccountSelector, signUp, signUpStateSelector } from "redux/features/signupSlice";
 import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
@@ -27,6 +27,7 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const onboarding = useOnboarding();
   const signUpState = useAppSelector(signUpStateSelector);
+  const newAccount = useAppSelector(newAccountSelector);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -44,16 +45,19 @@ export default function Page() {
   }, [navigation]);
 
   useEffect(() => {
-    console.log("signUpState", signUpState);
-    if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
-      setError("This name is already registered on the blockchain. Please choose another name.");
-    }
-    if (signUpState === SignUpState.user_exists_only_on_local_storage) {
-      setError("This name is already registered locally on this device. Please choose another name.");
-    }
-    if (signUpState === SignUpState.create_account) {
-      router.push("/home");
-    }
+    (async () => {
+      console.log("signUpState", signUpState);
+      if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
+        setError("This name is already registered on the blockchain. Please choose another name or press Back for a normal sign in.");
+      }
+      if (signUpState === SignUpState.user_exists_only_on_local_storage) {
+        setError("This name is already registered locally on this device. Please choose another name.");
+      }
+      if (signUpState === SignUpState.account_created && newAccount) {
+        await dispatch(loggedIn({ keyInfo: newAccount })).unwrap();
+        router.push("/home");
+      }
+    })();
   }, [signUpState]);
 
   const copyToClipboard = async () => {
@@ -80,7 +84,7 @@ export default function Page() {
 
     try {
       setLoading(true);
-      await dispatch(signUp({ name, password, phrase }));
+      await dispatch(signUp({ name, password, phrase })).unwrap();
     } catch (error) {
       RNAlert.alert("Error", "" + error);
       setError("" + error);

@@ -28,7 +28,7 @@ const ProgressViewModal = () => {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={{ flexDirection: "row", alignItems: "center" }}>
         <Text.Caption1 style={{ paddingRight: 4 }}>Show Progress</Text.Caption1>
-        <MaterialIcons name="history" size={18} onPress={clear} />
+        <MaterialIcons name="history" size={18} />
       </TouchableOpacity>
 
       <Modal
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     paddingHorizontal: 16,
   },
-  flatList: { borderColor: colors.grayscale[200], borderWidth: 1, marginVertical: 22, borderRadius: 4 },
+  flatList: { borderColor: colors.grayscale[200], borderWidth: 1, marginVertical: 22, borderRadius: 4, height: 400 },
 });
 
 export default ProgressViewModal;

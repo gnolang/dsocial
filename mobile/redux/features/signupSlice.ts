@@ -1,5 +1,5 @@
-import { PayloadAction, createAsyncThunk, createSlice, loggedIn } from "@reduxjs/toolkit";
-import { GnoNativeApi } from "@gnolang/gnonative";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
 import { Alert } from "react-native";
 
@@ -9,18 +9,19 @@ export enum SignUpState {
   user_exists_only_on_local_storage = 'user_exists_only_on_local_storage',
   user_already_exists_on_blockchain_under_different_name = 'user_already_exists_on_blockchain_under_different_name',
   user_already_exists_on_blockchain = 'user_already_exists_on_blockchain',
-  create_account = 'create_account',
   account_created = 'account_created',
 }
 
 export interface CounterState {
   signUpState?: SignUpState
+  newAccount?: KeyInfo;
   loading: boolean;
   progress: string[];
 }
 
 const initialState: CounterState = {
   signUpState: undefined,
+  newAccount: undefined,
   loading: false,
   progress: [],
 };
@@ -30,6 +31,8 @@ interface SignUpParam {
   password: string;
   phrase: string;
 }
+
+type SignUpResponse = { newAccount?: KeyInfo, state: SignUpState };
 
 /**
  * This thunk checks if the user is already registered on the blockchain and/or local storage.
@@ -46,76 +49,71 @@ interface SignUpParam {
  *
  * ref: https://github.com/gnolang/dsocial/issues/72
  */
-export const signUp = createAsyncThunk<void, SignUpParam, ThunkExtra>("user/signUp", async (param, config) => {
+export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>("user/signUp", async (param, thunkAPI) => {
 
   const { name, password, phrase } = param;
-  const gnonative = config.extra.gnonative as GnoNativeApi;
+  const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
 
-  config.dispatch(addProgress(`checking if "${name}" is already registered on the blockchain...`))
+  thunkAPI.dispatch(addProgress(`checking if "${name}" is already registered on the blockchain.`))
 
   const blockchainResult = await gnonative.qEval("gno.land/r/demo/users", `GetUserByName("${name}")`);
   // The result contains something like ("g1cv7yjukd8d3236fwjndztrfj0kej8323lc8rt9" std.Address)
   const blockchainUsersMatch = blockchainResult.match(/\("(\w+)" std\.Address\)/);
-  config.dispatch(addProgress(`response for "${name}": "${blockchainUsersMatch}"`))
   const blockchainUsersAddr = blockchainUsersMatch ? blockchainUsersMatch[1] : null;
+  thunkAPI.dispatch(addProgress(`response for "${name}": "${blockchainUsersAddr}"`))
 
   let userOnLocalStorage = null;
   try {
-    config.dispatch(addProgress(`checking if "${name}" is already on local storage...`))
+    thunkAPI.dispatch(addProgress(`checking if "${name}" is already on local storage`))
 
     userOnLocalStorage = await gnonative.getKeyInfoByNameOrAddress(name);
 
-    config.dispatch(addProgress(`response for "${name}": ${userOnLocalStorage}`))
+    thunkAPI.dispatch(addProgress(`response for "${name}": ${JSON.stringify(userOnLocalStorage)}`))
   } catch (e) {
     // TODO: Check for error other than ErrCryptoKeyNotFound(#151)
-    config.dispatch(addProgress(`response for "${name}": ${e}`))
+    thunkAPI.dispatch(addProgress(`response for "${name}": ${e}`))
   }
 
   if (userOnLocalStorage) {
     if (blockchainUsersAddr) {
       if (blockchainUsersAddr == await gnonative.addressToBech32(userOnLocalStorage.address)) {
         // CASE 1.0: Offer to do normal signin, or choose new name
-        config.dispatch(signUpState(SignUpState.user_exists_on_blockchain_and_local_storage))
-        return;
+        return { newAccount: undefined, state: SignUpState.user_exists_on_blockchain_and_local_storage }
+
       }
       else {
         // CASE 1.1: Bad case. Choose new name. (Delete name in keystore?)
-        config.dispatch(signUpState(SignUpState.user_exists_under_differente_key))
-        return;
+        return { newAccount: undefined, state: SignUpState.user_exists_under_differente_key }
       }
     }
     else {
       // CASE 1.2: Offer to onboard existing account, replace it, or choose new name
-      config.dispatch(signUpState(SignUpState.user_exists_only_on_local_storage))
-      return;
+      return { newAccount: undefined, state: SignUpState.user_exists_only_on_local_storage }
     }
   } else {
     if (blockchainUsersAddr) {
       try {
-        config.dispatch(addProgress(`checking for "${blockchainUsersAddr}" on blochchain...`))
+        thunkAPI.dispatch(addProgress(`checking for "${blockchainUsersAddr}" on blochchain...`))
         const keystoreInfoByAddr = await gnonative.getKeyInfoByNameOrAddress(blockchainUsersAddr);
         console.log("This name is already registered on the blockchain. The same key has a different name on this phone: " + keystoreInfoByAddr?.name);
 
         // CASE 2.0: Offer to rename keystoreInfoByAddr.name to name in keystore (password check), and do signin
-        config.dispatch(signUpState(SignUpState.user_already_exists_on_blockchain_under_different_name))
-        return;
+        return { newAccount: undefined, state: SignUpState.user_already_exists_on_blockchain_under_different_name }
+
       } catch (e) {
-        config.dispatch(addProgress(`response for "${blockchainUsersAddr}": ${e}`))
+        thunkAPI.dispatch(addProgress(`response for "${blockchainUsersAddr}": ${e}`))
         // TODO: Check for error other than ErrCryptoKeyNotFound(#151)
       }
 
       // CASE 2.1: "This name is already registered on the blockchain. Please choose another name."
-      config.dispatch(signUpState(SignUpState.user_already_exists_on_blockchain))
-      return;
+      return { newAccount: undefined, state: SignUpState.user_already_exists_on_blockchain }
     }
 
     // Proceed to create the account.
     // CASE 3.0: Proceed to create the account.
-    config.dispatch(signUpState(SignUpState.create_account))
-
     const newAccount = await gnonative.createAccount(name, phrase, password);
     if (!newAccount) {
-      config.dispatch(addProgress(`Failed to create account "${name}"`))
+      thunkAPI.dispatch(addProgress(`Failed to create account "${name}"`))
       throw new Error(`Failed to create account "${name}"`);
     }
 
@@ -123,10 +121,12 @@ export const signUp = createAsyncThunk<void, SignUpParam, ThunkExtra>("user/sign
 
     await gnonative.selectAccount(name);
     await gnonative.setPassword(password);
-    await onboard(gnonative, newAccount.name, newAccount.address);
-    await config.dispatch(loggedIn({ keyInfo: newAccount }));
 
-    config.dispatch(signUpState(SignUpState.account_created))
+    thunkAPI.dispatch(addProgress(`onboarding "${name}"`))
+    await onboard(gnonative, newAccount.name, newAccount.address);
+
+    thunkAPI.dispatch(addProgress(`SignUpState.account_created`))
+    return { newAccount, state: SignUpState.account_created };
   }
 })
 
@@ -223,7 +223,7 @@ export const signUpSlice = createSlice({
     },
     addProgress: (state, action: PayloadAction<string>) => {
       console.log("progress--->", action.payload);
-      state.progress = [...state.progress, action.payload];
+      state.progress = [...state.progress, '- ' + action.payload];
     },
     clearProgress: (state) => {
       state.progress = [];
@@ -233,16 +233,21 @@ export const signUpSlice = createSlice({
     builder.addCase(signUp.rejected, (state, action) => {
       action.error.message ? state.progress = [...state.progress, action.error.message] : null;
       console.error("signUp.rejected", action);
-    });
+    }).addCase(signUp.fulfilled, (state, action) => {
+      state.loading = false;
+      state.newAccount = action.payload?.newAccount;
+      state.signUpState = action.payload?.state;
+    })
   },
 
   selectors: {
     selectLoading: (state) => state.loading,
     selectProgress: (state) => state.progress,
     signUpStateSelector: (state) => state.signUpState,
+    newAccountSelector: (state) => state.newAccount,
   },
 });
 
 export const { addProgress, signUpState, clearProgress } = signUpSlice.actions;
 
-export const { selectLoading, selectProgress, signUpStateSelector } = signUpSlice.selectors;
+export const { selectLoading, selectProgress, signUpStateSelector, newAccountSelector } = signUpSlice.selectors;

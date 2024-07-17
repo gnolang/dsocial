@@ -28,7 +28,7 @@ const ProgressView = () => {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={{ flexDirection: "row", alignItems: "center" }}>
         <Text.Caption1 style={{ paddingRight: 4 }}>Show Progress</Text.Caption1>
-        <MaterialIcons name="history" size={18} onPress={clear} />
+        <MaterialIcons name="history" size={18} />
       </TouchableOpacity>
 
       <Modal
