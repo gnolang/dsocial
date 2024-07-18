@@ -73,7 +73,7 @@ export default function Page() {
       }
       if (signUpState === SignUpState.user_exists_only_on_local_storage) {
         setError(
-          "This name is already registered locally on this device but NOT on chain. If you want to register your account on the Gno Blockchain, please press Create again."
+          "This name is already registered locally on this device but NOT on chain. If you want to register your account on the Gno Blockchain, please press Create again. Your seed phrase will be the same."
         );
         return;
       }
@@ -113,6 +113,8 @@ export default function Page() {
     }
 
     if (signUpState === SignUpState.user_exists_only_on_local_storage && existingAccount) {
+      await gnonative.selectAccount(name);
+      await gnonative.setPassword(password);
       await dispatch(onboarding({ account: existingAccount })).unwrap();
       return;
     }
