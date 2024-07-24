@@ -44,7 +44,15 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.881375651656-dksihke73tspht1n2em6vr0idqgaqbo5"
+        }
+      ]
+    ],
     "extra": {
       "router": {
         "origin": false
