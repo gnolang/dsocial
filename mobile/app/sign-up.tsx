@@ -11,6 +11,7 @@ import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import {
   SignUpState,
+  clearSignUpState,
   existingAccountSelector,
   newAccountSelector,
   onboarding,
@@ -41,6 +42,7 @@ export default function Page() {
       setPassword("");
       setConfirmPassword("");
       setError(undefined);
+      dispatch(clearSignUpState())
       inputRef.current?.focus();
       try {
         setPhrase(await gnonative.generateRecoveryPhrase());
@@ -67,7 +69,7 @@ export default function Page() {
       }
       if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
         setError(
-          "This name is already registered on the blockchain under different name. Please choose another name or press Back for a normal sign in."
+          "This account is already registered on the blockchain under different name. Please choose another Seed Phrase or press Back for a normal sign in."
         );
         return;
       }
@@ -95,6 +97,7 @@ export default function Page() {
   };
 
   const onCreate = async () => {
+    dispatch(clearSignUpState());
     setError(undefined);
     if (!name || !password) {
       setError("Please fill out all fields");
