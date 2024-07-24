@@ -69,7 +69,7 @@ export default function Page() {
       }
       if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
         setError(
-          "This account is already registered on the blockchain under different name. Please choose another Seed Phrase or press Back for a normal sign in."
+          "This account is already registered on the blockchain under a different name. Please press Back and sign up again with another Seed Phrase, or for a normal sign in with a different account if available."
         );
         return;
       }
