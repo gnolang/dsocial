@@ -165,4 +165,6 @@ function useNotificationContext() {
   return context;
 }
 
+export type UseNotificationReturnType = ReturnType<typeof useNotificationContext>;
+
 export { NotificationProvider, useNotificationContext };

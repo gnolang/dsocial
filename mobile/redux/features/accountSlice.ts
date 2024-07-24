@@ -1,4 +1,4 @@
-import { AsyncThunkOptions, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "@gno/types";
 import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import { GnoNativeApi } from "@gnolang/gnonative";

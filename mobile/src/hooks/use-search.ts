@@ -115,3 +115,5 @@ export const useSearch = () => {
     Unfollow,
   };
 };
+
+export type UseSearchReturnType = ReturnType<typeof useSearch>;

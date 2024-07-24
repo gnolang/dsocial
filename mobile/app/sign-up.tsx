@@ -5,11 +5,20 @@ import TextInput from "components/textinput";
 import Button from "components/button";
 import Spacer from "components/spacer";
 import * as Clipboard from "expo-clipboard";
-import { useAppDispatch, loggedIn } from "@gno/redux";
+import { loggedIn, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
-import useOnboarding from "@gno/hooks/use-onboarding";
 import Layout from "@gno/components/layout";
 import { useGnoNativeContext } from "@gnolang/gnonative";
+import {
+  SignUpState,
+  clearSignUpState,
+  existingAccountSelector,
+  newAccountSelector,
+  onboarding,
+  signUp,
+  signUpStateSelector,
+} from "redux/features/signupSlice";
+import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
   const [name, setName] = useState("");
@@ -23,13 +32,17 @@ export default function Page() {
   const navigation = useNavigation();
   const { gnonative } = useGnoNativeContext();
   const dispatch = useAppDispatch();
-  const onboarding = useOnboarding();
+  const signUpState = useAppSelector(signUpStateSelector);
+  const newAccount = useAppSelector(newAccountSelector);
+  const existingAccount = useAppSelector(existingAccountSelector);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       setName("");
       setPassword("");
       setConfirmPassword("");
+      setError(undefined);
+      dispatch(clearSignUpState())
       inputRef.current?.focus();
       try {
         setPhrase(await gnonative.generateRecoveryPhrase());
@@ -40,11 +53,51 @@ export default function Page() {
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(() => {
+    (async () => {
+      console.log("signUpState ->", signUpState);
+
+      if (signUpState === SignUpState.user_exists_on_blockchain_and_local_storage) {
+        setError(
+          "This name is already registered on the blockchain and on this device. Please choose another name or press Back for a normal sign in."
+        );
+        return;
+      }
+      if (signUpState === SignUpState.user_already_exists_on_blockchain) {
+        setError("This name is already registered on the blockchain. Please, choose another name.");
+        return;
+      }
+      if (signUpState === SignUpState.user_already_exists_on_blockchain_under_different_name) {
+        setError(
+          "This account is already registered on the blockchain under a different name. Please press Back and sign up again with another Seed Phrase, or for a normal sign in with a different account if available."
+        );
+        return;
+      }
+      if (signUpState === SignUpState.user_exists_only_on_local_storage) {
+        setError(
+          "This name is already registered locally on this device but NOT on chain. If you want to register your account on the Gno Blockchain, please press Create again. Your seed phrase will be the same."
+        );
+        return;
+      }
+      if (signUpState === SignUpState.user_exists_under_differente_key) {
+        setError(
+          "This name is already registered locally and on the blockchain under a different key. Please choose another name."
+        );
+        return;
+      }
+      if (signUpState === SignUpState.account_created && newAccount) {
+        await dispatch(loggedIn({ keyInfo: newAccount })).unwrap();
+        router.push("/home");
+      }
+    })();
+  }, [signUpState, newAccount]);
+
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(phrase || "");
   };
 
   const onCreate = async () => {
+    dispatch(clearSignUpState());
     setError(undefined);
     if (!name || !password) {
       setError("Please fill out all fields");
@@ -62,17 +115,16 @@ export default function Page() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const newAccount = await gnonative.createAccount(name, phrase, password);
-      if (!newAccount) throw new Error("Failed to create account");
-      console.log("createAccount response: " + JSON.stringify(newAccount));
-
+    if (signUpState === SignUpState.user_exists_only_on_local_storage && existingAccount) {
       await gnonative.selectAccount(name);
       await gnonative.setPassword(password);
-      await onboarding.onboard(newAccount.name, newAccount.address);
-      await dispatch(loggedIn({ keyInfo: newAccount }));
-      router.push("/home");
+      await dispatch(onboarding({ account: existingAccount })).unwrap();
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await dispatch(signUp({ name, password, phrase })).unwrap();
     } catch (error) {
       RNAlert.alert("Error", "" + error);
       setError("" + error);
@@ -121,6 +173,7 @@ export default function Page() {
             </View>
           </View>
         </ScrollView>
+        <ProgressViewModal />
       </Layout.Body>
     </Layout.Container>
   );
