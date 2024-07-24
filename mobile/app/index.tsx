@@ -8,8 +8,7 @@ import ReenterPassword from "@gno/components/modal/reenter-password";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
 import { loggedIn, useAppDispatch } from "@gno/redux";
-import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
-import { useGnoNativeContext } from "@gnolang/gnonative";
+import { KeyInfo, useGnoNativeContext } from "@gnolang/gnonative";
 import Spacer from "@gno/components/spacer";
 import * as Application from "expo-application";
 

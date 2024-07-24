@@ -1,10 +1,9 @@
 import { Alert, StyleSheet, View } from "react-native";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { useGnoNativeContext } from "@gnolang/gnonative";
+import { KeyInfo, useGnoNativeContext } from "@gnolang/gnonative";
 import { logedOut, useAppDispatch } from "@gno/redux";
 import Button from "@gno/components/button";
-import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Layout from "@gno/components/layout";
 import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
