@@ -12,6 +12,11 @@ import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import Spacer from "@gno/components/spacer";
 import * as Application from "expo-application";
+import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID!,
+});
 
 export default function Root() {
   const route = useRouter();
@@ -70,6 +75,19 @@ export default function Root() {
     setReenterPassword(undefined);
   };
 
+  const _signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log('userInfo', userInfo);
+
+      const tokens = await GoogleSignin.getTokens()
+      console.log('tokens', tokens);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (loading) {
     return (
       <Layout.Container>
@@ -105,6 +123,12 @@ export default function Root() {
           <Spacer />
           <Text.Caption1>Or create a new account:</Text.Caption1>
           <Button.Link title="Sign up" href="sign-up" />
+          <GoogleSigninButton
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
+            onPress={_signIn}
+            // disabled={isInProgress}
+          />
         </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (
