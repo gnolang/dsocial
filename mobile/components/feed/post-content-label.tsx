@@ -13,8 +13,8 @@ const PostContentLabel: React.FC<Props> = ({ children, onMentionPress }) => {
   return (
     <Autolink
       text={children}
-      email={false}
-      url={false}
+      email={true}
+      url={true}
       matchers={[
         {
           pattern: PATTERN,
