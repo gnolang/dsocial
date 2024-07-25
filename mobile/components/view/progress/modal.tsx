@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Modal, StyleSheet, FlatList, TouchableOpacity, Share } from "react-native";
 import { useAppDispatch, useAppSelector } from "@gno/redux";
 import { colors } from "@gno/styles/colors";
@@ -6,11 +6,13 @@ import Layout from "@gno/components/layout";
 import { clearProgress, selectProgress } from "redux/features/signupSlice";
 import Text from "@gno/components/text";
 import { EvilIcons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 
-const ProgressViewModal = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+interface Props {
+  visible: boolean;
+  onRequestClose: () => void;
+}
 
+const ProgressViewModal: React.FC<Props> = ({ visible, onRequestClose }) => {
   const dispatch = useAppDispatch();
   const progress = useAppSelector(selectProgress);
 
@@ -26,23 +28,16 @@ const ProgressViewModal = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setModalVisible(true)} style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text.Caption1 style={{ paddingRight: 4 }}>Show Progress</Text.Caption1>
-        <MaterialIcons name="history" size={18} />
-      </TouchableOpacity>
-
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
+        visible={visible}
+        onRequestClose={onRequestClose}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.transparentTop}></View>
           <View style={styles.modalContent}>
-            <Layout.Header title="Progress" onCloseHandler={() => setModalVisible(false)} style={{ marginTop: 22 }} />
+            <Layout.Header title="Progress" onCloseHandler={onRequestClose} style={{ marginTop: 22 }} />
             <FlatList
               data={progress}
               style={styles.flatList}

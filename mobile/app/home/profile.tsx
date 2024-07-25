@@ -12,10 +12,12 @@ import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
 import { onboarding } from "redux/features/signupSlice";
+import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
   const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
@@ -115,6 +117,8 @@ export default function Page() {
             <View></View>
           </>
           <Layout.Footer>
+            <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
+            <Button.TouchableOpacity title="Logs" onPress={() => setModalVisible(true)} variant="primary" />
             <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
             <Button.TouchableOpacity
               title="Register to the notification service"

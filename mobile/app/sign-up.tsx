@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Button as RNButton, ScrollView, TextInput as RNTextInput, Alert as RNAlert } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Button as RNButton,
+  ScrollView,
+  TextInput as RNTextInput,
+  Alert as RNAlert,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { router, useNavigation } from "expo-router";
 import TextInput from "components/textinput";
@@ -19,12 +27,15 @@ import {
   signUpStateSelector,
 } from "redux/features/signupSlice";
 import { ProgressViewModal } from "@gno/components/view/progress";
+import Text from "@gno/components/text";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function Page() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [phrase, setPhrase] = useState<string>("");
   const [error, setError] = useState<string | undefined>(undefined);
+  const [modalVisible, setModalVisible] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<RNTextInput>(null);
@@ -42,7 +53,7 @@ export default function Page() {
       setPassword("");
       setConfirmPassword("");
       setError(undefined);
-      dispatch(clearSignUpState())
+      dispatch(clearSignUpState());
       inputRef.current?.focus();
       try {
         setPhrase(await gnonative.generateRecoveryPhrase());
@@ -139,7 +150,7 @@ export default function Page() {
       <Layout.Body>
         <ScrollView>
           <View style={styles.main}>
-            <Text style={styles.title}>Create your account</Text>
+            <Text.Title style={styles.title}>Create your account</Text.Title>
             <View style={{ minWidth: 200, paddingTop: 8 }}>
               <Spacer />
               <TextInput
@@ -160,9 +171,9 @@ export default function Page() {
               />
             </View>
             <View style={{ minWidth: 200, paddingTop: 8 }}>
-              <Text>Your seed phrase:</Text>
+              <Text.Caption1>Your seed phrase:</Text.Caption1>
               <Spacer />
-              <Text>{phrase}</Text>
+              <Text.Caption1>{phrase}</Text.Caption1>
               <RNButton title="copy" onPress={copyToClipboard} />
               <Spacer />
               <Alert severity="error" message={error} />
@@ -173,7 +184,13 @@ export default function Page() {
             </View>
           </View>
         </ScrollView>
-        <ProgressViewModal />
+        <View style={styles.footer}>
+          <TouchableOpacity onPress={() => setModalVisible(true)} style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text.Caption1 style={{ paddingRight: 4 }}>Show Progress</Text.Caption1>
+            <MaterialIcons name="history" size={18} />
+          </TouchableOpacity>
+        </View>
+        <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
       </Layout.Body>
     </Layout.Container>
   );
@@ -198,5 +215,10 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 36,
     color: "#38434D",
+  },
+  footer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
