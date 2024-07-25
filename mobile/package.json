@@ -15,11 +15,10 @@
     "@buf/gnolang_dsocial-indexer.connectrpc_es": "^1.4.0-20240621073300-3f8442294fd1.3",
     "@buf/gnolang_dsocial-notification.bufbuild_es": "^1.10.0-20240621073240-68037cb72eee.1",
     "@buf/gnolang_dsocial-notification.connectrpc_es": "^1.4.0-20240621073240-68037cb72eee.3",
-    "@buf/gnolang_gnonative.bufbuild_es": "^1.9.0-20240430140846-fe9f3938584d.1",
     "@bufbuild/protobuf": "^1.6.0",
     "@connectrpc/connect": "^1.2.1",
     "@connectrpc/connect-web": "^1.2.1",
-    "@gnolang/gnonative": "^1.4.0",
+    "@gnolang/gnonative": "^1.5.0",
     "@reduxjs/toolkit": "^2.1.0",
     "base-64": "^1.0.0",
     "date-fns": "^3.6.0",
@@ -27,6 +26,7 @@
     "expo-application": "~5.9.1",
     "expo-clipboard": "~6.0.3",
     "expo-constants": "~16.0.2",
+    "expo-dev-client": "~4.0.18",
     "expo-device": "~6.0.2",
     "expo-linear-gradient": "~13.0.2",
     "expo-linking": "~6.3.1",
@@ -51,8 +51,7 @@
     "react-redux": "^9.1.0",
     "styled-components": "^6.1.8",
     "text-encoding": "^0.7.0",
-    "web-streams-polyfill": "^3.3.2",
-    "expo-dev-client": "~4.0.18"
+    "web-streams-polyfill": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
