@@ -183,13 +183,14 @@ export default function Page() {
               <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" disabled={loading} />
             </View>
           </View>
+          <Spacer space={16} />
+          <View style={styles.footer}>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text.Caption1 style={{ paddingRight: 4 }}>Show Progress</Text.Caption1>
+              <MaterialIcons name="history" size={18} />
+            </TouchableOpacity>
+          </View>
         </ScrollView>
-        <View style={styles.footer}>
-          <TouchableOpacity onPress={() => setModalVisible(true)} style={{ flexDirection: "row", alignItems: "center" }}>
-            <Text.Caption1 style={{ paddingRight: 4 }}>Show Progress</Text.Caption1>
-            <MaterialIcons name="history" size={18} />
-          </TouchableOpacity>
-        </View>
         <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
       </Layout.Body>
     </Layout.Container>
