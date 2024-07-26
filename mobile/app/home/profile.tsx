@@ -12,6 +12,7 @@ import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
 import { onboarding } from "redux/features/signupSlice";
+import Avatar from "@gno/components/avatar/avatar";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
@@ -102,6 +103,9 @@ export default function Page() {
     <>
       <Layout.Container>
         <Layout.Body>
+          <View style={{ paddingBottom: 20 }}>
+            <Avatar uri={activeAccount?.image || "https://www.gravatar.com/avatar/tmp"} />
+          </View>
           <>
             <AccountBalance activeAccount={activeAccount} />
             <Text.Subheadline>Chain ID:</Text.Subheadline>
