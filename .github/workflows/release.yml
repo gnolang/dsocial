@@ -36,6 +36,7 @@ jobs:
 
       - name: Semantic Release
         uses: cycjimmy/semantic-release-action@v4
+        id: semantic
         with:
           working_directory: ./mobile
           extra_plugins: |
