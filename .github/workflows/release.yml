@@ -45,7 +45,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Debug semantic release output
+        run: |
+          echo ${{ steps.semantic.outputs }}
+
       - name: Build on EAS
         working-directory: mobile
-        if: steps.semantic.outputs.new_release_version == 'true'
-        run: eas build --platform all --non-interactive --no-wait
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          echo ${{ steps.semantic.outputs.new_release_version }}
+          eas build --platform all --non-interactive --no-wait
