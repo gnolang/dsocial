@@ -15,6 +15,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "usesAppleSignIn": true,
       "supportsTablet": true,
       "bundleIdentifier": "tech.berty.dsocial.ios",
       "infoPlist": {

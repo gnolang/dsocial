@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
@@ -13,6 +13,7 @@ import { useGnoNativeContext } from "@gnolang/gnonative";
 import Spacer from "@gno/components/spacer";
 import * as Application from "expo-application";
 import { GoogleSignin, GoogleSigninButton } from '@react-native-google-signin/google-signin';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 GoogleSignin.configure({
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID!,
@@ -127,8 +128,35 @@ export default function Root() {
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
             onPress={_signIn}
-            // disabled={isInProgress}
+          // disabled={isInProgress}
           />
+
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            cornerRadius={5}
+            style={styles.button}
+            onPress={async () => {
+              try {
+                const credential = await AppleAuthentication.signInAsync({
+                  requestedScopes: [
+                    AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+                    AppleAuthentication.AppleAuthenticationScope.EMAIL,
+                  ],
+                });
+                // signed in
+                console.log('credential', credential);
+              } catch (e: any) {
+                if (e.code === 'ERR_REQUEST_CANCELED') {
+                  // handle that the user canceled the sign-in flow
+                } else {
+                  // handle other errors
+                }
+              }
+            }}
+          />
+
+
         </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (
@@ -137,3 +165,10 @@ export default function Root() {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    width: 200,
+    height: 44,
+  },
+});
