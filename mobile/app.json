@@ -53,6 +53,17 @@
         "projectId": "90cf25eb-7332-4489-83b4-65a9e1d9f9a2"
       }
     },
+    "expo": {
+      "plugins": [
+        [
+          "expo-image-picker",
+          {
+            "photosPermission": "The app accesses your photos to upload an avatar.",
+            "cameraPermission": "The app accesses your camera to create an avatar."
+          }
+        ]
+      ]
+    },
     "owner": "bertytechnologies"
   }
 }
