@@ -13,11 +13,13 @@ const Avatar: React.FC<Props> = ({ uri, style }) => {
   );
 };
 
+const SIZE = 80;
+
 const styles = StyleSheet.create({
   image: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: SIZE,
+    height: SIZE,
+    borderRadius: SIZE,
   },
 });
 

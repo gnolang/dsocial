@@ -12,7 +12,6 @@ import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
 import { onboarding } from "redux/features/signupSlice";
-import Avatar from "@gno/components/avatar/avatar";
 import AvatarPicker from "@gno/components/avatar/avatar-picker";
 
 export default function Page() {
