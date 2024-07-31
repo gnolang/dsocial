@@ -64,8 +64,7 @@ const loadBech32AvatarFromChain = async (bech32: string, thunkAPI: ThunkExtra) =
   try {
     console.log("Loading avatar for", bech32);
     const response = await gnonative.qEval("gno.land/r/demo/profile", `GetStringField("${bech32}","Avatar", "${DEFAULT_AVATAR}")`);
-    const parsed = response.substring(2, response.length - "\" string)".length);
-    return parsed;
+    return response.substring(2, response.length - "\" string)".length);
   } catch (error) {
     console.error("Error loading avatar", error);
   }

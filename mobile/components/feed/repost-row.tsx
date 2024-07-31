@@ -40,7 +40,7 @@ export function RepostRow({ post, onPress = func, showFooter = true }: FeedProps
       <View style={styles.body}>
         <View style={styles.content}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Image source={{ uri: post.user.image }} style={styles.image} />
+            <Image source={{ uri: post.user.avatar }} style={styles.image} />
             <Pressable style={{ flexDirection: "row", alignItems: "center", paddingLeft: 8 }} onPress={onPressName}>
               <Text.Body style={[{ fontWeight: "bold", fontSize: 16, paddingRight: 8 }]}>@{post.user.name}</Text.Body>
               <TimeStampLabel timestamp={post.date} />
