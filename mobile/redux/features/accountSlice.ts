@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "@gno/types";
 import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
+import { useUserCache } from "@gno/hooks/use-user-cache";
 
 export interface CounterState {
   account?: User;
@@ -31,7 +32,8 @@ export const loggedIn = createAsyncThunk<User, LoginParam, ThunkExtra>("account/
 export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: string }, ThunkExtra>("account/saveAvatar", async (param, thunkAPI) => {
   const { mimeType, base64 } = param;
 
-  const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
+  const gnonative = thunkAPI.extra.gnonative;
+  const userCache = thunkAPI.extra.userCache
 
   try {
     const gasFee = "1000000ugnot";
@@ -41,6 +43,8 @@ export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: str
     for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted)) {
       console.log("response on saving avatar: ", response);
     }
+
+    userCache.invalidateCache();
   } catch (error) {
     console.error("on saving avatar", error);
   }

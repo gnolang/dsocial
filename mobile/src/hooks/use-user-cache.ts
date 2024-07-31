@@ -38,5 +38,9 @@ export const useUserCache = () => {
 
     return user;
   }
-  return { getUser };
+
+  function invalidateCache() {
+    usersCache.clear();
+  }
+  return { getUser, invalidateCache };
 };
