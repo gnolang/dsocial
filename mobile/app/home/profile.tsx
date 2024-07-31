@@ -1,10 +1,9 @@
 import { Alert, StyleSheet, View } from "react-native";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { useGnoNativeContext } from "@gnolang/gnonative";
+import { KeyInfo, useGnoNativeContext } from "@gnolang/gnonative";
 import { logedOut, useAppDispatch } from "@gno/redux";
 import Button from "@gno/components/button";
-import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 import Layout from "@gno/components/layout";
 import { LoadingModal } from "@gno/components/loading";
 import { AccountBalance } from "@gno/components/settings";
@@ -13,10 +12,12 @@ import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
 import { onboarding } from "redux/features/signupSlice";
 import AvatarPicker from "@gno/components/avatar/avatar-picker";
+import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
   const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
   const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
@@ -119,6 +120,8 @@ export default function Page() {
             <View></View>
           </>
           <Layout.Footer>
+            <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
+            <Button.TouchableOpacity title="Logs" onPress={() => setModalVisible(true)} variant="primary" />
             <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
             <Button.TouchableOpacity
               title="Register to the notification service"

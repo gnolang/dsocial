@@ -1,5 +1,5 @@
+import { KeyInfo } from "@gnolang/gnonative";
 import SideMenuAccountItem from "./account-item";
-import { KeyInfo } from "@buf/gnolang_gnonative.bufbuild_es/gnonativetypes_pb";
 
 interface SideMenuAccountListProps {
   accounts: KeyInfo[];

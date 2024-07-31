@@ -6,7 +6,9 @@ import TextInput from "@gno/components/textinput";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, Platform } from "react-native";
+import { addProgress } from "redux/features/signupSlice";
+import {  useAppDispatch } from "@gno/redux";
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -16,6 +18,7 @@ export default function Search() {
   const { gnonative } = useGnoNativeContext();
   const navigation = useNavigation();
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -33,6 +36,7 @@ export default function Search() {
   const onPost = async () => {
     setLoading(true);
     setError(undefined);
+    dispatch(addProgress(`posting a message.`))
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
@@ -46,8 +50,10 @@ export default function Search() {
       // TODO: replace with a better way to wait for the transaction to be mined
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
+      dispatch(addProgress(`done, redirecting to home page.`))
       router.push("home");
     } catch (error) {
+      dispatch(addProgress(`error on posting a message: ` + JSON.stringify(error)))
       console.error("on post screen", error);
       setError("" + error);
     } finally {
