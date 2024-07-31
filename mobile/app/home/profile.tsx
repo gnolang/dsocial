@@ -105,9 +105,7 @@ export default function Page() {
       <Layout.Container>
         <Layout.Body>
           <View style={{ paddingBottom: 20 }}>
-            <AvatarPicker>
-              <Avatar uri={activeAccount?.image || "https://www.gravatar.com/avatar/tmp"} />
-            </AvatarPicker>
+            <AvatarPicker />
           </View>
           <>
             <AccountBalance activeAccount={activeAccount} />

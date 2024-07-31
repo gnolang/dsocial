@@ -2,35 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useGnoNativeContext } from '@gnolang/gnonative';
-import * as FileSystem from 'expo-file-system';
-import { compressImage, convertImageToBase64 } from '@gno/utils/file-utils';
+import { compressImage } from '@gno/utils/file-utils';
 import { loggedIn, selectAccount, useAppDispatch, useAppSelector } from "@gno/redux";
+import Avatar from './avatar';
+import Button from '../button';
 
 interface Props {
   children: React.ReactNode;
 }
 
-const AvatarPicker : React.FC<Props> = ({children}) => {
-  const [image, setImage] = useState<string| null>(null);
-  const [compressedImage, setCompressedImage] = useState<string| null>(null);
+const AvatarPicker: React.FC<Props> = ({ children }) => {
+  const [base64Image, setBase64Image] = useState<string | null>(null);
+  const [compressedImage, setCompressedImage] = useState<string | null>(null);
 
   const { gnonative } = useGnoNativeContext();
   const account = useAppSelector(selectAccount)
 
+  const DEFAULT_AVATAR = "https://www.gravatar.com/avatar/tmp"
+
   useEffect(() => {
     const loadAvatar = async () => {
-      try {
-        const response = await gnonative.qEval("gno.land/r/demo/profile", `GetStringField("${account?.address}","Avatar", "")`);
-        console.log("response: ", response);
-        if (response) {
-          setImage(response);
-        }
-      } catch (error) {
-        console.error("Error loading avatar", error);
-      }
+
     }
     loadAvatar();
-  });
+  }, []);
 
 
   const pickImage = async () => {
@@ -41,39 +36,45 @@ const AvatarPicker : React.FC<Props> = ({children}) => {
       quality: 0.5, // compress image for smaller size
     });
 
-    console.log(result);
-
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
 
       const imagePath = result.assets[0].uri;
+      const mimeType = result.assets[0].mimeType;
+
       const imageCompressed = await compressImage(imagePath)
       if (!imageCompressed) {
         console.log("Error compressing image");
         return;
       }
 
-      console.log("compressed image: ", imageCompressed.uri);
-      console.log("compressed base64: ", imageCompressed.base64);
-
       try {
         const gasFee = "1000000ugnot";
         const gasWanted = 10000000;
 
-        const args: Array<string> = ["Avatar", String("data:image/xxx;base64," + imageCompressed.base64)];
+        const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + imageCompressed.base64)];
         for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted)) {
           console.log("response ono post screen: ", response);
         }
       } catch (error) {
         console.error("on post screen", error);
       }
+    }
+  }
 
+  const loadImage = async () => {
+    try {
+      const response = await gnonative.qEval("gno.land/r/demo/profile", `GetStringField("${account?.address}","Avatar", "${DEFAULT_AVATAR}")`);
+      const parsed = response.substring(2, response.length - "\" string)".length);
+      setBase64Image(parsed);
+    } catch (error) {
+      console.error("Error loading avatar", error);
     }
   }
 
   return (
     <TouchableOpacity onPress={pickImage} >
-      {children}
+      <Button.TouchableOpacity onPress={loadImage} title='Load Image' variant="primary" />
+      {base64Image ? <Avatar uri={base64Image} /> : null}
     </TouchableOpacity>
   )
 }
