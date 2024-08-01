@@ -17,7 +17,7 @@ export type Post = {
 export interface User {
   address: string;
   name: string;
-  image?: string;
+  avatar?: string;
   followers?: number;
   url?: string;
   bio?: string;

@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyInfo, useGnoNativeContext } from "@gnolang/gnonative";
@@ -11,6 +11,7 @@ import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
 import { onboarding } from "redux/features/signupSlice";
+import AvatarPicker from "@gno/components/avatar/avatar-picker";
 import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
@@ -103,35 +104,40 @@ export default function Page() {
     <>
       <Layout.Container>
         <Layout.Body>
-          <>
-            <AccountBalance activeAccount={activeAccount} />
-            <Text.Subheadline>Chain ID:</Text.Subheadline>
-            <Text.Body>{chainID}</Text.Body>
-            <Text.Subheadline>Remote:</Text.Subheadline>
-            <Text.Body>{remote}</Text.Body>
-            <Text.Subheadline>Followers:</Text.Subheadline>
-            <Text.Body>{followersCount.n_followers}</Text.Body>
-            <Text.Subheadline>Following:</Text.Subheadline>
-            <Text.Body>{followersCount.n_following}</Text.Body>
-            <View></View>
-          </>
-          <Layout.Footer>
-            <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
-            <Button.TouchableOpacity title="Logs" onPress={() => setModalVisible(true)} variant="primary" />
-            <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
-            <Button.TouchableOpacity
-              title="Register to the notification service"
-              onPress={onPressNotification}
-              variant="primary"
-            />
-            <Button.TouchableOpacity title="Logout" onPress={onPressLogout} style={styles.logout} variant="primary-red" />
-            <Button.TouchableOpacity
-              title="Remove Account"
-              onPress={onRemoveAccount}
-              style={styles.logout}
-              variant="primary-red"
-            />
-          </Layout.Footer>
+          <ScrollView >
+            <View style={{ paddingBottom: 20 }}>
+              <AvatarPicker />
+            </View>
+            <>
+              <AccountBalance activeAccount={activeAccount} />
+              <Text.Subheadline>Chain ID:</Text.Subheadline>
+              <Text.Body>{chainID}</Text.Body>
+              <Text.Subheadline>Remote:</Text.Subheadline>
+              <Text.Body>{remote}</Text.Body>
+              <Text.Subheadline>Followers:</Text.Subheadline>
+              <Text.Body>{followersCount.n_followers}</Text.Body>
+              <Text.Subheadline>Following:</Text.Subheadline>
+              <Text.Body>{followersCount.n_following}</Text.Body>
+              <View></View>
+            </>
+            <Layout.Footer>
+              <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
+              <Button.TouchableOpacity title="Logs" onPress={() => setModalVisible(true)} variant="primary" />
+              <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
+              <Button.TouchableOpacity
+                title="Register to the notification service"
+                onPress={onPressNotification}
+                variant="primary"
+              />
+              <Button.TouchableOpacity title="Logout" onPress={onPressLogout} style={styles.logout} variant="primary-red" />
+              <Button.TouchableOpacity
+                title="Remove Account"
+                onPress={onRemoveAccount}
+                style={styles.logout}
+                variant="primary-red"
+              />
+            </Layout.Footer>
+          </ScrollView>
         </Layout.Body>
       </Layout.Container>
       <LoadingModal visible={loading} />

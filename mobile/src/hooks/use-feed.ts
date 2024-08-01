@@ -81,7 +81,7 @@ export const useFeed = () => {
       user: {
         name: creator.name,
         address: creator.address,
-        image: "https://www.gravatar.com/avatar/tmp",
+        avatar: creator.avatar,
         followers: 0,
         url: "string",
         bio: "string",

@@ -44,7 +44,13 @@
     "experiments": {
       "tsconfigPaths": true
     },
-    "plugins": ["expo-router"],
+    "plugins": ["expo-router", [
+      "expo-image-picker",
+      {
+        "photosPermission": "The app accesses your photos to upload an avatar.",
+        "cameraPermission": "The app accesses your camera to create an avatar."
+      }
+    ]],
     "extra": {
       "router": {
         "origin": false

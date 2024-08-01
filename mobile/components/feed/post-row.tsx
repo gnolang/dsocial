@@ -43,7 +43,7 @@ export function PostRow({ post, onPress = func, onGnod = func, showFooter = true
     <Pressable onPress={() => onPress(post)} style={styles.container}>
       <RepostLabel post={post} />
       <View style={styles.body}>
-        <Image source={{ uri: post.user.image }} style={styles.image} />
+        <Image source={{ uri: post.user.avatar }} style={styles.image} />
         <View style={styles.content}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Pressable style={{ flexDirection: "row", alignItems: "center" }} onPress={() => nativgateToAccount(post?.user.name)}>
