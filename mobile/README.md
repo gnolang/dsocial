@@ -87,7 +87,7 @@ To launch Android Studio, in a terminal enter:
 make asdf.install_tools
 ```
 
-If you get an error like "https://github.com/CocoaPods/CLAide.git (at master@97b765e) is not yet checked out" then reinstall cocoapods like this: 
+If you get an error like "https://github.com/CocoaPods/CLAide.git (at master@97b765e) is not yet checked out" then reinstall cocoapods like this:
 
 ```sh
 asdf uninstall cocoapods
@@ -96,7 +96,7 @@ make asdf.install_tools
 
 ```sh
 # to build and run on ios:
-make ios 
+make ios
 ```
 
 ### Build for Android
@@ -120,10 +120,26 @@ make asdf.install_tools
 
 ```sh
 # to build and run on android:
-make android 
+make android
 
 # to start Metro Bundler:
 make start
 ```
 
+## Manual release to Google Play Store and Apple App Store
+
+The manual release process uses the [`eas`](https://docs.expo.dev/build/setup/#install-the-latest-eas-cli) CLI to submit the app to the stores.
+
+### Apple App Store
+
+1. Download the `GoogleService-Info.plist` file from the Firebase Console.
+2. Run `make ios.release_production` to build the app.
+3. After the build is complete, submit it to the App Store running `eas submit --platform ios`
+
+### Google Play Store
+
+1. Download the `google-services.json` file from the Firebase Console.
+2. Run `make android.release_production` to build the app.
+3. After the build is complete, submit it to the Play Store running `eas submit --platform android`
+You'll need to have a [service account json file](https://developers.google.com/android/management/service-account) to authenticate with Google Play Store.
 
