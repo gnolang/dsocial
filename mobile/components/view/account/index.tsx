@@ -1,11 +1,11 @@
 import { useMemo } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Text from "@gno/components/text";
-import Layout from "@gno/components/layout";
 import { colors } from "@gno/styles/colors";
 import Button from "@gno/components/button";
 import { Following, Post, User } from "@gno/types";
 import FeedView from "../feed/feed-view";
+import Avatar from "@gno/components/avatar/avatar";
 
 interface Props {
   onPressFollowing: () => void;
@@ -39,11 +39,13 @@ function AccountView(props: Props) {
 
   const isFollowed = useMemo(() => followers.find((f) => f.address === currentUser.address) != null, [user, followers]);
 
+  const avarUri = user.avatar ? user.avatar : "https://www.gravatar.com/avatar/tmp";
+
   return (
     <>
       <View style={styles.container}>
         <View style={styles.banner}>
-          <Image source={{ uri: "https://www.gravatar.com/avatar/tmp" }} style={styles.avatar} />
+          <Avatar uri={avarUri} style={styles.avatar} />
         </View>
 
         <View style={styles.followButtonRow}>
