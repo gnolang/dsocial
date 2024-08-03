@@ -1,4 +1,5 @@
 check-program = $(foreach exec,$(1),$(if $(shell PATH="$(PATH)" which $(exec)),,$(error "Missing deps: no '$(exec)' in PATH")))
+check-file = $(foreach file,$(1),$(if $(wildcard $(file)),,$(error "Missing file: $(file)")))
 
 node_modules: package.json package-lock.json
 	$(call check-program, npm)
@@ -9,13 +10,27 @@ ios: node_modules # Run the iOS app
 	npx expo run:ios
 .PHONY: ios
 
-ios.release: node_modules # Run the iOS app in release mode
+# - IOS
+
+ios.release_mode: node_modules # Run the iOS app in release mode
 	npx expo run:ios --configuration Release
-.PHONY: ios.release
+.PHONY: ios.release_mode
+
+ios.release_production: node_modules
+	$(call check-file, GoogleService-Info.plist)
+	eas build --platform ios --profile production
+.PHONY: ios.release_production
+
+# - Android
 
 android: node_modules # Run the Android app
 	npx expo run:android
 .PHONY: android
+
+android.release_production: node_modules
+	$(call check-file, google-services.json)
+	eas build --platform android --profile production
+.PHONY: android.release_production
 
 android.reverse:
 	$(call check-program, adb)
@@ -50,6 +65,8 @@ asdf.install_tools: asdf.add_plugins
 	@echo "Installing asdf tools..."
 	@asdf install
 
+# - Other
+
 clean:
 	$(call check-program, npm)
 
@@ -74,15 +91,6 @@ clean:
 clean_install: clean node_modules
 	cd ios && pod install
 .PHONY: clean_install
-
-release.ios: node_modules
-	npm run build
-	eas build --platform ios --profile production
-.PHONY: release.ios
-
-release.android: node_modules
-	eas build --platform android --profile production
-.PHONY: elease.android
 
 help:
 	@echo "Available make commands:"
