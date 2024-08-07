@@ -28,7 +28,10 @@
           }
         }
       },
-      "buildNumber": "9"
+      "buildNumber": "9",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
