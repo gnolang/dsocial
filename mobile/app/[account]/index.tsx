@@ -44,11 +44,16 @@ export default function Page() {
     try {
       setLoading("Loading account...");
       const response = await search.getJsonUserByName(accountName);
-      setUser(response);
 
       if (!response) {
+        setUser(undefined);
         setError(`The account '${accountName}' does not exist.`);
         return;
+      } else {
+        // TODO: add avatar to indexer and avoid querying on chain
+        const user = await userCache.getUser(response.address);
+        response.avatar = user.avatar;
+        setUser(response);
       }
 
       const { followers } = await search.GetJsonFollowers(response.address);
