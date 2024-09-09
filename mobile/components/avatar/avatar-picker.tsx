@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useGnoNativeContext } from '@gnolang/gnonative';
 import { compressImage } from '@gno/utils/file-utils';
-import { reloadAvatar, saveAvatar, selectAccount, selectAvatar, useAppDispatch, useAppSelector } from "@gno/redux";
+import { reloadAvatar, saveAvatar, selectAvatar, useAppDispatch, useAppSelector } from "@gno/redux";
 import Avatar from './avatar';
 
 const AvatarPicker: React.FC = () => {
   const [base64Image, setBase64Image] = useState<string | null>(null);
 
-  const { gnonative } = useGnoNativeContext();
-
-  const account = useAppSelector(selectAccount);
   const avatarBase64 = useAppSelector(selectAvatar);
 
   const dispatch = useAppDispatch();

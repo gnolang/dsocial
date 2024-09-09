@@ -4,6 +4,7 @@ import { ThunkExtra } from "redux/redux-provider";
 import { Alert } from "react-native";
 import { UseNotificationReturnType } from "@gno/provider/notification-provider";
 import { UseSearchReturnType } from "@gno/hooks/use-search";
+import { User } from "@gno/types";
 
 export enum SignUpState {
   user_exists_on_blockchain_and_local_storage = 'user_exists_on_blockchain_and_local_storage',
@@ -120,7 +121,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
   }
 })
 
-export const onboarding = createAsyncThunk<SignUpResponse, { account: KeyInfo }, ThunkExtra>("user/onboarding", async (param, thunkAPI) => {
+export const onboarding = createAsyncThunk<SignUpResponse, { account: User }, ThunkExtra>("user/onboarding", async (param, thunkAPI) => {
   thunkAPI.dispatch(addProgress(`onboarding "${param.account.name}"`))
 
   const push = thunkAPI.extra.push;
@@ -175,7 +176,7 @@ const checkForUserOnBlockchain = async (gnonative: GnoNativeApi, search: UseSear
   return undefined;
 }
 
-const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType, account: KeyInfo) => {
+const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType, account: User) => {
   const { name, address } = account
   const address_bech32 = await gnonative.addressToBech32(address);
   console.log("onboarding %s, with address: %s", name, address_bech32);

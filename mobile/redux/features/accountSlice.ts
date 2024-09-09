@@ -22,7 +22,7 @@ export const loggedIn = createAsyncThunk<User, LoginParam, ThunkExtra>("account/
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
 
   const bech32 = await gnonative.addressToBech32(keyInfo.address);
-  const user: User = { address: bech32, name: keyInfo.name };
+  const user: User = { bech32, ...keyInfo };
 
   user.avatar = await loadBech32AvatarFromChain(bech32, thunkAPI);
 
@@ -54,7 +54,7 @@ export const reloadAvatar = createAsyncThunk<string | undefined, void, ThunkExtr
 
   const state = await thunkAPI.getState() as CounterState;
   // @ts-ignore
-  const bech32 = state.account?.account?.address;
+  const bech32 = state.account?.account?.bech32;
   if (bech32) {
     return await loadBech32AvatarFromChain(bech32, thunkAPI);
   }
@@ -93,6 +93,7 @@ export const accountSlice = createSlice({
     });
     builder.addCase(reloadAvatar.fulfilled, (state, action) => {
       if (state.account) {
+        console.log("Reloading avatar", action.payload);
         state.account.avatar = action.payload;
       } else {
         console.error("No account to set avatar");

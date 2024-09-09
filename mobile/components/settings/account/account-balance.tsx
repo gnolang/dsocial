@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Text from "@gno/components/text";
-import { KeyInfo, useGnoNativeContext } from "@gnolang/gnonative";
+import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useSearch } from "@gno/hooks/use-search";
 import * as Application from "expo-application";
+import { User } from "@gno/types";
 
 interface Props {
-  activeAccount: KeyInfo | undefined;
+  activeAccount: User | undefined;
 }
 
 export function AccountBalance({ activeAccount }: Props) {

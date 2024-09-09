@@ -21,20 +21,20 @@ export default function Page() {
   const ref = useRef<FlatList>(null);
   const dispatch = useAppDispatch();
 
-  const user = useAppSelector(selectAccount);
+  const account = useAppSelector(selectAccount);
 
   useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      if (!user) {
+      if (!account) {
         RNAlert.alert("No user found.");
         return;
       }
       setError(undefined);
       setIsLoading(true);
       try {
-        const total = await feed.fetchCount(user.address);
+        const total = await feed.fetchCount(account.bech32);
         setTotalPosts(total);
       } catch (error) {
         RNAlert.alert("Error while fetching posts.", " " + error);
@@ -52,7 +52,7 @@ export default function Page() {
 
   const onPress = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
-    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.bech32 } });
   };
 
   const onGnod = async (post: Post) => {
@@ -85,7 +85,7 @@ export default function Page() {
       </Layout.Container>
     );
 
-  if (!user) {
+  if (!account) {
     return (
       <Layout.Container>
         <Layout.Body>
@@ -98,7 +98,7 @@ export default function Page() {
   return (
     <SafeAreaView style={{ flex: 1, paddingTop: Platform.select({ ios: 0, default: 20 }) }}>
       <View style={styles.container}>
-        <FeedView totalPosts={totalPosts} onPress={onPress} onGnod={onGnod} address={user.address} type="userFeed" />
+        <FeedView totalPosts={totalPosts} onPress={onPress} onGnod={onGnod} bech32={account.bech32} type="userFeed" />
         <Button.TouchableOpacity title="Post" onPress={onPressPost} style={styles.post} variant="primary" />
       </View>
     </SafeAreaView>

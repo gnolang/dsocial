@@ -8,7 +8,7 @@ import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { addProgress } from "redux/features/signupSlice";
-import {  useAppDispatch } from "@gno/redux";
+import {  selectAccount, useAppDispatch, useAppSelector } from "@gno/redux";
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -19,13 +19,13 @@ export default function Search() {
   const navigation = useNavigation();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const account = useAppSelector(selectAccount);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
       setPostContent("");
       try {
-        const response = await gnonative.getActiveAccount();
-        if (!response.key) throw new Error("No active account");
+        if (!account) throw new Error("No active account");
       } catch (error: unknown | Error) {
         console.log(error);
       }

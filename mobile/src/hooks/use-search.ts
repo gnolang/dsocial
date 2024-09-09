@@ -7,7 +7,6 @@ export const useSearch = () => {
   const { gnonative } = useGnoNativeContext();
 
   async function Follow(address: string) {
-    checkActiveAccount();
 
     try {
       const gasFee = "1000000ugnot";
@@ -22,7 +21,6 @@ export const useSearch = () => {
   }
 
   async function Unfollow(address: string) {
-    checkActiveAccount();
 
     try {
       const gasFee = "1000000ugnot";
@@ -37,7 +35,6 @@ export const useSearch = () => {
   }
 
   async function GetJsonFollowersCount(address: string | Uint8Array) {
-    checkActiveAccount();
 
     const { n_followers } = await GetJsonFollowers(address);
     const { n_following } = await GetJsonFollowing(address);
@@ -46,7 +43,6 @@ export const useSearch = () => {
   }
 
   async function GetJsonFollowers(address: string | Uint8Array) {
-    checkActiveAccount();
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}", 0, 1000)`);
     const json = (await convertToJson(result)) as GetJsonFollowersResult;
@@ -55,7 +51,6 @@ export const useSearch = () => {
   }
 
   async function GetJsonFollowing(address: string | Uint8Array) {
-    checkActiveAccount();
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}", 0, 1000)`);
     const json = (await convertToJson(result)) as GetJsonFollowingResult;
@@ -64,7 +59,6 @@ export const useSearch = () => {
   }
 
   async function getJsonUserByName(username: string) {
-    checkActiveAccount();
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonUserByName("${username}")`);
     const json = (await convertToJson(result)) as User;
@@ -72,15 +66,13 @@ export const useSearch = () => {
     return json;
   }
 
-  async function searchUser(q: string, excludeActiveAccount?: boolean) {
-    checkActiveAccount();
+  async function searchUser(q: string, accountToExclude?: User) {
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `ListJsonUsersByPrefix("${q}", ${MAX_RESULT})`);
     const usernames = await convertToJson(result);
-    if (excludeActiveAccount) {
+    if (accountToExclude) {
       // Remove the active account's own username.
-      const currentAccount = await gnonative.getActiveAccount();
-      const i = usernames.indexOf(currentAccount.key?.name, 0);
+      const i = usernames.indexOf(accountToExclude.name, 0);
       if (i >= 0) {
         usernames.splice(i, 1);
       }
@@ -98,11 +90,6 @@ export const useSearch = () => {
     const jsonPosts = JSON.parse(json);
 
     return jsonPosts;
-  }
-
-  async function checkActiveAccount() {
-    const currentAccount = await gnonative.getActiveAccount();
-    if (!currentAccount.key) throw new Error("No active account");
   }
 
   return {

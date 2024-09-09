@@ -51,7 +51,7 @@ export default function Page() {
         return;
       } else {
         // TODO: add avatar to indexer and avoid querying on chain
-        const user = await userCache.getUser(response.address);
+        const user = await userCache.getUser(response.bech32);
         response.avatar = user.avatar;
         setUser(response);
       }
@@ -64,11 +64,11 @@ export default function Page() {
 
       const isUserFeed = response.address === currentUser?.address;
       if (isUserFeed) {
-        const total = await feed.fetchCount(response.address);
+        const total = await feed.fetchCount(response.bech32);
         setTotalPosts(total);
       } else {
         // Set startIndex and endIndex to 0 to just get the n_posts.
-        const r = await feed.fetchThreadPosts(response.address, 0, 0);
+        const r = await feed.fetchThreadPosts(response.bech32, 0, 0);
         setTotalPosts(r.n_posts);
       }
 
@@ -124,7 +124,7 @@ export default function Page() {
 
   const onPressPost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
-    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.bech32 } });
   };
 
   return (

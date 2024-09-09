@@ -37,7 +37,7 @@ function AccountView(props: Props) {
   } = props;
   const accountName = user.name;
 
-  const isFollowed = useMemo(() => followers.find((f) => f.address === currentUser.address) != null, [user, followers]);
+  const isFollowed = useMemo(() => followers.find((f) => f.address.toString() === currentUser.address.toString()) != null, [user, followers]);
 
   const avarUri = user.avatar ? user.avatar : "https://www.gravatar.com/avatar/tmp";
 
@@ -51,14 +51,14 @@ function AccountView(props: Props) {
         <View style={styles.followButtonRow}>
           {isFollowed ? (
             <Button.TouchableOpacity
-              onPress={() => onPressUnfollow(user.address)}
+              onPress={() => onPressUnfollow(user.address.toString())}
               variant="primary"
               title="Unfollow"
               style={{ width: 100 }}
             />
           ) : (
             <Button.TouchableOpacity
-              onPress={() => onPressFollow(user.address)}
+              onPress={() => onPressFollow(user.address.toString())}
               variant="primary"
               title="Follow"
               style={{ width: 100 }}
@@ -82,7 +82,7 @@ function AccountView(props: Props) {
         <View style={{ flex: 1, width: "100%", paddingHorizontal: 16, paddingTop: 8 }}>
           <Text.Body>Posts</Text.Body>
           <View style={{ height: 1, backgroundColor: colors.grayscale[200] }} />
-          <FeedView totalPosts={totalPosts} onPress={onPressPost} onGnod={onGnod} address={user.address} type="userPosts" />
+          {/* <FeedView totalPosts={totalPosts} onPress={onPressPost} onGnod={onGnod} bech32={user.address.toString()} type="userPosts" /> */}
         </View>
       </View>
     </>

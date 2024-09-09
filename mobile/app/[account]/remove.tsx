@@ -10,7 +10,7 @@ export default function Page() {
   const data = useAppSelector(selectFollowers);
 
   const onConfirm = async (item: User) => {
-    await gnonative.deleteAccount(item.address, undefined, true);
+    await gnonative.deleteAccount(item.bech32, undefined, true);
 
     dispatch(logedOut());
   };
