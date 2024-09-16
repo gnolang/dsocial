@@ -17,8 +17,8 @@ export enum SignUpState {
 
 export interface CounterState {
   signUpState?: SignUpState
-  newAccount?: KeyInfo;
-  existingAccount?: KeyInfo;
+  newAccount?: User;
+  existingAccount?: User;
   loading: boolean;
   progress: string[];
 }
@@ -37,7 +37,7 @@ interface SignUpParam {
   phrase: string;
 }
 
-type SignUpResponse = { newAccount?: KeyInfo, existingAccount?: KeyInfo, state: SignUpState };
+type SignUpResponse = { newAccount?: User, existingAccount?: User, state: SignUpState };
 
 /**
  * This thunk checks if the user is already registered on the blockchain and/or local storage.
@@ -117,7 +117,11 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
     await onboard(gnonative, push, newAccount);
 
     thunkAPI.dispatch(addProgress(`SignUpState.account_created`))
-    return { newAccount, state: SignUpState.account_created };
+
+    const bech32 = await gnonative.addressToBech32(newAccount.address);
+    const user: User = { bech32, ...newAccount };
+
+    return { newAccount: user, state: SignUpState.account_created };
   }
 })
 
@@ -134,10 +138,14 @@ export const onboarding = createAsyncThunk<SignUpResponse, { account: User }, Th
   return { newAccount: account, state: SignUpState.account_created };
 })
 
-const checkForUserOnLocalStorage = async (gnonative: GnoNativeApi, name: string): Promise<KeyInfo | undefined> => {
-  let userOnLocalStorage: KeyInfo | undefined = undefined;
+const checkForUserOnLocalStorage = async (gnonative: GnoNativeApi, name: string): Promise<User | undefined> => {
+  let userOnLocalStorage: User | undefined = undefined;
   try {
-    userOnLocalStorage = await gnonative.getKeyInfoByNameOrAddress(name);
+    const keyInfo = await gnonative.getKeyInfoByNameOrAddress(name);
+    if (keyInfo) {
+      userOnLocalStorage = {...keyInfo, bech32: await gnonative.addressToBech32(keyInfo.address)};
+    }
+
   } catch (e) {
     // TODO: Check for error other than ErrCryptoKeyNotFound(#151)
     return undefined;
@@ -150,7 +158,7 @@ const checkForUserOnBlockchain = async (gnonative: GnoNativeApi, search: UseSear
 
   if (result?.address) {
     console.log("user %s already exists on the blockchain under the same name", name);
-    return { address: result?.address, state: SignUpState.user_already_exists_on_blockchain };
+    return { address: result.bech32, state: SignUpState.user_already_exists_on_blockchain };
   }
 
   try {
@@ -176,7 +184,7 @@ const checkForUserOnBlockchain = async (gnonative: GnoNativeApi, search: UseSear
   return undefined;
 }
 
-const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType, account: User) => {
+const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType, account: KeyInfo | User) => {
   const { name, address } = account
   const address_bech32 = await gnonative.addressToBech32(address);
   console.log("onboarding %s, with address: %s", name, address_bech32);
@@ -186,14 +194,14 @@ const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType,
 
     if (hasBalance) {
       console.log("user %s already has a balance", name);
-      await registerAccount(gnonative, name);
+      await registerAccount(gnonative, name, account.address);
       return;
     }
 
     const response = await sendCoins(address_bech32);
     console.log("sent coins %s", response);
 
-    await registerAccount(gnonative, name);
+    await registerAccount(gnonative, name, account.address);
 
     push.registerDevice(address_bech32);
   } catch (error) {
@@ -201,14 +209,14 @@ const onboard = async (gnonative: GnoNativeApi, push: UseNotificationReturnType,
   }
 };
 
-const registerAccount = async (gnonative: GnoNativeApi, name: string) => {
+const registerAccount = async (gnonative: GnoNativeApi, name: string, callerAddress: Uint8Array) => {
   console.log("Registering account %s", name);
   try {
     const gasFee = "10000000ugnot";
     const gasWanted = 20000000;
     const send = "200000000ugnot";
     const args: Array<string> = ["", name, "Profile description"];
-    for await (const response of await gnonative.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, send)) {
+    for await (const response of await gnonative.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, callerAddress, send)) {
       console.log("response: ", JSON.stringify(response));
     }
   } catch (error) {

@@ -56,10 +56,10 @@ export default function Page() {
         setUser(response);
       }
 
-      const { followers } = await search.GetJsonFollowers(response.address);
+      const { followers } = await search.GetJsonFollowers(response.bech32);
       setFollowers(followers);
 
-      const { following } = await search.GetJsonFollowing(response.address);
+      const { following } = await search.GetJsonFollowing(response.bech32);
       setFollowing(following);
 
       const isUserFeed = response.address === currentUser?.address;
@@ -68,6 +68,7 @@ export default function Page() {
         setTotalPosts(total);
       } else {
         // Set startIndex and endIndex to 0 to just get the n_posts.
+        console.log("fetching thread posts xxxx", response);
         const r = await feed.fetchThreadPosts(response.bech32, 0, 0);
         setTotalPosts(r.n_posts);
       }

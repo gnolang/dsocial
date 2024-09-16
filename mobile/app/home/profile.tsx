@@ -83,9 +83,8 @@ export default function Page() {
     }
 
     try {
-      const address = await gnonative.addressToBech32(account.address);
-      const followersCount = await search.GetJsonFollowersCount(address);
-
+      const followersCount = await search.GetJsonFollowersCount(account.bech32);
+      console.log("followersCount", followersCount);
       setFollowersCount(followersCount);
 
       console.log("remote: %s chainId %s " + remote, chainId);

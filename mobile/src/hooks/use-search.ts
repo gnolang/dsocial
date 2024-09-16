@@ -34,7 +34,7 @@ export const useSearch = () => {
     }
   }
 
-  async function GetJsonFollowersCount(address: string | Uint8Array) {
+  async function GetJsonFollowersCount(address: string) {
 
     const { n_followers } = await GetJsonFollowers(address);
     const { n_following } = await GetJsonFollowing(address);
@@ -42,7 +42,7 @@ export const useSearch = () => {
     return { n_followers, n_following };
   }
 
-  async function GetJsonFollowers(address: string | Uint8Array) {
+  async function GetJsonFollowers(address: string) {
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonFollowers("${address}", 0, 1000)`);
     const json = (await convertToJson(result)) as GetJsonFollowersResult;
@@ -50,7 +50,7 @@ export const useSearch = () => {
     return json;
   }
 
-  async function GetJsonFollowing(address: string | Uint8Array) {
+  async function GetJsonFollowing(address: string) {
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonFollowing("${address}", 0, 1000)`);
     const json = (await convertToJson(result)) as GetJsonFollowingResult;
@@ -58,12 +58,17 @@ export const useSearch = () => {
     return json;
   }
 
-  async function getJsonUserByName(username: string) {
+  async function getJsonUserByName(username: string) : Promise<User | undefined> {
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetJsonUserByName("${username}")`);
-    const json = (await convertToJson(result)) as User;
+    const json = (await convertToJson(result));
+    if (!json) return undefined;
+    // GetJsonUserByName returns an address as bech32 hex.
+    // To keep consistency with the rest of the app, we'll convert it to a ui8int string.
+    json.bech32 = json.address as string;
+    json.address = await gnonative.addressFromBech32(json.address as string);
 
-    return json;
+    return json as User;
   }
 
   async function searchUser(q: string, accountToExclude?: User) {
