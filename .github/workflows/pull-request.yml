@@ -1,0 +1,30 @@
+name: First check on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-npm-command:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@v3
+
+      - name: Setup Node version
+        working-directory: mobile
+        run: |
+          asdf plugin add nodejs
+          asdf install nodejs
+          echo "node_version=$(asdf current nodejs | xargs | cut -d ' ' -f 2)" >> $GITHUB_ENV
+
+      - name: Set nodejs as global exec
+        run: |
+          asdf global nodejs ${{ env.node_version }}
+
+      - name: Run ts:check
+        run: npm run ts:check
