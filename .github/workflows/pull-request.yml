@@ -26,5 +26,10 @@ jobs:
         run: |
           asdf global nodejs ${{ env.node_version }}
 
+      - name: Install dependencies
+        working-directory: mobile
+        run: npm ci
+
       - name: Run ts:check
+        working-directory: mobile
         run: npm run ts:check
