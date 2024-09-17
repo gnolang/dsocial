@@ -97,7 +97,6 @@ export default function Page() {
         return;
       }
       if (signUpState === SignUpState.account_created && newAccount) {
-        await dispatch(loggedIn({ keyInfo: newAccount })).unwrap();
         router.push("/home");
       }
     })();
@@ -127,7 +126,7 @@ export default function Page() {
     }
 
     if (signUpState === SignUpState.user_exists_only_on_local_storage && existingAccount) {
-      await gnonative.selectAccount(name);
+      await gnonative.activateAccount(name);
       await gnonative.setPassword(password);
       await dispatch(onboarding({ account: existingAccount })).unwrap();
       return;

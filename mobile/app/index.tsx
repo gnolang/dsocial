@@ -44,7 +44,7 @@ export default function Root() {
   const onChangeAccountHandler = async (keyInfo: KeyInfo) => {
     try {
       setLoading("Changing account...");
-      const response = await gnonative.selectAccount(keyInfo.name);
+      const response = await gnonative.activateAccount(keyInfo.name);
 
       setLoading(undefined);
 
