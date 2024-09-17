@@ -35,12 +35,17 @@ export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: str
   const gnonative = thunkAPI.extra.gnonative;
   const userCache = thunkAPI.extra.userCache
 
+  const state = await thunkAPI.getState() as CounterState;
+  console.log("statexxx", state);
+  // @ts-ignore
+  const address = state.account?.account?.address;
+
   try {
     const gasFee = "1000000ugnot";
     const gasWanted = 10000000;
 
     const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
-    for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted)) {
+    for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted, address)) {
       console.log("response on saving avatar: ", response);
     }
 

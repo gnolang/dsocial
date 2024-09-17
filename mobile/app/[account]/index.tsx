@@ -98,14 +98,14 @@ export default function Page() {
     router.navigate({ pathname: "account/followers" });
   };
 
-  const onPressFollow = async (address: string) => {
-    await search.Follow(address);
+  const onPressFollow = async (address: string, callerAddress: Uint8Array) => {
+    await search.Follow(address, callerAddress);
 
     fetchData();
   };
 
-  const onPressUnfollow = async (address: string) => {
-    await search.Unfollow(address as string);
+  const onPressUnfollow = async (address: string, callerAddress: Uint8Array) => {
+    await search.Unfollow(address as string, callerAddress);
 
     fetchData();
   };
@@ -113,8 +113,11 @@ export default function Page() {
   const onGnod = async (post: Post) => {
     console.log("gnodding post: ", post);
     setLoading("Gnoding...");
+
+    if (!currentUser) throw new Error("No active account");
+
     try {
-      await feed.onGnod(post);
+      await feed.onGnod(post, currentUser.address);
       await fetchData();
     } catch (error) {
       console.error("Error while adding reaction: " + error);
@@ -135,6 +138,7 @@ export default function Page() {
         <ErrorView message={error} />
       ) : (
         <AccountView
+          callerAddress={currentUser.address}
           user={user}
           currentUser={currentUser}
           totalPosts={totalPosts}

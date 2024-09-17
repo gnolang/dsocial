@@ -6,13 +6,13 @@ const MAX_RESULT = 10;
 export const useSearch = () => {
   const { gnonative } = useGnoNativeContext();
 
-  async function Follow(address: string) {
+  async function Follow(address: string, callerAddress: Uint8Array) {
 
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
       const args: Array<string> = [address];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted, callerAddress)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {
@@ -20,13 +20,13 @@ export const useSearch = () => {
     }
   }
 
-  async function Unfollow(address: string) {
+  async function Unfollow(address: string, callerAddress: Uint8Array) {
 
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
       const args: Array<string> = [address];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "Unfollow", args, gasFee, gasWanted, callerAddress)) {
         console.log("response: ", JSON.stringify(response));
       }
     } catch (error) {

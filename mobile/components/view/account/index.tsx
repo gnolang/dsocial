@@ -10,8 +10,8 @@ import Avatar from "@gno/components/avatar/avatar";
 interface Props {
   onPressFollowing: () => void;
   onPressFollowers: () => void;
-  onPressFollow: (address: string) => void;
-  onPressUnfollow: (address: string) => void;
+  onPressFollow: (address: string, callerAddress: Uint8Array) => void;
+  onPressUnfollow: (address: string, callerAddress: Uint8Array) => void;
   onPressPost: (post: Post) => void;
   onGnod: (post: Post) => void;
   user: User;
@@ -19,6 +19,7 @@ interface Props {
   followers: Following[];
   following: Following[];
   totalPosts: number;
+  callerAddress: Uint8Array;
 }
 
 function AccountView(props: Props) {
@@ -34,6 +35,8 @@ function AccountView(props: Props) {
     followers,
     currentUser,
     totalPosts,
+    callerAddress,
+
   } = props;
   const accountName = user.name;
 
@@ -51,14 +54,14 @@ function AccountView(props: Props) {
         <View style={styles.followButtonRow}>
           {isFollowed ? (
             <Button.TouchableOpacity
-              onPress={() => onPressUnfollow(user.address.toString())}
+              onPress={() => onPressUnfollow(user.address.toString(), callerAddress)}
               variant="primary"
               title="Unfollow"
               style={{ width: 100 }}
             />
           ) : (
             <Button.TouchableOpacity
-              onPress={() => onPressFollow(user.address.toString())}
+              onPress={() => onPressFollow(user.address.toString(), callerAddress)}
               variant="primary"
               title="Follow"
               style={{ width: 100 }}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Text from "@gno/components/text";
-import { selectPostToReply, useAppSelector } from "@gno/redux";
+import { selectAccount, selectPostToReply, useAppSelector } from "@gno/redux";
 import Layout from "@gno/components/layout";
 import TextInput from "@gno/components/textinput";
 import Button from "@gno/components/button";
@@ -24,6 +24,7 @@ function Page() {
   const feed = useFeed();
   const router = useRouter();
   const { gnonative } = useGnoNativeContext();
+  const account = useAppSelector(selectAccount);
 
   const params = useLocalSearchParams();
   const { post_id, address } = params;
@@ -54,12 +55,14 @@ function Page() {
     setError(undefined);
     setPosting(true);
 
+    if (!account) throw new Error("No active account"); // never happens, but just in case
+
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
 
       const args: Array<string> = [post.user.bech32, String(post.id), String(post.id), replyContent];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted, account.address)) {
         console.log("response ono post screen: ", response);
       }
 
@@ -80,8 +83,11 @@ function Page() {
   const onGnod = async (post: Post) => {
     console.log("gnodding post: ", post);
     setLoading("Gnoding...");
+
+    if (!account) throw new Error("No active account");
+
     try {
-      await feed.onGnod(post);
+      await feed.onGnod(post, account.address);
       await fetchData();
     } catch (error) {
       RNAlert.alert("Error", "Error while adding reaction: " + error);

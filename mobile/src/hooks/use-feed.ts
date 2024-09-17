@@ -107,7 +107,7 @@ export const useFeed = () => {
     return nHomePosts;
   }
 
-  async function onGnod(post: Post) {
+  async function onGnod(post: Post, callerAddress: Uint8Array) : Promise<void> {
 
     try {
       const gasFee = "1000000ugnot";
@@ -115,7 +115,7 @@ export const useFeed = () => {
 
       const args: Array<string> = [post.user.bech32, String(post.id), String(post.id), String("0")];
       console.log("AddReaction args: ", args.join(", "));
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted)) {
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted, callerAddress)) {
         const result = JSON.parse(JSON.stringify(response)).result;
         // Alert.alert("AddReaction Result", base64.decode(result));
       }

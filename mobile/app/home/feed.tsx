@@ -58,8 +58,10 @@ export default function Page() {
   const onGnod = async (post: Post) => {
     setIsLoading(true);
 
+    if (!account) throw new Error("No active account");
+
     try {
-      await feed.onGnod(post);
+      await feed.onGnod(post, account.address);
     } catch (error) {
       RNAlert.alert("Error", "Error while adding reaction: " + error);
     } finally {
