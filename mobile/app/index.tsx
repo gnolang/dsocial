@@ -107,7 +107,7 @@ export default function Root() {
         </Layout.BodyAlignedBotton>
       </Layout.Container>
       {reenterPassword ? (
-        <ReenterPassword visible={Boolean(reenterPassword)} accountName={reenterPassword.name} onClose={onCloseReenterPassword} />
+        <ReenterPassword visible={Boolean(reenterPassword)} accountName={reenterPassword.name} accountAddress={reenterPassword.address} onClose={onCloseReenterPassword} />
       ) : null}
     </>
   );

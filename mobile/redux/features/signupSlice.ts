@@ -1,10 +1,12 @@
-import { PayloadAction, createAsyncThunk, createSlice, loggedIn } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
 import { Alert } from "react-native";
 import { UseNotificationReturnType } from "@gno/provider/notification-provider";
 import { UseSearchReturnType } from "@gno/hooks/use-search";
 import { User } from "@gno/types";
+import { loggedIn } from "@gno/redux";
+
 
 export enum SignUpState {
   user_exists_on_blockchain_and_local_storage = 'user_exists_on_blockchain_and_local_storage',
@@ -121,7 +123,7 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpParam, ThunkExtra>(
     const bech32 = await gnonative.addressToBech32(newAccount.address);
     const user: User = { bech32, ...newAccount };
 
-    thunkAPI.dispatch(loggedIn({ keyInfo: newAccount }))
+    await thunkAPI.dispatch(loggedIn({ keyInfo: newAccount })).unwrap();
 
     return { newAccount: user, state: SignUpState.account_created };
   }

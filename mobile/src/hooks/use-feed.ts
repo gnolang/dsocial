@@ -112,9 +112,9 @@ export const useFeed = () => {
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
-
-      const args: Array<string> = [post.user.bech32, String(post.id), String(post.id), String("0")];
-      console.log("AddReaction args: ", args.join(", "));
+      // post.user.address is in fact a bech32 address
+      const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), String("0")];
+      console.log("AddReaction args2: ", args.join(", "));
       for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted, callerAddress)) {
         const result = JSON.parse(JSON.stringify(response)).result;
         // Alert.alert("AddReaction Result", base64.decode(result));
