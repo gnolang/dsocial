@@ -36,12 +36,13 @@ function Page() {
   const fetchData = async () => {
     if (!post) return;
 
+    console.log("fetching post: ", post_id, address);
     setLoading("Loading post...");
     try {
       const thread = await feed.fetchThread(address as string, Number(post_id));
       setThread(thread.data);
     } catch (error) {
-      console.error("on post screen", error);
+      console.error("failed on [post_id].tsx screen", error);
       setError("" + error);
     } finally {
       setLoading(undefined);
@@ -61,7 +62,8 @@ function Page() {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
 
-      const args: Array<string> = [post.user.bech32, String(post.id), String(post.id), replyContent];
+      // Post objects comes from the indexer, address is a bech32 address
+      const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), replyContent];
       for await (const response of await gnonative.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted, account.address)) {
         console.log("response ono post screen: ", response);
       }

@@ -68,7 +68,6 @@ export default function Page() {
         setTotalPosts(total);
       } else {
         // Set startIndex and endIndex to 0 to just get the n_posts.
-        console.log("fetching thread posts xxxx", response);
         const r = await feed.fetchThreadPosts(response.bech32, 0, 0);
         setTotalPosts(r.n_posts);
       }
@@ -128,7 +127,8 @@ export default function Page() {
 
   const onPressPost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
-    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.bech32 } });
+    // Posts come from the indexer, the address is a bech32 address.
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: String(item.user.address) } });
   };
 
   return (
