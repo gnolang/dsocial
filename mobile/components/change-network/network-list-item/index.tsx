@@ -1,7 +1,7 @@
 import Icons from '@gno/components/icons';
 import Text from '@gno/components/text';
 import { colors } from '@gno/styles/colors';
-import { NetworkMetainfo } from '@gnolang/gnonative/build/hooks/types';
+import { NetworkMetainfo } from "@gno/types";
 import styled from 'styled-components/native';
 
 export interface Props {

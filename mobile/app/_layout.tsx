@@ -8,15 +8,19 @@ import { NotificationProvider } from "@gno/provider/notification-provider";
 import { ReduxProvider } from "redux/redux-provider";
 
 const gnoDefaultConfig = {
+  // @ts-ignore
   remote: process.env.EXPO_PUBLIC_GNO_REMOTE!,
+  // @ts-ignore
   chain_id: process.env.EXPO_PUBLIC_GNO_CHAIN_ID!,
 };
 
 const indexerDefaultConfig = {
+  // @ts-ignore
   remote: process.env.EXPO_PUBLIC_INDEXER_REMOTE!,
 };
 
 const notificationDefaultConfig = {
+  // @ts-ignore
   remote: process.env.EXPO_PUBLIC_NOTIFICATION_REMOTE!,
 };
 

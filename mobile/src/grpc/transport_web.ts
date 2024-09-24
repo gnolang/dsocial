@@ -1,5 +1,7 @@
+// @ts-ignore
 import { polyfill as polyfillReadableStream } from "react-native-polyfill-globals/src/readable-stream";
 polyfillReadableStream();
+// @ts-ignore
 import { fetch as fetchPolyfill, Headers as HeadersPolyfill } from "react-native-fetch-api";
 
 import type { AnyMessage, MethodInfo, PartialMessage, ServiceType } from "@bufbuild/protobuf";
@@ -241,7 +243,7 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
               throw endStream.error;
             }
 
-            endStream.metadata.forEach((value, key) => trailerTarget.set(key, value));
+            endStream.metadata.forEach((value:any, key:any) => trailerTarget.set(key, value));
             continue;
           }
 

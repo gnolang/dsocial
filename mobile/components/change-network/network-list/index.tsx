@@ -1,7 +1,7 @@
 import NetworkListItem from "../network-list-item";
 import styled from "styled-components/native";
 import Text from "components/text";
-import { NetworkMetainfo } from "@gnolang/gnonative/build/hooks/types";
+import { NetworkMetainfo } from "@gno/types";
 
 interface Props {
   currentChainId: string | undefined;
