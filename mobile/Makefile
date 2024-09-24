@@ -1,7 +1,10 @@
 check-program = $(foreach exec,$(1),$(if $(shell PATH="$(PATH)" which $(exec)),,$(error "Missing deps: no '$(exec)' in PATH")))
 check-file = $(foreach file,$(1),$(if $(wildcard $(file)),,$(error "Missing file: $(file)")))
 
-node_modules: package.json package-lock.json
+ts_check:
+	npm run ts:check
+
+node_modules: ts_check package.json package-lock.json
 	$(call check-program, npm)
 	(npm install && touch $@) || true
 .PHONY: node_modules
