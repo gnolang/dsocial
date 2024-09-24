@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"gno.land/p/demo/avl"
+	"gno.land/p/demo/avlhelpers"
 	"gno.land/p/demo/ufmt"
 	"gno.land/r/demo/users"
 )
@@ -412,36 +413,10 @@ func GetJsonFollowing(address std.Address, startIndex int, endIndex int) string 
 	return json
 }
 
-// TODO: This is a temporary copy. Remove this when they merge https://github.com/gnolang/gno/pull/1708.
-func listKeysByPrefix(tree avl.Tree, prefix string, maxResults int) []string {
-	end := ""
-	n := len(prefix)
-	// To make the end of the search, increment the final character ASCII by one.
-	for n > 0 {
-		if ascii := int(prefix[n-1]); ascii < 0xff {
-			end = prefix[0:n-1] + string(ascii+1)
-			break
-		}
-
-		// The last character is 0xff. Try the previous character.
-		n--
-	}
-
-	result := []string{}
-	tree.Iterate(prefix, end, func(key string, value interface{}) bool {
-		result = append(result, key)
-		if len(result) >= maxResults {
-			return true
-		}
-		return false
-	})
-	return result
-}
-
 // Get a list of user names starting from the given prefix. Limit the
 // number of results to maxResults.
 func ListUsersByPrefix(prefix string, maxResults int) []string {
-	return listKeysByPrefix(gUserAddressByName, prefix, maxResults)
+	return avlhelpers.ListByteStringKeysByPrefix(gUserAddressByName, prefix, maxResults)
 }
 
 // Get a list of user names starting from the given prefix. Limit the
