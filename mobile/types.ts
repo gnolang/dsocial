@@ -1,3 +1,5 @@
+import { KeyInfo } from "@gnolang/gnonative";
+
 type PostInterface = {
   user: User;
   post: string;
@@ -14,13 +16,9 @@ export type Post = {
   repost_parent?: ParentPost;
 } & PostInterface;
 
-export interface User {
-  address: string;
-  name: string;
+export interface User extends Pick<KeyInfo, "address" | "name"> {
+  bech32: string;
   avatar?: string;
-  followers?: number;
-  url?: string;
-  bio?: string;
 }
 
 export interface Following {

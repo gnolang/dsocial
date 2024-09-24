@@ -51,24 +51,24 @@ export default function Page() {
         return;
       } else {
         // TODO: add avatar to indexer and avoid querying on chain
-        const user = await userCache.getUser(response.address);
+        const user = await userCache.getUser(response.bech32);
         response.avatar = user.avatar;
         setUser(response);
       }
 
-      const { followers } = await search.GetJsonFollowers(response.address);
+      const { followers } = await search.GetJsonFollowers(response.bech32);
       setFollowers(followers);
 
-      const { following } = await search.GetJsonFollowing(response.address);
+      const { following } = await search.GetJsonFollowing(response.bech32);
       setFollowing(following);
 
       const isUserFeed = response.address === currentUser?.address;
       if (isUserFeed) {
-        const total = await feed.fetchCount(response.address);
+        const total = await feed.fetchCount(response.bech32);
         setTotalPosts(total);
       } else {
         // Set startIndex and endIndex to 0 to just get the n_posts.
-        const r = await feed.fetchThreadPosts(response.address, 0, 0);
+        const r = await feed.fetchThreadPosts(response.bech32, 0, 0);
         setTotalPosts(r.n_posts);
       }
 
@@ -97,14 +97,14 @@ export default function Page() {
     router.navigate({ pathname: "account/followers" });
   };
 
-  const onPressFollow = async (address: string) => {
-    await search.Follow(address);
+  const onPressFollow = async (address: string, callerAddress: Uint8Array) => {
+    await search.Follow(address, callerAddress);
 
     fetchData();
   };
 
-  const onPressUnfollow = async (address: string) => {
-    await search.Unfollow(address as string);
+  const onPressUnfollow = async (address: string, callerAddress: Uint8Array) => {
+    await search.Unfollow(address as string, callerAddress);
 
     fetchData();
   };
@@ -112,8 +112,11 @@ export default function Page() {
   const onGnod = async (post: Post) => {
     console.log("gnodding post: ", post);
     setLoading("Gnoding...");
+
+    if (!currentUser) throw new Error("No active account");
+
     try {
-      await feed.onGnod(post);
+      await feed.onGnod(post, currentUser.address);
       await fetchData();
     } catch (error) {
       console.error("Error while adding reaction: " + error);
@@ -124,7 +127,8 @@ export default function Page() {
 
   const onPressPost = async (item: Post) => {
     await dispatch(setPostToReply({ post: item }));
-    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: item.user.address } });
+    // Posts come from the indexer, the address is a bech32 address.
+    router.navigate({ pathname: "/post/[post_id]", params: { post_id: item.id, address: String(item.user.address) } });
   };
 
   return (
@@ -134,6 +138,7 @@ export default function Page() {
         <ErrorView message={error} />
       ) : (
         <AccountView
+          callerAddress={currentUser.address}
           user={user}
           currentUser={currentUser}
           totalPosts={totalPosts}

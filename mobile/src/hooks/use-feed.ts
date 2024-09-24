@@ -17,7 +17,6 @@ export const useFeed = () => {
   const indexer = useIndexerContext();
 
   async function fetchThreadPosts(address: string, startIndex: number, endIndex: number): Promise<ThreadPosts> {
-    await checkActiveAccount();
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",0, 0, ${startIndex}, ${endIndex})`);
     const json = await enrichData(result);
@@ -26,7 +25,6 @@ export const useFeed = () => {
   }
 
   async function fetchThread(address: string, postId: number): Promise<ThreadPosts> {
-    await checkActiveAccount();
 
     const result = await gnonative.qEval("gno.land/r/berty/social", `GetThreadPosts("${address}",${postId},0, 0, 100)`);
     const json = await enrichData(result);
@@ -76,15 +74,12 @@ export const useFeed = () => {
   }
 
   function convertToPost(jsonPost: any, creator: User, repost_parent?: ParentPost): Post {
-    console.log("jsonPost: ", jsonPost);
     const post: Post = {
       user: {
         name: creator.name,
         address: creator.address,
         avatar: creator.avatar,
-        followers: 0,
-        url: "string",
-        bio: "string",
+        bech32: ''
       },
       id: jsonPost.id,
       post: jsonPost.body,
@@ -112,27 +107,15 @@ export const useFeed = () => {
     return nHomePosts;
   }
 
-  async function checkActiveAccount() {
-    const currentAccount = await gnonative.getActiveAccount();
-    if (!currentAccount.key) throw new Error("No active account");
-
-    const bech32 = await gnonative.addressToBech32(currentAccount.key.address);
-
-    const user: User = { address: bech32, name: currentAccount.key.name };
-
-    return user;
-  }
-
-  async function onGnod(post: Post) {
-    await checkActiveAccount();
+  async function onGnod(post: Post, callerAddress: Uint8Array) : Promise<void> {
 
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 2000000;
-
-      const args: Array<string> = [post.user.address, String(post.id), String(post.id), String("0")];
-      console.log("AddReaction args: ", args.join(", "));
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted)) {
+      // post.user.address is in fact a bech32 address
+      const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), String("0")];
+      console.log("AddReaction args2: ", args.join(", "));
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted, callerAddress)) {
         const result = JSON.parse(JSON.stringify(response)).result;
         // Alert.alert("AddReaction Result", base64.decode(result));
       }
@@ -141,5 +124,5 @@ export const useFeed = () => {
     }
   }
 
-  return { fetchFeed, fetchCount, fetchThread, fetchThreadPosts, checkActiveAccount, onGnod };
+  return { fetchFeed, fetchCount, fetchThread, fetchThreadPosts, onGnod };
 };

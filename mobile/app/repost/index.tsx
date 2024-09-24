@@ -2,7 +2,7 @@ import Button from "@gno/components/button";
 import { PostRow } from "@gno/components/feed/post-row";
 import Layout from "@gno/components/layout";
 import TextInput from "@gno/components/textinput";
-import { selectPostToReply, useAppSelector } from "@gno/redux";
+import { selectAccount, selectPostToReply, useAppSelector } from "@gno/redux";
 import { useGnoNativeContext } from "@gnolang/gnonative";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -16,16 +16,20 @@ export default function Page() {
   const [replyContent, setReplyContent] = useState("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  const account = useAppSelector(selectAccount);
+
   const onPressRepost = async () => {
     if (!post) return;
+
+    if (!account) throw new Error("No active account");
 
     setLoading(true);
     try {
       const gasFee = "1000000ugnot";
       const gasWanted = 10000000;
-
-      const args: Array<string> = [post.user.address, String(post.id), replyContent];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "RepostThread", args, gasFee, gasWanted)) {
+      // post.user.address is in fact a bech32 address
+      const args: Array<string> = [String(post.user.address), String(post.id), replyContent];
+      for await (const response of await gnonative.call("gno.land/r/berty/social", "RepostThread", args, gasFee, gasWanted, account.address)) {
         console.log("response ono post screen: ", response);
       }
 

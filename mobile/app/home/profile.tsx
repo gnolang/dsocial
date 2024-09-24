@@ -1,8 +1,8 @@
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { router, useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { KeyInfo, useGnoNativeContext } from "@gnolang/gnonative";
-import { logedOut, useAppDispatch } from "@gno/redux";
+import { useGnoNativeContext } from "@gnolang/gnonative";
+import { logedOut, selectAccount, useAppDispatch, useAppSelector } from "@gno/redux";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import { LoadingModal } from "@gno/components/loading";
@@ -15,13 +15,13 @@ import AvatarPicker from "@gno/components/avatar/avatar-picker";
 import { ProgressViewModal } from "@gno/components/view/progress";
 
 export default function Page() {
-  const [activeAccount, setActiveAccount] = useState<KeyInfo | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
   const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
 
+  const account = useAppSelector(selectAccount);
   const { gnonative } = useGnoNativeContext();
   const search = useSearch();
   const navigation = useNavigation();
@@ -40,13 +40,13 @@ export default function Page() {
   }, [navigation]);
 
   const onboard = async () => {
-    if (!activeAccount) {
+    if (!account) {
       console.log("No active account");
       return;
     }
     setLoading(true);
     try {
-      await dispatch(onboarding({ account: activeAccount })).unwrap();
+      await dispatch(onboarding({ account })).unwrap();
       fetchAccountData();
     } catch (error) {
       console.log("Error on onboard", JSON.stringify(error));
@@ -56,13 +56,13 @@ export default function Page() {
   };
 
   const onPressNotification = async () => {
-    if (!activeAccount) {
-      console.log("No active account");
-      return;
+    if (!account) {
+      throw new Error("No active account");
     }
+
     setLoading(true);
     try {
-      const address_bech32 = await gnonative.addressToBech32(activeAccount?.address);
+      const address_bech32 = await gnonative.addressToBech32(account.address);
       await push.registerDevice(address_bech32);
       Alert.alert("Push notification", "You have successfully registered for push notification!");
     } catch (error) {
@@ -73,17 +73,18 @@ export default function Page() {
   };
 
   const fetchAccountData = async () => {
-    const account = await gnonative.getActiveAccount();
     const chainId = await gnonative.getChainID();
     const remote = await gnonative.getRemote();
-    setActiveAccount(account.key);
     setChainID(chainId);
     setRemote(remote);
 
-    try {
-      const address = await gnonative.addressToBech32(account?.key?.address!);
-      const followersCount = await search.GetJsonFollowersCount(address);
+    if (!account) {
+      throw new Error("No active account");
+    }
 
+    try {
+      const followersCount = await search.GetJsonFollowersCount(account.bech32);
+      console.log("followersCount", followersCount);
       setFollowersCount(followersCount);
 
       console.log("remote: %s chainId %s " + remote, chainId);
@@ -109,7 +110,7 @@ export default function Page() {
               <AvatarPicker />
             </View>
             <>
-              <AccountBalance activeAccount={activeAccount} />
+              <AccountBalance activeAccount={account} />
               <Text.Subheadline>Chain ID:</Text.Subheadline>
               <Text.Body>{chainID}</Text.Body>
               <Text.Subheadline>Remote:</Text.Subheadline>

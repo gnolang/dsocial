@@ -10,8 +10,8 @@ import Avatar from "@gno/components/avatar/avatar";
 interface Props {
   onPressFollowing: () => void;
   onPressFollowers: () => void;
-  onPressFollow: (address: string) => void;
-  onPressUnfollow: (address: string) => void;
+  onPressFollow: (address: string, callerAddress: Uint8Array) => void;
+  onPressUnfollow: (address: string, callerAddress: Uint8Array) => void;
   onPressPost: (post: Post) => void;
   onGnod: (post: Post) => void;
   user: User;
@@ -19,6 +19,7 @@ interface Props {
   followers: Following[];
   following: Following[];
   totalPosts: number;
+  callerAddress: Uint8Array;
 }
 
 function AccountView(props: Props) {
@@ -34,10 +35,12 @@ function AccountView(props: Props) {
     followers,
     currentUser,
     totalPosts,
+    callerAddress,
+
   } = props;
   const accountName = user.name;
 
-  const isFollowed = useMemo(() => followers.find((f) => f.address === currentUser.address) != null, [user, followers]);
+  const isFollowed = useMemo(() => followers.find((f) => f.address.toString() === currentUser.address.toString()) != null, [user, followers]);
 
   const avarUri = user.avatar ? user.avatar : "https://www.gravatar.com/avatar/tmp";
 
@@ -51,14 +54,14 @@ function AccountView(props: Props) {
         <View style={styles.followButtonRow}>
           {isFollowed ? (
             <Button.TouchableOpacity
-              onPress={() => onPressUnfollow(user.address)}
+              onPress={() => onPressUnfollow(user.address.toString(), callerAddress)}
               variant="primary"
               title="Unfollow"
               style={{ width: 100 }}
             />
           ) : (
             <Button.TouchableOpacity
-              onPress={() => onPressFollow(user.address)}
+              onPress={() => onPressFollow(user.address.toString(), callerAddress)}
               variant="primary"
               title="Follow"
               style={{ width: 100 }}
@@ -82,7 +85,7 @@ function AccountView(props: Props) {
         <View style={{ flex: 1, width: "100%", paddingHorizontal: 16, paddingTop: 8 }}>
           <Text.Body>Posts</Text.Body>
           <View style={{ height: 1, backgroundColor: colors.grayscale[200] }} />
-          <FeedView totalPosts={totalPosts} onPress={onPressPost} onGnod={onGnod} address={user.address} type="userPosts" />
+          <FeedView totalPosts={totalPosts} onPress={onPressPost} onGnod={onGnod} bech32={user.bech32} type="userPosts" />
         </View>
       </View>
     </>

@@ -4,17 +4,19 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSearch } from "@gno/hooks/use-search";
 import SearchResults from "@gno/components/list/search/search-result-list";
 import { colors } from "@gno/styles/colors";
+import {  selectAccount, useAppSelector } from "@gno/redux";
 
 export default function Search() {
   const router = useRouter();
   const params = useLocalSearchParams<{ q?: string }>();
   const search = useSearch();
   const [data, setData] = useState<string[]>([]);
+  const account = useAppSelector(selectAccount);
 
   useEffect(() => {
     (async function () {
       if (params.q) {
-        const result = await search.searchUser(params.q, true);
+        const result = await search.searchUser(params.q, account);
         setData(result);
       } else {
         setData([]);

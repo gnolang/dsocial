@@ -31,7 +31,8 @@ export const useUserCache = () => {
       password: "",
       pubKey: "",
       address: userJson.address,
-      avatar: bech32Image
+      avatar: bech32Image,
+      bech32: "",
     };
 
     usersCache.set(bech32, user);
