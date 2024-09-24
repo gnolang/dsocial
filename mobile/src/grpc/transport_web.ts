@@ -243,7 +243,7 @@ export function createXHRGrpcWebTransport(options: GrpcWebTransportOptions): Tra
               throw endStream.error;
             }
 
-            endStream.metadata.forEach((value, key) => trailerTarget.set(key, value));
+            endStream.metadata.forEach((value:any, key:any) => trailerTarget.set(key, value));
             continue;
           }
 
