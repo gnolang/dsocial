@@ -263,6 +263,7 @@ const sendCoins = async (address: string) => {
     reactNative: { textStreaming: true },
   };
 
+  // @ts-ignore
   const faucetRemote = process.env.EXPO_PUBLIC_FAUCET_REMOTE;
   if (!faucetRemote) {
     throw new Error("faucet remote address is undefined");
