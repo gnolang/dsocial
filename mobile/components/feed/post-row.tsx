@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
-import { Post } from "../../types";
+import { Post } from "@gno/types";
 import Text from "@gno/components/text";
 import RepliesLabel from "./replies-label";
 import TimeStampLabel from "./timestamp-label";
