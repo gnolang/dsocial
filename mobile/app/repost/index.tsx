@@ -26,7 +26,7 @@ export default function Page() {
     setLoading(true);
     try {
       const gasFee = "1000000ugnot";
-      const gasWanted = 10000000;
+      const gasWanted = BigInt(10000000);
       // post.user.address is in fact a bech32 address
       const args: Array<string> = [String(post.user.address), String(post.id), replyContent];
       for await (const response of await gnonative.call("gno.land/r/berty/social", "RepostThread", args, gasFee, gasWanted, account.address)) {

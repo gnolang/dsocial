@@ -217,7 +217,7 @@ const registerAccount = async (gnonative: GnoNativeApi, name: string, callerAddr
   console.log("Registering account %s", name);
   try {
     const gasFee = "10000000ugnot";
-    const gasWanted = 20000000;
+    const gasWanted = BigInt(20000000);
     const send = "200000000ugnot";
     const args: Array<string> = ["", name, "Profile description"];
     for await (const response of await gnonative.call("gno.land/r/demo/users", "Register", args, gasFee, gasWanted, callerAddress, send)) {

@@ -42,7 +42,7 @@ export default function Search() {
 
     try {
       const gasFee = "1000000ugnot";
-      const gasWanted = 10000000;
+      const gasWanted = BigInt(10000000);
       const args: Array<string> = [postContent];
       for await (const response of await gnonative.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted, account.address)) {
         console.log("response ono post screen: ", response);

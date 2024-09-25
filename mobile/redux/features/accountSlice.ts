@@ -42,7 +42,7 @@ export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: str
 
   try {
     const gasFee = "1000000ugnot";
-    const gasWanted = 10000000;
+    const gasWanted = BigInt(10000000);
 
     const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
     for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted, address)) {
