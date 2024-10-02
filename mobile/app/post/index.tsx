@@ -8,7 +8,8 @@ import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { addProgress } from "redux/features/signupSlice";
-import {  selectAccount, useAppDispatch, useAppSelector } from "@gno/redux";
+import { selectAccount, useAppDispatch, useAppSelector } from "@gno/redux";
+import * as Linking from 'expo-linking';
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -20,6 +21,8 @@ export default function Search() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectAccount);
+
+  const url = Linking.useURL();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -33,7 +36,62 @@ export default function Search() {
     return unsubscribe;
   }, [navigation]);
 
-  const onPost = async () => {
+  useEffect(() => {
+    (async () => {
+      if (url) {
+        const { hostname, path, queryParams } = Linking.parse(url);
+
+        console.log("link url", url);
+        console.log("link hostname", hostname);
+        console.log("link path", path);
+        console.log("link queryParams", queryParams);
+
+        if (queryParams) {
+
+          if (queryParams.address && typeof queryParams.address === "string") {
+            const address = decodeURIComponent(queryParams.address)
+            console.log("address: ", address);
+            await makeCallTx(address)
+          }
+
+          if (queryParams.tx && typeof queryParams.tx === "string") {
+            const signedTx = decodeURIComponent(queryParams.tx)
+            console.log("signedTx: ", signedTx);
+            await broadcastTxCommit(signedTx)
+          }
+        }
+      }
+    })()
+  }, [url]);
+
+  const requestAddressForGnokeyMobile = async () => {
+    const callback = encodeURIComponent('tech.berty.dsocial://post');
+    Linking.openURL(`land.gno.gnokey://toselect?callback=${callback}`);
+  }
+
+  const broadcastTxCommit = async (signedTx: string) => {
+
+    setLoading(true);
+    setError(undefined);
+    dispatch(addProgress(`posting a message.`))
+
+    try {
+      for await (const response of await gnonative.broadcastTxCommit(signedTx)) {
+        const result = JSON.parse(JSON.stringify(response)).result;
+        console.log("broadcast result:", result);
+      }
+      router.push("home");
+    } catch (error) {
+      dispatch(addProgress(`error on broadcasting a tx: ` + JSON.stringify(error)))
+      console.error("on post screen", error);
+      setError("" + error);
+    } finally {
+      setLoading(false);
+    }
+    
+  }
+
+  const makeCallTx = async (bech32:string) => {
     setLoading(true);
     setError(undefined);
     dispatch(addProgress(`posting a message.`))
@@ -44,19 +102,18 @@ export default function Search() {
       const gasFee = "1000000ugnot";
       const gasWanted = BigInt(10000000);
       const args: Array<string> = [postContent];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted, account.address)) {
-        console.log("response ono post screen: ", response);
-      }
-      setPostContent("");
 
-      // delay 3s to wait for the transaction to be mined
-      // TODO: replace with a better way to wait for the transaction to be mined
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      // const address = await gnonative.addressFromBech32('g1xz4h2uaxc2p6n9l8swpfyvnklzc7840rygkxrf');
+      const address = await gnonative.addressFromBech32(bech32);
+      const argsTx = await gnonative.makeCallTx("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted, address)
 
-      dispatch(addProgress(`done, redirecting to home page.`))
-      router.push("home");
+      console.log("txJson: ", argsTx.txJson);
+      console.log("account: ", JSON.stringify(account));
+
+      Linking.openURL('land.gno.gnokey://tosign?tx=' + encodeURIComponent(argsTx.txJson));
+      
     } catch (error) {
-      dispatch(addProgress(`error on posting a message: ` + JSON.stringify(error)))
+      dispatch(addProgress(`error on makeCallTx: ` + JSON.stringify(error)))
       console.error("on post screen", error);
       setError("" + error);
     } finally {
@@ -86,7 +143,7 @@ export default function Search() {
               style={{ height: 200 }}
             />
             <Spacer space={24} />
-            <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPost} />
+            <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={requestAddressForGnokeyMobile} />
             <Spacer space={48} />
           </KeyboardAvoidingView>
         </Layout.BodyAlignedBotton>

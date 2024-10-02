@@ -12,6 +12,7 @@ import { PostRow } from "@gno/components/feed/post-row";
 import { FlatList, KeyboardAvoidingView, View, Alert as RNAlert } from "react-native";
 import { Post } from "@gno/types";
 import { useFeed } from "@gno/hooks/use-feed";
+import * as Linking from 'expo-linking';
 
 function Page() {
   const [replyContent, setReplyContent] = useState("");
@@ -49,7 +50,12 @@ function Page() {
     }
   };
 
-  const onPressReply = async () => {
+  const selectKeyOnGnokeyApp = async () => {
+    // TODO: implement this function
+
+  }
+
+  const selectKeyOnGnokeyApp = async () => {
     if (!post) return;
 
     setLoading(undefined);
@@ -62,14 +68,26 @@ function Page() {
       const gasFee = "1000000ugnot";
       const gasWanted = BigInt(10000000);
 
-      // Post objects comes from the indexer, address is a bech32 address
-      const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), replyContent];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted, account.address)) {
-        console.log("response ono post screen: ", response);
-      }
+      const argsTx = await gnonative.makeCallTx("gno.land/r/berty/social", "PostReply", [String(post.user.address), String(post.id), String(post.id), replyContent], gasFee, gasWanted, account.address);
+      console.log("argsTx: ", argsTx);
 
-      setReplyContent("");
-      await fetchData();
+      // open gnokey app:
+      // const argsTxBase64 = encodeTxToBase64(argsTx.txJson);
+      // Linking.openURL('land.gno.gnokey://gnokey/tosign?tx=' + argsTxBase64);
+
+      // call another app passing argsTx as a parameter
+      // return
+
+      
+
+      // Post objects comes from the indexer, address is a bech32 address
+      // const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), replyContent];
+      // for await (const response of await gnonative.call("gno.land/r/berty/social", "PostReply", args, gasFee, gasWanted, account.address)) {
+      //   console.log("response ono post screen: ", response);
+      // }
+
+      // setReplyContent("");
+      // await fetchData();
     } catch (error) {
       console.error("on post screen", error);
       setError("" + error);
@@ -143,7 +161,7 @@ function Page() {
             numberOfLines={3}
             style={{ height: 80 }}
           />
-          <Button.TouchableOpacity loading={posting} title="Reply" variant="primary" onPress={onPressReply} />
+          <Button.TouchableOpacity loading={posting} title="Reply" variant="primary" onPress={selectKeyOnGnokeyApp} />
           <Spacer space={16} />
           <Button.TouchableOpacity title="Back" onPress={() => router.back()} variant="secondary" />
           <Alert severity="error" message={error} />
