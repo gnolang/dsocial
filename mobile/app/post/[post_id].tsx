@@ -51,11 +51,6 @@ function Page() {
   };
 
   const selectKeyOnGnokeyApp = async () => {
-    // TODO: implement this function
-
-  }
-
-  const selectKeyOnGnokeyApp = async () => {
     if (!post) return;
 
     setLoading(undefined);
