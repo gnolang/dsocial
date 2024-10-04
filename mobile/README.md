@@ -146,15 +146,5 @@ You'll need to have a [service account json file](https://developers.google.com/
 
 ## Opening the App using Links
 
-Paste these links inside the mobile app Browser to 'wakeup' the app:
-
-`tech.berty.dsocial://?hello=world`
-
-The schema is:
-
-npx uri-scheme open exp+gnokey://somepath/into/app?hello=world --ios
-
-```sh
-$ npx uri-scheme open tech.berty.dsocial://?hello=world --ios
-```
-
+You can open this app using [Linking](https://docs.expo.dev/guides/linking/).
+To understand the URL format, please refer to the 'expo-linking' usage in this project.
