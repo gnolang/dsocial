@@ -27,12 +27,6 @@ export const requestLoginForGnokeyMobile = createAsyncThunk<boolean>("tx/request
     return await Linking.openURL(`land.gno.gnokey://tologin?callback=${callback}`);
 })
 
-export const requestAddressForGnokeyMobile = createAsyncThunk<boolean>("tx/requestAddressForGnokeyMobile", async () => {
-    console.log("requesting address for GnokeyMobile");
-    const callback = encodeURIComponent('tech.berty.dsocial://post');
-    return await Linking.openURL(`land.gno.gnokey://toselect?callback=${callback}`);
-});
-
 export const makeCallTxAndRedirect = createAsyncThunk<MakeTxResponse, { bech32: string, postContent: string }, ThunkExtra>("tx/makeCallTx", async ({ bech32, postContent }, thunkAPI) => {
     console.log("making a tx to: ", bech32);
 
@@ -96,7 +90,7 @@ export const linkingSlice = createSlice({
         selectPath: (state: State) => state.path,
         selectQueryParams: (state: State) => state.queryParams,
         selectLinkingParsedURL: (state: State) => state.linkingParsedURl,
-        selectQueryParamsAddress: (state: State) => state.linkingParsedURl?.queryParams?.address,
+        selectQueryParamsAddress: (state: State) => state.linkingParsedURl?.queryParams?.address as string | undefined,
     },
 });
 

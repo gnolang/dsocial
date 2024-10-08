@@ -7,7 +7,6 @@ import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
 import { broadcastTxCommit, hasParam, makeCallTxAndRedirect, selectAccount, selectQueryParams, selectQueryParamsAddress, useAppDispatch, useAppSelector } from "@gno/redux";
-import * as Linking from 'expo-linking';
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -19,13 +18,11 @@ export default function Search() {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectAccount);
 
-  // address from the url to be used in the makeCallTx
-  const bech32 = useAppSelector(selectQueryParamsAddress);
-
   const queryParams = useAppSelector(selectQueryParams);
 
+  // hook to handle the signed tx from the Gnokey and broadcast it
   useEffect(() => {
-    if ( queryParams && hasParam("tx", queryParams)) {
+    if (queryParams && hasParam("tx", queryParams)) {
 
       const signedTx = decodeURIComponent(queryParams.tx as string)
       console.log("signedTx: ", signedTx);
@@ -40,18 +37,8 @@ export default function Search() {
       } finally {
         setLoading(false);
       }
-    } 
+    }
   }, [queryParams]);
-
-  useEffect(() => {
-    (async () => {
-      if (bech32 && typeof bech32 == 'string' && postContent) {
-        const argsTx = await dispatch(makeCallTxAndRedirect({ bech32, postContent })).unwrap();
-
-        console.log("Opening Gnokey to sign the transaction, argsTx: ", argsTx.txJson);
-      }
-    })()
-  }, [bech32]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -61,11 +48,9 @@ export default function Search() {
     return unsubscribe;
   }, [navigation]);
 
-  const requestAddress = async () => {
-    console.log("requesting address for GnokeyMobile");
-    // await dispatch(requestAddressForGnokeyMobile()).unwrap();
-    const callback = encodeURIComponent('tech.berty.dsocial://post');
-    Linking.openURL(`land.gno.gnokey://toselect?callback=${callback}`);
+  const onPressPost = async () => {
+    if (!account || !account.bech32) throw new Error("No active account: " + JSON.stringify(account));
+    await dispatch(makeCallTxAndRedirect({ bech32: account.bech32, postContent })).unwrap();
   }
 
   return (
@@ -90,7 +75,7 @@ export default function Search() {
               style={{ height: 200 }}
             />
             <Spacer space={24} />
-            <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={requestAddress} />
+            <Button.TouchableOpacity loading={loading} title="Post" variant="primary" onPress={onPressPost} />
             <Spacer space={48} />
           </KeyboardAvoidingView>
         </Layout.BodyAlignedBotton>
