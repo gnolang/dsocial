@@ -13,21 +13,32 @@ const initialState: CounterState = {
 };
 
 interface LoginParam {
-  keyInfo: KeyInfo;
+  bech32: string;
 }
 
 export const loggedIn = createAsyncThunk<User, LoginParam, ThunkExtra>("account/loggedIn", async (param, thunkAPI) => {
-  const { keyInfo } = param;
+  console.log("Logging in", param);
+  const { bech32 } = param;
 
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
 
-  const bech32 = await gnonative.addressToBech32(keyInfo.address);
-  const user: User = { bech32, ...keyInfo };
-
-  user.avatar = await loadBech32AvatarFromChain(bech32, thunkAPI);
+  const user: User = {
+    name: await getAccountName(bech32, gnonative) || 'Unknown',
+    address: await gnonative.addressFromBech32(bech32),
+    bech32,
+    avatar: await loadBech32AvatarFromChain(bech32, thunkAPI)
+  };
 
   return user;
 });
+
+async function getAccountName(bech32: string, gnonative: GnoNativeApi) {
+  const accountNameStr = await gnonative.qEval("gno.land/r/demo/users", `GetUserByAddress("${bech32}").Name`);
+  console.log("GetUserByAddress result:", accountNameStr);
+  const accountName = accountNameStr.match(/\("(\w+)"/)?.[1];
+  console.log("GetUserByAddress after regex", accountName);
+  return accountName
+}
 
 export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: string }, ThunkExtra>("account/saveAvatar", async (param, thunkAPI) => {
   const { mimeType, base64 } = param;
@@ -92,6 +103,7 @@ export const accountSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(loggedIn.fulfilled, (state, action) => {
       state.account = action.payload;
+      console.log("Logged in", action.payload);
     });
     builder.addCase(loggedIn.rejected, (_, action) => {
       console.error("loggedIn.rejected", action);

@@ -9,17 +9,19 @@ const LinkingProvider = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (url) {
-      const linkingParsedURL = Linking.parse(url);
-      const { hostname, path, queryParams } = linkingParsedURL;
+    (async () => {
+      if (url) {
+        const linkingParsedURL = Linking.parse(url);
+        const { hostname, path, queryParams } = linkingParsedURL;
 
-      console.log("link url", url);
-      console.log("link hostname", hostname);
-      console.log("link path", path);
-      console.log("link queryParams", queryParams);
+        console.log("link url", url);
+        console.log("link hostname", hostname);
+        console.log("link path", path);
+        console.log("link queryParams", queryParams);
 
-      dispatch(setLinkingParsedURL(linkingParsedURL))
-    }
+        await dispatch(setLinkingParsedURL(linkingParsedURL)).unwrap();
+      }
+    })();
   }, [url]);
 
   return <>{children}</>;
