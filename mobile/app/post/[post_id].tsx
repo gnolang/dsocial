@@ -60,7 +60,7 @@ function Page() {
 
     try {
       const gasFee = "1000000ugnot";
-      const gasWanted = 10000000;
+      const gasWanted = BigInt(10000000);
 
       // Post objects comes from the indexer, address is a bech32 address
       const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), replyContent];

@@ -10,7 +10,6 @@ import { AccountBalance } from "@gno/components/settings";
 import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
-import { onboarding } from "redux/features/signupSlice";
 import AvatarPicker from "@gno/components/avatar/avatar-picker";
 import { ProgressViewModal } from "@gno/components/view/progress";
 
@@ -38,22 +37,6 @@ export default function Page() {
     });
     return unsubscribe;
   }, [navigation]);
-
-  const onboard = async () => {
-    if (!account) {
-      console.log("No active account");
-      return;
-    }
-    setLoading(true);
-    try {
-      await dispatch(onboarding({ account })).unwrap();
-      fetchAccountData();
-    } catch (error) {
-      console.log("Error on onboard", JSON.stringify(error));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const onPressNotification = async () => {
     if (!account) {
@@ -124,7 +107,6 @@ export default function Page() {
             <Layout.Footer>
               <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
               <Button.TouchableOpacity title="Logs" onPress={() => setModalVisible(true)} variant="primary" />
-              <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
               <Button.TouchableOpacity
                 title="Register to the notification service"
                 onPress={onPressNotification}

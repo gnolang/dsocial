@@ -111,7 +111,7 @@ export const useFeed = () => {
 
     try {
       const gasFee = "1000000ugnot";
-      const gasWanted = 2000000;
+      const gasWanted = BigInt(2000000);
       // post.user.address is in fact a bech32 address
       const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), String("0")];
       console.log("AddReaction args2: ", args.join(", "));

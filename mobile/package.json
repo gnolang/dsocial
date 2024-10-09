@@ -18,7 +18,7 @@
     "@bufbuild/protobuf": "^1.6.0",
     "@connectrpc/connect": "^1.2.1",
     "@connectrpc/connect-web": "^1.2.1",
-    "@gnolang/gnonative": "^1.8.1",
+    "@gnolang/gnonative": "3.0.0",
     "@reduxjs/toolkit": "^2.1.0",
     "base-64": "^1.0.0",
     "date-fns": "^3.6.0",

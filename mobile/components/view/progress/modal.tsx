@@ -1,9 +1,7 @@
 import React from "react";
 import { View, Modal, StyleSheet, FlatList, TouchableOpacity, Share } from "react-native";
-import { useAppDispatch, useAppSelector } from "@gno/redux";
 import { colors } from "@gno/styles/colors";
 import Layout from "@gno/components/layout";
-import { clearProgress, selectProgress } from "redux/features/signupSlice";
 import Text from "@gno/components/text";
 import { EvilIcons } from "@expo/vector-icons";
 
@@ -12,12 +10,13 @@ interface Props {
   onRequestClose: () => void;
 }
 
+// TODO: reimplment this
 const ProgressViewModal: React.FC<Props> = ({ visible, onRequestClose }) => {
-  const dispatch = useAppDispatch();
-  const progress = useAppSelector(selectProgress);
+  //const dispatch = useAppDispatch();
+  const progress = ["<disabled>"]
 
   const clear = async () => {
-    await dispatch(clearProgress());
+    //await dispatch(clearProgress());
   };
 
   const share = async () => {
