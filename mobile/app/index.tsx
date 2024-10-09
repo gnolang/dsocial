@@ -3,7 +3,7 @@ import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
-import { clearLinking, loggedIn, requestLoginForGnokeyMobile, selectPath, selectQueryParamsAddress, useAppDispatch, useAppSelector } from "@gno/redux";
+import { clearLinking, loggedIn, requestLoginForGnokeyMobile, selectAccount, selectPath, selectQueryParamsAddress, useAppDispatch, useAppSelector } from "@gno/redux";
 import Spacer from "@gno/components/spacer";
 import * as Application from "expo-application";
 import { useEffect } from "react";
@@ -14,9 +14,15 @@ export default function Root() {
   const route = useRouter();
   const path = useAppSelector(selectPath)
   const bech32 = useAppSelector(selectQueryParamsAddress)
+  const account = useAppSelector(selectAccount)
 
   const appVersion = Application.nativeApplicationVersion;
 
+  useEffect(() => {
+    if (account) {
+      route.replace("/home");
+    }
+  }, [account]);
 
   useEffect(() => {
     if (path === "login-callback" && bech32) {

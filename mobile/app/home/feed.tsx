@@ -27,10 +27,7 @@ export default function Page() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      if (!account) {
-        RNAlert.alert("No user found.");
-        return;
-      }
+      if (!account) return;
       setError(undefined);
       setIsLoading(true);
       try {
