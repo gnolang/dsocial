@@ -38,9 +38,10 @@ export const makeCallTxAndRedirect = createAsyncThunk<MakeTxResponse, { bech32: 
 
     const res = await gnonative.makeCallTx("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted, address)
 
-    setTimeout(() =>
-        Linking.openURL('land.gno.gnokey://tosign?tx=' + encodeURIComponent(res.txJson)), 500)
-
+    setTimeout(() => {
+        const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${bech32}`, `client_name=dSocial`, `reason=Post a message`];
+        Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
+    }, 500)
     return res
 })
 
