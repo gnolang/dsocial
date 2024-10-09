@@ -4,33 +4,33 @@ check-file = $(foreach file,$(1),$(if $(wildcard $(file)),,$(error "Missing file
 ts_check:
 	npm run ts:check
 
-node_modules: ts_check package.json package-lock.json
+node_modules: package.json package-lock.json
 	$(call check-program, npm)
 	(npm install && touch $@) || true
 .PHONY: node_modules
 
-ios: node_modules # Run the iOS app
+ios: node_modules ts_check # Run the iOS app
 	npx expo run:ios
 .PHONY: ios
 
 # - IOS
 
-ios.release_mode: node_modules # Run the iOS app in release mode
+ios.release_mode: node_modules ts_check # Run the iOS app in release mode
 	npx expo run:ios --configuration Release
 .PHONY: ios.release_mode
 
-ios.release_production: node_modules
+ios.release_production: node_modules ts_check
 	$(call check-file, GoogleService-Info.plist)
 	eas build --platform ios --profile production
 .PHONY: ios.release_production
 
 # - Android
 
-android: node_modules # Run the Android app
+android: node_modules ts_check # Run the Android app
 	npx expo run:android
 .PHONY: android
 
-android.release_production: node_modules
+android.release_production: node_modules ts_check
 	$(call check-file, google-services.json)
 	eas build --platform android --profile production
 .PHONY: android.release_production
@@ -49,7 +49,7 @@ android.reverse:
 	adb -s $(ANDROID_DEVICE) reverse tcp:26661 tcp:26661 # push notifications
 .PHONY: android.reverse
 
-start: node_modules
+start: node_modules ts_check
 	npm run start
 .PHONY: start
 
