@@ -3,7 +3,6 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { accountSlice, profileSlice, replySlice, linkingSlice } from "./features";
 import { GnoNativeApi, useGnoNativeContext } from "@gnolang/gnonative";
-import { signUpSlice } from "./features/signupSlice";
 import { useSearch, UseSearchReturnType } from "@gno/hooks/use-search";
 import { useNotificationContext, UseNotificationReturnType } from "@gno/provider/notification-provider";
 import { useUserCache } from "@gno/hooks/use-user-cache";
@@ -21,7 +20,6 @@ const reducer = {
     [accountSlice.reducerPath]: accountSlice.reducer,
     [profileSlice.reducerPath]: profileSlice.reducer,
     [replySlice.reducerPath]: replySlice.reducer,
-    [signUpSlice.reducerPath]: signUpSlice.reducer,
     [linkingSlice.reducerPath]: linkingSlice.reducer,
 }
 
