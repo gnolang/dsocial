@@ -6,7 +6,7 @@ import TextInput from "@gno/components/textinput";
 import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
-import { broadcastTxCommit, hasParam, makeCallTxAndRedirect, selectAccount, selectQueryParams, selectQueryParamsAddress, useAppDispatch, useAppSelector } from "@gno/redux";
+import { broadcastTxCommit, hasParam, makeCallTxAndRedirectToSign, selectAccount, selectQueryParams, useAppDispatch, useAppSelector } from "@gno/redux";
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -50,7 +50,7 @@ export default function Search() {
 
   const onPressPost = async () => {
     if (!account || !account.bech32) throw new Error("No active account: " + JSON.stringify(account));
-    await dispatch(makeCallTxAndRedirect({ bech32: account.bech32, postContent })).unwrap();
+    await dispatch(makeCallTxAndRedirectToSign({callerAddressBech32: account.bech32, postContent})).unwrap();
   }
 
   return (

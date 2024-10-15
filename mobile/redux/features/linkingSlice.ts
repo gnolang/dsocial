@@ -27,22 +27,50 @@ export const requestLoginForGnokeyMobile = createAsyncThunk<boolean>("tx/request
     return await Linking.openURL(`land.gno.gnokey://tologin?callback=${callback}`);
 })
 
-export const makeCallTxAndRedirect = createAsyncThunk<MakeTxResponse, { bech32: string, postContent: string }, ThunkExtra>("tx/makeCallTx", async ({ bech32, postContent }, thunkAPI) => {
-    console.log("making a tx to: ", bech32);
+type MakeTxAndRedirectParams = {
+    postContent: string,
+    callerAddressBech32: string,
+};
 
-    const gnonative = thunkAPI.extra.gnonative;
-    const address = await gnonative.addressFromBech32(bech32);
+export const makeCallTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, MakeTxAndRedirectParams, ThunkExtra>("tx/makeCallTxAndRedirectToSign", async (props, thunkAPI) => {
+    const { callerAddressBech32, postContent } = props;
+
+    const packagePath = "gno.land/r/berty/social";
+    const fnc = "PostMessage";
+    const args: Array<string> = [postContent];
     const gasFee = "1000000ugnot";
     const gasWanted = BigInt(10000000);
-    const args: Array<string> = [postContent];
 
-    const res = await gnonative.makeCallTx("gno.land/r/berty/social", "PostMessage", args, gasFee, gasWanted, address)
+    const res = await thunkAPI.dispatch(makeCallTx({packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 })).unwrap();
 
     setTimeout(() => {
-        const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${bech32}`, `client_name=dSocial`, `reason=Post a message`];
+        const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, `client_name=dSocial`, `reason=Post a message`];
         Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
     }, 500)
-    return res
+
+    return res;
+})
+
+type MakeTxParams = {
+    packagePath: string,
+    fnc: string,
+    args: string[],
+    gasFee: string,
+    gasWanted: bigint,
+    send?: string,
+    memo?: string,
+    callerAddressBech32: string,
+};
+
+export const makeCallTx = createAsyncThunk<MakeTxResponse, MakeTxParams, ThunkExtra>("tx/makeCallTx", async (props, thunkAPI) => {
+    const {packagePath, fnc, callerAddressBech32, gasFee, gasWanted, args } = props;
+
+    console.log("making a tx for: ", callerAddressBech32);
+
+    const gnonative = thunkAPI.extra.gnonative;
+    const address = await gnonative.addressFromBech32(callerAddressBech32);
+
+    return await gnonative.makeCallTx(packagePath, fnc, args, gasFee, gasWanted, address)
 })
 
 export const broadcastTxCommit = createAsyncThunk<void, string, ThunkExtra>("tx/broadcastTxCommit", async (signedTx, thunkAPI) => {
