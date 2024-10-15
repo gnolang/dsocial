@@ -3,7 +3,7 @@ import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import Ruller from "@gno/components/row/Ruller";
 import Text from "@gno/components/text";
-import { clearLinking, loggedIn, requestLoginForGnokeyMobile, selectAccount, selectPath, selectQueryParamsAddress, useAppDispatch, useAppSelector } from "@gno/redux";
+import { clearLinking, loggedIn, requestLoginForGnokeyMobile, selectBech32AddressSelected, useAppDispatch, useAppSelector } from "@gno/redux";
 import Spacer from "@gno/components/spacer";
 import * as Application from "expo-application";
 import { useEffect } from "react";
@@ -12,25 +12,18 @@ import { useRouter } from "expo-router";
 export default function Root() {
   const dispatch = useAppDispatch();
   const route = useRouter();
-  const path = useAppSelector(selectPath)
-  const bech32 = useAppSelector(selectQueryParamsAddress)
-  const account = useAppSelector(selectAccount)
+  const bech32AddressSelected = useAppSelector(selectBech32AddressSelected)
 
   const appVersion = Application.nativeApplicationVersion;
 
   useEffect(() => {
-    if (account) {
-      route.replace("/home");
-    }
-  }, [account]);
-
-  useEffect(() => {
-    if (path === "login-callback" && bech32) {
-      dispatch(loggedIn({ bech32: bech32 as string }));
+    console.log("bech32AddressSelected on index", bech32AddressSelected);
+    if (bech32AddressSelected) {
+      dispatch(loggedIn({ bech32: bech32AddressSelected as string }));
       dispatch(clearLinking());
       setTimeout(() => route.replace("/home"), 500);
     }
-  }, [path, bech32]);
+  }, [bech32AddressSelected]);
 
 
 

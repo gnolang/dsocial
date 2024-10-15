@@ -4,9 +4,9 @@ import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, Post, User } from "@gno/types";
-import { setPostToReply, useAppSelector } from "@gno/redux";
+import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector } from "@gno/redux";
 import { selectAccount } from "redux/features/accountSlice";
-import { setFollows } from "redux/features/profileSlice";
+import { followAndRedirectToSign, setFollows } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
 import ErrorView from "@gno/components/view/account/no-account-view";
@@ -30,6 +30,28 @@ export default function Page() {
   const dispatch = useDispatch();
 
   const currentUser = useAppSelector(selectAccount);
+  const txJsonSigned = useAppSelector(selectQueryParamsTxJsonSigned);
+
+
+  useEffect(() => {
+
+    (async () => {
+      if (txJsonSigned) {
+        console.log("txJsonSigned: ", txJsonSigned);
+
+        const signedTx = decodeURIComponent(txJsonSigned as string)
+        try {
+          await dispatch(broadcastTxCommit(signedTx)).unwrap();
+        } catch (error) {
+          console.error("on broadcastTxCommit", error);
+        }
+
+        dispatch(clearLinking());
+        fetchData();
+      }
+    })();
+
+  }, [txJsonSigned]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -40,6 +62,8 @@ export default function Page() {
 
   const fetchData = async () => {
     if (!accountName) return;
+
+    console.log("fetching data for account: ", currentUser?.bech32);
 
     try {
       setLoading("Loading account...");
@@ -98,9 +122,7 @@ export default function Page() {
   };
 
   const onPressFollow = async (address: string, callerAddress: Uint8Array) => {
-    await search.Follow(address, callerAddress);
-
-    fetchData();
+    await dispatch(followAndRedirectToSign({ address, callerAddress })).unwrap();
   };
 
   const onPressUnfollow = async (address: string, callerAddress: Uint8Array) => {

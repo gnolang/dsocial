@@ -4,26 +4,18 @@ import * as Linking from 'expo-linking';
 import { ThunkExtra } from "redux/redux-provider";
 
 interface State {
-    linkingParsedURl: Linking.ParsedURL | undefined;
-    queryParams: Linking.QueryParams | undefined;
-    path: string | undefined;
-    hostname: string | undefined;
+    txJsonSigned: string | undefined;
+    bech32AddressSelected: string | undefined;
 }
 
 const initialState: State = {
-    linkingParsedURl: undefined,
-    queryParams: undefined,
-    path: undefined,
-    hostname: undefined,
+    txJsonSigned: undefined,
+    bech32AddressSelected: undefined,
 };
-
-export const hasParam = (param: string, queryParams: Linking.QueryParams | undefined): boolean => {
-    return Boolean(queryParams && queryParams[param] !== undefined);
-}
 
 export const requestLoginForGnokeyMobile = createAsyncThunk<boolean>("tx/requestLoginForGnokeyMobile", async () => {
     console.log("requesting login for GnokeyMobile");
-    const callback = encodeURIComponent('tech.berty.dsocial:///login-callback');
+    const callback = encodeURIComponent('tech.berty.dsocial://login-callback');
     return await Linking.openURL(`land.gno.gnokey://tologin?callback=${callback}`);
 })
 
@@ -41,7 +33,7 @@ export const makeCallTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, Make
     const gasFee = "1000000ugnot";
     const gasWanted = BigInt(10000000);
 
-    const res = await thunkAPI.dispatch(makeCallTx({packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 })).unwrap();
+    const res = await thunkAPI.dispatch(makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 })).unwrap();
 
     setTimeout(() => {
         const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, `client_name=dSocial`, `reason=Post a message`];
@@ -51,7 +43,7 @@ export const makeCallTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, Make
     return res;
 })
 
-type MakeTxParams = {
+type MakeCallTxParams = {
     packagePath: string,
     fnc: string,
     args: string[],
@@ -62,8 +54,8 @@ type MakeTxParams = {
     callerAddressBech32: string,
 };
 
-export const makeCallTx = createAsyncThunk<MakeTxResponse, MakeTxParams, ThunkExtra>("tx/makeCallTx", async (props, thunkAPI) => {
-    const {packagePath, fnc, callerAddressBech32, gasFee, gasWanted, args } = props;
+export const makeCallTx = createAsyncThunk<MakeTxResponse, MakeCallTxParams, ThunkExtra>("tx/makeCallTx", async (props, thunkAPI) => {
+    const { packagePath, fnc, callerAddressBech32, gasFee, gasWanted, args } = props;
 
     console.log("making a tx for: ", callerAddressBech32);
 
@@ -77,21 +69,9 @@ export const broadcastTxCommit = createAsyncThunk<void, string, ThunkExtra>("tx/
     console.log("broadcasting tx: ", signedTx);
 
     const gnonative = thunkAPI.extra.gnonative;
-    await gnonative.broadcastTxCommit(signedTx);
+    const res = await gnonative.broadcastTxCommit(signedTx);
+    console.log("broadcasted tx: ", res);
 });
-
-type SetLinkingResponse = Partial<State>;
-
-export const setLinkingParsedURL = createAsyncThunk<SetLinkingResponse, Linking.ParsedURL, ThunkExtra>("tx/setLinkingParsedURL", async (linkingParsedURl, thunkAPI) => {
-    const { hostname, path, queryParams } = linkingParsedURl;
-
-    return {
-        linkingParsedURl,
-        queryParams: queryParams || undefined,
-        path: path || undefined,
-        hostname: hostname || undefined,
-    }
-})
 
 /**
  * Slice to handle linking between the app and the GnokeyMobile app
@@ -99,30 +79,24 @@ export const setLinkingParsedURL = createAsyncThunk<SetLinkingResponse, Linking.
 export const linkingSlice = createSlice({
     name: "linking",
     initialState,
-    extraReducers: (builder) => {
-        builder.addCase(setLinkingParsedURL.fulfilled, (state, action) => {
-            state.linkingParsedURl = action.payload.linkingParsedURl;
-            state.queryParams = action.payload.queryParams;
-            state.path = action.payload.path;
-            state.hostname = action.payload.hostname;
-        })
-    },
     reducers: {
+        setLinkingData: (state, action) => {
+            const queryParams = action.payload.queryParams
+
+            state.bech32AddressSelected = queryParams?.address ? queryParams.address as string : undefined
+            state.txJsonSigned = queryParams?.tx ? queryParams.tx as string : undefined
+        },
         clearLinking: (state) => {
-            state.linkingParsedURl = undefined;
-            state.queryParams = undefined;
-            state.path = undefined;
-            state.hostname = undefined;
+            console.log("clearing linking data");
+            state = { ...initialState };
         }
     },
     selectors: {
-        selectPath: (state: State) => state.path,
-        selectQueryParams: (state: State) => state.queryParams,
-        selectLinkingParsedURL: (state: State) => state.linkingParsedURl,
-        selectQueryParamsAddress: (state: State) => state.linkingParsedURl?.queryParams?.address as string | undefined,
+        selectQueryParamsTxJsonSigned: (state: State) => state.txJsonSigned as string | undefined,
+        selectBech32AddressSelected: (state: State) => state.bech32AddressSelected as string | undefined,
     },
 });
 
-export const { clearLinking } = linkingSlice.actions;
+export const { clearLinking, setLinkingData } = linkingSlice.actions;
 
-export const { selectLinkingParsedURL, selectQueryParams, selectQueryParamsAddress, selectPath } = linkingSlice.selectors;
+export const { selectQueryParamsTxJsonSigned, selectBech32AddressSelected } = linkingSlice.selectors;

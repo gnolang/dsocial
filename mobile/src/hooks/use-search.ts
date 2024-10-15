@@ -6,20 +6,6 @@ const MAX_RESULT = 10;
 export const useSearch = () => {
   const { gnonative } = useGnoNativeContext();
 
-  async function Follow(address: string, callerAddress: Uint8Array) {
-
-    try {
-      const gasFee = "1000000ugnot";
-      const gasWanted = BigInt(10000000);
-      const args: Array<string> = [address];
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "Follow", args, gasFee, gasWanted, callerAddress)) {
-        console.log("response: ", JSON.stringify(response));
-      }
-    } catch (error) {
-      console.error("error registering account", error);
-    }
-  }
-
   async function Unfollow(address: string, callerAddress: Uint8Array) {
 
     try {
@@ -103,7 +89,6 @@ export const useSearch = () => {
     GetJsonFollowersCount,
     GetJsonFollowing,
     GetJsonFollowers,
-    Follow,
     Unfollow,
   };
 };

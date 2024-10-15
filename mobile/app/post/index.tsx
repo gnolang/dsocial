@@ -6,7 +6,7 @@ import TextInput from "@gno/components/textinput";
 import { Stack, useNavigation, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform } from "react-native";
-import { broadcastTxCommit, hasParam, makeCallTxAndRedirectToSign, selectAccount, selectQueryParams, useAppDispatch, useAppSelector } from "@gno/redux";
+import { broadcastTxCommit, makeCallTxAndRedirectToSign, selectAccount, selectQueryParamsTxJsonSigned, useAppDispatch, useAppSelector } from "@gno/redux";
 
 export default function Search() {
   const [postContent, setPostContent] = useState("");
@@ -18,13 +18,13 @@ export default function Search() {
   const dispatch = useAppDispatch();
   const account = useAppSelector(selectAccount);
 
-  const queryParams = useAppSelector(selectQueryParams);
+  const txJsonSigned = useAppSelector(selectQueryParamsTxJsonSigned);
 
   // hook to handle the signed tx from the Gnokey and broadcast it
   useEffect(() => {
-    if (queryParams && hasParam("tx", queryParams)) {
+    if (txJsonSigned) {
 
-      const signedTx = decodeURIComponent(queryParams.tx as string)
+      const signedTx = decodeURIComponent(txJsonSigned as string)
       console.log("signedTx: ", signedTx);
 
       try {
@@ -38,7 +38,7 @@ export default function Search() {
         setLoading(false);
       }
     }
-  }, [queryParams]);
+  }, [txJsonSigned]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
