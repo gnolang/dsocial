@@ -40,7 +40,7 @@ function AccountView(props: Props) {
   } = props;
   const accountName = user.name;
 
-  const isFollowed = useMemo(() => followers.find((f) => f.address.toString() === currentUser.address.toString()) != null, [user, followers]);
+  const isFollowed = useMemo(() => followers.find((f) => f.address.toString() === currentUser.bech32) != null, [user, followers]);
 
   const avarUri = user.avatar ? user.avatar : "https://www.gravatar.com/avatar/tmp";
 
