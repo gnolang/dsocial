@@ -61,7 +61,7 @@ function AccountView(props: Props) {
             />
           ) : (
             <Button.TouchableOpacity
-              onPress={() => onPressFollow(user.address.toString(), callerAddress)}
+              onPress={() => onPressFollow(user.bech32, callerAddress)}
               variant="primary"
               title="Follow"
               style={{ width: 100 }}
