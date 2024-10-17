@@ -1,3 +1,4 @@
+import { Post } from "@gno/types";
 import { GnoNativeApi, MakeTxResponse } from "@gnolang/gnonative";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import * as Linking from 'expo-linking';
@@ -27,13 +28,12 @@ type MakeTxAndRedirectParams = {
 export const postTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, MakeTxAndRedirectParams, ThunkExtra>("tx/makeCallTxAndRedirectToSign", async (props, thunkAPI) => {
     const { callerAddressBech32, postContent } = props;
 
-    const packagePath = "gno.land/r/berty/social";
     const fnc = "PostMessage";
     const args: Array<string> = [postContent];
     const gasFee = "1000000ugnot";
     const gasWanted = BigInt(10000000);
 
-    const res = await makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
+    const res = await makeCallTx({ fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
 
     setTimeout(() => {
         const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, `client_name=dSocial`, `reason=Post a message`];
@@ -44,7 +44,6 @@ export const postTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, MakeTxAn
 })
 
 type MakeCallTxParams = {
-    packagePath: string,
     fnc: string,
     args: string[],
     gasFee: string,
@@ -54,13 +53,13 @@ type MakeCallTxParams = {
     callerAddressBech32: string,
 };
 
-export const makeCallTx = async (props : MakeCallTxParams, gnonative: GnoNativeApi) : Promise<MakeTxResponse> => {
-    const { packagePath, fnc, callerAddressBech32, gasFee, gasWanted, args } = props;
+export const makeCallTx = async (props: MakeCallTxParams, gnonative: GnoNativeApi): Promise<MakeTxResponse> => {
+    const { fnc, callerAddressBech32, gasFee, gasWanted, args } = props;
 
     console.log("making a tx for: ", callerAddressBech32);
     const address = await gnonative.addressFromBech32(callerAddressBech32);
 
-    return await gnonative.makeCallTx(packagePath, fnc, args, gasFee, gasWanted, address)
+    return await gnonative.makeCallTx("gno.land/r/berty/social", fnc, args, gasFee, gasWanted, address)
 }
 
 export const broadcastTxCommit = createAsyncThunk<void, string, ThunkExtra>("tx/broadcastTxCommit", async (signedTx, thunkAPI) => {
@@ -69,6 +68,29 @@ export const broadcastTxCommit = createAsyncThunk<void, string, ThunkExtra>("tx/
     const gnonative = thunkAPI.extra.gnonative;
     const res = await gnonative.broadcastTxCommit(signedTx);
     console.log("broadcasted tx: ", res);
+});
+
+interface GnodCallTxParams {
+    post: Post,
+    callerAddressBech32: string,
+    pathName: string,
+}
+
+export const gnodTxAndRedirectToSign = createAsyncThunk<void, GnodCallTxParams, ThunkExtra>("tx/gnodTxAndRedirectToSign", async (props, thunkAPI) => {
+    console.log("gnodding post: ", props.post);
+    const { post, callerAddressBech32, pathName } = props;
+
+    const fnc = "AddReaction";
+    const gasFee = "1000000ugnot";
+    const gasWanted = BigInt(2000000);
+    // post.user.address is in fact a bech32 address
+    const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), String("0")];
+    const res = await makeCallTx({ fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
+
+    setTimeout(() => {
+        const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, `client_name=dSocial`, `reason=Gnoding a message`, `callback=${encodeURIComponent('tech.berty.dsocial://' + pathName)}`];
+        Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
+    }, 500)
 });
 
 /**

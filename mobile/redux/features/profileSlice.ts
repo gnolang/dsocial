@@ -27,14 +27,13 @@ export const followTxAndRedirectToSign = createAsyncThunk<void, { address: strin
   console.log("Follow user: %s", address);
   const gnonative = thunkAPI.extra.gnonative;
 
-  const packagePath = "gno.land/r/berty/social";
   const fnc = "Follow";
   const args: Array<string> = [address];
   const gasFee = "1000000ugnot";
   const gasWanted = BigInt(10000000);
   const callerAddressBech32 = await gnonative.addressToBech32(callerAddress);
 
-  const res = await makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
+  const res = await makeCallTx({ fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
 
   setTimeout(() => {
     const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, CLIENT_NAME_PARAM, 'reason=Follow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
@@ -46,14 +45,13 @@ export const unfollowTxAndRedirectToSign = createAsyncThunk<void, { address: str
   console.log("Follow user: %s", address);
   const gnonative = thunkAPI.extra.gnonative;
 
-  const packagePath = "gno.land/r/berty/social";
   const fnc = "Unfollow";
   const args: Array<string> = [address];
   const gasFee = "1000000ugnot";
   const gasWanted = BigInt(10000000);
   const callerAddressBech32 = await gnonative.addressToBech32(callerAddress);
 
-  const res = await makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
+  const res = await makeCallTx({ fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
 
   setTimeout(() => {
     const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, CLIENT_NAME_PARAM, 'reason=Unfollow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];

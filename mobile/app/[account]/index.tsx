@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { router, useNavigation } from "expo-router";
+import { router, useNavigation, usePathname } from "expo-router";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, Post, User } from "@gno/types";
-import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector, selectAccount } from "@gno/redux";
+import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector, selectAccount, gnodTxAndRedirectToSign } from "@gno/redux";
 import { followTxAndRedirectToSign, selectProfileAccountName, setFollows, unfollowTxAndRedirectToSign } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
@@ -31,6 +31,7 @@ export default function Page() {
   const currentUser = useAppSelector(selectAccount);
   const txJsonSigned = useAppSelector(selectQueryParamsTxJsonSigned);
 
+  const pathName = usePathname();
 
   useEffect(() => {
 
@@ -140,14 +141,16 @@ export default function Page() {
 
     if (!currentUser) throw new Error("No active account");
 
-    try {
-      await feed.onGnod(post, currentUser.address);
-      await fetchData();
-    } catch (error) {
-      console.error("Error while adding reaction: " + error);
-    } finally {
-      setLoading(undefined);
-    }
+    dispatch(gnodTxAndRedirectToSign({ post, callerAddressBech32: currentUser.bech32, pathName })).unwrap();
+
+    // try {
+    //   await feed.onGnod(post, currentUser.address);
+    //   await fetchData();
+    // } catch (error) {
+    //   console.error("Error while adding reaction: " + error);
+    // } finally {
+    //   setLoading(undefined);
+    // }
   };
 
   const onPressPost = async (item: Post) => {

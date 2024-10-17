@@ -107,22 +107,5 @@ export const useFeed = () => {
     return nHomePosts;
   }
 
-  async function onGnod(post: Post, callerAddress: Uint8Array) : Promise<void> {
-
-    try {
-      const gasFee = "1000000ugnot";
-      const gasWanted = BigInt(2000000);
-      // post.user.address is in fact a bech32 address
-      const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), String("0")];
-      console.log("AddReaction args2: ", args.join(", "));
-      for await (const response of await gnonative.call("gno.land/r/berty/social", "AddReaction", args, gasFee, gasWanted, callerAddress)) {
-        const result = JSON.parse(JSON.stringify(response)).result;
-        // Alert.alert("AddReaction Result", base64.decode(result));
-      }
-    } catch (error) {
-      Alert.alert("Error", "Error while adding reaction: " + error);
-    }
-  }
-
-  return { fetchFeed, fetchCount, fetchThread, fetchThreadPosts, onGnod };
+  return { fetchFeed, fetchCount, fetchThread, fetchThreadPosts };
 };
