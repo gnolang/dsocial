@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, Post, User } from "@gno/types";
-import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector } from "@gno/redux";
-import { selectAccount } from "redux/features/accountSlice";
-import { followAndRedirectToSign, setFollows } from "redux/features/profileSlice";
+import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector, selectAccount } from "@gno/redux";
+import { followAndRedirectToSign, selectProfileAccountName, setFollows, unfollowAndRedirectToSign } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
 import ErrorView from "@gno/components/view/account/no-account-view";
@@ -14,7 +13,7 @@ import Layout from "@gno/components/layout";
 import { colors } from "@gno/styles/colors";
 
 export default function Page() {
-  const { accountName } = useLocalSearchParams<{ accountName: string }>();
+  const accountName = useAppSelector(selectProfileAccountName)
 
   const [loading, setLoading] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -37,6 +36,8 @@ export default function Page() {
 
     (async () => {
       if (txJsonSigned) {
+        console.log("xxx1", accountName)
+
         console.log("txJsonSigned: ", txJsonSigned);
 
         const signedTx = decodeURIComponent(txJsonSigned as string)
@@ -46,7 +47,8 @@ export default function Page() {
           console.error("on broadcastTxCommit", error);
         }
 
-        dispatch(clearLinking());
+        // dispatch(clearLinking());
+        console.log("xxx2", accountName)
         fetchData();
       }
     })();
@@ -60,7 +62,8 @@ export default function Page() {
     return unsubscribe;
   }, [accountName]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    console.log("fetchData", accountName);
     if (!accountName) return;
 
     console.log("fetching data for account: ", currentUser?.bech32);
@@ -111,7 +114,7 @@ export default function Page() {
     } finally {
       setLoading(undefined);
     }
-  };
+  }, [accountName]);
 
   const onPressFollowing = () => {
     router.navigate({ pathname: "account/following" });
@@ -126,9 +129,9 @@ export default function Page() {
   };
 
   const onPressUnfollow = async (address: string, callerAddress: Uint8Array) => {
-    await search.Unfollow(address as string, callerAddress);
+    console.log("xxx0", accountName)
 
-    fetchData();
+    await dispatch(unfollowAndRedirectToSign({ address, callerAddress })).unwrap();
   };
 
   const onGnod = async (post: Post) => {

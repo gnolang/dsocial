@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "@gno/types";
-import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
+import { GnoNativeApi } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
-import { useUserCache } from "@gno/hooks/use-user-cache";
 
 export interface CounterState {
   account?: User;
