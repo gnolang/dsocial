@@ -3,7 +3,8 @@ import { makeCallTx } from "./linkingSlice";
 import { Following } from "@gno/types";
 import { ThunkExtra } from "redux/redux-provider";
 import * as Linking from 'expo-linking';
-import { set } from "date-fns";
+
+const CLIENT_NAME_PARAM = 'client_name=dSocial';
 
 export interface ProfileState {
   following: Following[];
@@ -33,10 +34,10 @@ export const followAndRedirectToSign = createAsyncThunk<void, { address: string,
   const gasWanted = BigInt(10000000);
   const callerAddressBech32 = await gnonative.addressToBech32(callerAddress);
 
-  const res = await thunkAPI.dispatch(makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 })).unwrap();
+  const res = await makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
 
   setTimeout(() => {
-    const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, 'client_name=dSocial', 'reason=Follow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
+    const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, CLIENT_NAME_PARAM, 'reason=Follow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
     Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
   }, 500)
 });
@@ -52,10 +53,10 @@ export const unfollowAndRedirectToSign = createAsyncThunk<void, { address: strin
   const gasWanted = BigInt(10000000);
   const callerAddressBech32 = await gnonative.addressToBech32(callerAddress);
 
-  const res = await thunkAPI.dispatch(makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 })).unwrap();
+  const res = await makeCallTx({ packagePath, fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
 
   setTimeout(() => {
-    const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, 'client_name=dSocial', 'reason=Unfollow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
+    const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, CLIENT_NAME_PARAM, 'reason=Unfollow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
     Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
   }, 500)
 });
