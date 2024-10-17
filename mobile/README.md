@@ -5,6 +5,7 @@
 The dSocial mobile app uses Expo. You can review the general expo requirements:
 
 - Expo Requiments: https://docs.expo.dev/get-started/installation/
+- Configure buff registry: `$ npm config set @buf:registry  https://buf.build/gen/npm/v1/`
 
 Here are specific steps to install the requirements on your platform.
 
@@ -143,3 +144,7 @@ The manual release process uses the [`eas`](https://docs.expo.dev/build/setup/#i
 3. After the build is complete, submit it to the Play Store running `eas submit --platform android`
 You'll need to have a [service account json file](https://developers.google.com/android/management/service-account) to authenticate with Google Play Store.
 
+## Opening the App using Links
+
+You can open this app using [Linking](https://docs.expo.dev/guides/linking/).
+To understand the URL format, please refer to the 'expo-linking' usage in this project.

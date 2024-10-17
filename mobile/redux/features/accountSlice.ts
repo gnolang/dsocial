@@ -1,8 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User } from "@gno/types";
-import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
+import { GnoNativeApi } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
-import { useUserCache } from "@gno/hooks/use-user-cache";
 
 export interface CounterState {
   account?: User;
@@ -13,21 +12,32 @@ const initialState: CounterState = {
 };
 
 interface LoginParam {
-  keyInfo: KeyInfo;
+  bech32: string;
 }
 
 export const loggedIn = createAsyncThunk<User, LoginParam, ThunkExtra>("account/loggedIn", async (param, thunkAPI) => {
-  const { keyInfo } = param;
+  console.log("Logging in", param);
+  const { bech32 } = param;
 
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
 
-  const bech32 = await gnonative.addressToBech32(keyInfo.address);
-  const user: User = { bech32, ...keyInfo };
-
-  user.avatar = await loadBech32AvatarFromChain(bech32, thunkAPI);
+  const user: User = {
+    name: await getAccountName(bech32, gnonative) || 'Unknown',
+    address: await gnonative.addressFromBech32(bech32),
+    bech32,
+    avatar: await loadBech32AvatarFromChain(bech32, thunkAPI)
+  };
 
   return user;
 });
+
+async function getAccountName(bech32: string, gnonative: GnoNativeApi) {
+  const accountNameStr = await gnonative.qEval("gno.land/r/demo/users", `GetUserByAddress("${bech32}").Name`);
+  console.log("GetUserByAddress result:", accountNameStr);
+  const accountName = accountNameStr.match(/\("(\w+)"/)?.[1];
+  console.log("GetUserByAddress after regex", accountName);
+  return accountName
+}
 
 export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: string }, ThunkExtra>("account/saveAvatar", async (param, thunkAPI) => {
   const { mimeType, base64 } = param;
@@ -42,7 +52,7 @@ export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: str
 
   try {
     const gasFee = "1000000ugnot";
-    const gasWanted = 10000000;
+    const gasWanted = BigInt(10000000);
 
     const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
     for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted, address)) {
@@ -92,6 +102,7 @@ export const accountSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(loggedIn.fulfilled, (state, action) => {
       state.account = action.payload;
+      console.log("Logged in", action.payload);
     });
     builder.addCase(loggedIn.rejected, (_, action) => {
       console.error("loggedIn.rejected", action);

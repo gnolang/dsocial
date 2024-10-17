@@ -1,5 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { makeCallTx } from "./linkingSlice";
 import { Following } from "@gno/types";
+import { ThunkExtra } from "redux/redux-provider";
+import * as Linking from 'expo-linking';
+
+const CLIENT_NAME_PARAM = 'client_name=dSocial';
 
 export interface ProfileState {
   following: Following[];
@@ -18,6 +23,42 @@ interface FollowsProps {
   followers: Following[];
 }
 
+export const followTxAndRedirectToSign = createAsyncThunk<void, { address: string, callerAddress: Uint8Array }, ThunkExtra>("profile/follow", async ({ address, callerAddress }, thunkAPI) => {
+  console.log("Follow user: %s", address);
+  const gnonative = thunkAPI.extra.gnonative;
+
+  const fnc = "Follow";
+  const args: Array<string> = [address];
+  const gasFee = "1000000ugnot";
+  const gasWanted = BigInt(10000000);
+  const callerAddressBech32 = await gnonative.addressToBech32(callerAddress);
+
+  const res = await makeCallTx({ fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
+
+  setTimeout(() => {
+    const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, CLIENT_NAME_PARAM, 'reason=Follow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
+    Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
+  }, 500)
+});
+
+export const unfollowTxAndRedirectToSign = createAsyncThunk<void, { address: string, callerAddress: Uint8Array }, ThunkExtra>("profile/follow", async ({ address, callerAddress }, thunkAPI) => {
+  console.log("Follow user: %s", address);
+  const gnonative = thunkAPI.extra.gnonative;
+
+  const fnc = "Unfollow";
+  const args: Array<string> = [address];
+  const gasFee = "1000000ugnot";
+  const gasWanted = BigInt(10000000);
+  const callerAddressBech32 = await gnonative.addressToBech32(callerAddress);
+
+  const res = await makeCallTx({ fnc, args, gasFee, gasWanted, callerAddressBech32 }, thunkAPI.extra.gnonative);
+
+  setTimeout(() => {
+    const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, CLIENT_NAME_PARAM, 'reason=Unfollow a user', `callback=${encodeURIComponent('tech.berty.dsocial://account')}`];
+    Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
+  }, 500)
+});
+
 export const setFollows = createAsyncThunk("profile/setFollows", async ({ following, followers }: FollowsProps, _) => {
   return { following, followers };
 });
@@ -25,9 +66,13 @@ export const setFollows = createAsyncThunk("profile/setFollows", async ({ follow
 export const profileSlice = createSlice({
   name: "profile",
   initialState,
-  reducers: {},
+  reducers: {
+    setProfileAccountName: (state, action) => {
+      state.accountName = action.payload;
+    }
+  },
   selectors: {
-    selectAccountName: (state) => state.accountName,
+    selectProfileAccountName: (state) => state.accountName,
     selectFollowers: (state) => state.followers,
     selectFollowing: (state) => state.following,
   },
@@ -42,4 +87,6 @@ export const profileSlice = createSlice({
   },
 });
 
-export const { selectAccountName, selectFollowers, selectFollowing } = profileSlice.selectors;
+export const { setProfileAccountName } = profileSlice.actions;
+
+export const { selectProfileAccountName, selectFollowers, selectFollowing } = profileSlice.selectors;

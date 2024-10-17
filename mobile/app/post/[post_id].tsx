@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import Text from "@gno/components/text";
-import { selectAccount, selectPostToReply, useAppSelector } from "@gno/redux";
+import { gnodTxAndRedirectToSign, selectAccount, selectPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
 import Layout from "@gno/components/layout";
 import TextInput from "@gno/components/textinput";
 import Button from "@gno/components/button";
@@ -26,8 +26,11 @@ function Page() {
   const { gnonative } = useGnoNativeContext();
   const account = useAppSelector(selectAccount);
 
+  const pathName = usePathname();
   const params = useLocalSearchParams();
   const { post_id, address } = params;
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     fetchData();
@@ -60,7 +63,7 @@ function Page() {
 
     try {
       const gasFee = "1000000ugnot";
-      const gasWanted = 10000000;
+      const gasWanted = BigInt(10000000);
 
       // Post objects comes from the indexer, address is a bech32 address
       const args: Array<string> = [String(post.user.address), String(post.id), String(post.id), replyContent];
@@ -84,18 +87,8 @@ function Page() {
 
   const onGnod = async (post: Post) => {
     console.log("gnodding post: ", post);
-    setLoading("Gnoding...");
-
     if (!account) throw new Error("No active account");
-
-    try {
-      await feed.onGnod(post, account.address);
-      await fetchData();
-    } catch (error) {
-      RNAlert.alert("Error", "Error while adding reaction: " + error);
-    } finally {
-      setLoading(undefined);
-    }
+    dispatch(gnodTxAndRedirectToSign({ post, callerAddressBech32: account.bech32, pathName }))
   };
 
   if (!post) {
