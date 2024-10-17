@@ -23,7 +23,7 @@ interface FollowsProps {
   followers: Following[];
 }
 
-export const followAndRedirectToSign = createAsyncThunk<void, { address: string, callerAddress: Uint8Array }, ThunkExtra>("profile/follow", async ({ address, callerAddress }, thunkAPI) => {
+export const followTxAndRedirectToSign = createAsyncThunk<void, { address: string, callerAddress: Uint8Array }, ThunkExtra>("profile/follow", async ({ address, callerAddress }, thunkAPI) => {
   console.log("Follow user: %s", address);
   const gnonative = thunkAPI.extra.gnonative;
 
@@ -42,7 +42,7 @@ export const followAndRedirectToSign = createAsyncThunk<void, { address: string,
   }, 500)
 });
 
-export const unfollowAndRedirectToSign = createAsyncThunk<void, { address: string, callerAddress: Uint8Array }, ThunkExtra>("profile/follow", async ({ address, callerAddress }, thunkAPI) => {
+export const unfollowTxAndRedirectToSign = createAsyncThunk<void, { address: string, callerAddress: Uint8Array }, ThunkExtra>("profile/follow", async ({ address, callerAddress }, thunkAPI) => {
   console.log("Follow user: %s", address);
   const gnonative = thunkAPI.extra.gnonative;
 

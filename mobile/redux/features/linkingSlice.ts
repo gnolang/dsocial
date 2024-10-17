@@ -24,7 +24,7 @@ type MakeTxAndRedirectParams = {
     callerAddressBech32: string,
 };
 
-export const makeCallTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, MakeTxAndRedirectParams, ThunkExtra>("tx/makeCallTxAndRedirectToSign", async (props, thunkAPI) => {
+export const postTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, MakeTxAndRedirectParams, ThunkExtra>("tx/makeCallTxAndRedirectToSign", async (props, thunkAPI) => {
     const { callerAddressBech32, postContent } = props;
 
     const packagePath = "gno.land/r/berty/social";

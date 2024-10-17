@@ -5,7 +5,7 @@ import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, Post, User } from "@gno/types";
 import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector, selectAccount } from "@gno/redux";
-import { followAndRedirectToSign, selectProfileAccountName, setFollows, unfollowAndRedirectToSign } from "redux/features/profileSlice";
+import { followTxAndRedirectToSign, selectProfileAccountName, setFollows, unfollowTxAndRedirectToSign } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
 import ErrorView from "@gno/components/view/account/no-account-view";
@@ -125,13 +125,13 @@ export default function Page() {
   };
 
   const onPressFollow = async (address: string, callerAddress: Uint8Array) => {
-    await dispatch(followAndRedirectToSign({ address, callerAddress })).unwrap();
+    await dispatch(followTxAndRedirectToSign({ address, callerAddress })).unwrap();
   };
 
   const onPressUnfollow = async (address: string, callerAddress: Uint8Array) => {
     console.log("xxx0", accountName)
 
-    await dispatch(unfollowAndRedirectToSign({ address, callerAddress })).unwrap();
+    await dispatch(unfollowTxAndRedirectToSign({ address, callerAddress })).unwrap();
   };
 
   const onGnod = async (post: Post) => {
