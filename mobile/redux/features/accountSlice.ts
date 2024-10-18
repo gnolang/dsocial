@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { makeCallTx } from "./linkingSlice";
 import { User } from "@gno/types";
 import { GnoNativeApi } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
+import * as Linking from 'expo-linking';
 
 export interface CounterState {
   account?: User;
@@ -39,30 +41,26 @@ async function getAccountName(bech32: string, gnonative: GnoNativeApi) {
   return accountName
 }
 
-export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: string }, ThunkExtra>("account/saveAvatar", async (param, thunkAPI) => {
-  const { mimeType, base64 } = param;
+interface AvatarCallTxParams {
+  mimeType: string;
+  base64: string;
+  callerAddressBech32: string;
+  pathName: string;
+}
+
+export const avatarTxAndRedirectToSign = createAsyncThunk<void, AvatarCallTxParams, ThunkExtra>("account/avatarTxAndRedirectToSign", async (props, thunkAPI) => {
+  const { mimeType, base64, callerAddressBech32, pathName } = props;
 
   const gnonative = thunkAPI.extra.gnonative;
-  const userCache = thunkAPI.extra.userCache
 
-  const state = await thunkAPI.getState() as CounterState;
-  console.log("statexxx", state);
-  // @ts-ignore
-  const address = state.account?.account?.address;
+  const gasFee = "1000000ugnot";
+  const gasWanted = BigInt(10000000);
+  const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
+  const res = await makeCallTx({ packagePath: "gno.land/r/demo/profile", fnc: "SetStringField", args, gasFee, gasWanted, callerAddressBech32 }, gnonative);
 
-  try {
-    const gasFee = "1000000ugnot";
-    const gasWanted = BigInt(10000000);
+  const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, `client_name=dSocial`, `reason=Upload a new avatar`, `callback=${encodeURIComponent('tech.berty.dsocial://' + pathName)}`];
+  Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
 
-    const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
-    for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted, address)) {
-      console.log("response on saving avatar: ", response);
-    }
-
-    userCache.invalidateCache();
-  } catch (error) {
-    console.error("on saving avatar", error);
-  }
 });
 
 export const reloadAvatar = createAsyncThunk<string | undefined, void, ThunkExtra>("account/reloadAvatar", async (param, thunkAPI) => {

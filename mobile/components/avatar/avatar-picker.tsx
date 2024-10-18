@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { compressImage } from '@gno/utils/file-utils';
-import { reloadAvatar, saveAvatar, selectAvatar, useAppDispatch, useAppSelector } from "@gno/redux";
+import { selectAvatar, useAppSelector } from "@gno/redux";
 import Avatar from './avatar';
 
-const AvatarPicker: React.FC = () => {
+interface Props {
+  onChanged: (imagePath: string, mimeType?: string) => void;
+}
+
+const AvatarPicker: React.FC<Props> = ({onChanged}) => {
   const [base64Image, setBase64Image] = useState<string | null>(null);
 
   const avatarBase64 = useAppSelector(selectAvatar);
-
-  const dispatch = useAppDispatch();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -25,14 +26,7 @@ const AvatarPicker: React.FC = () => {
       const imagePath = result.assets[0].uri;
       const mimeType = result.assets[0].mimeType;
 
-      const imageCompressed = await compressImage(imagePath)
-      if (!imageCompressed || !mimeType || !imageCompressed.base64) {
-        console.log("Error compressing image or missing data");
-        return;
-      }
-      await dispatch(saveAvatar({ mimeType, base64: imageCompressed.base64 })).unwrap();
-
-      await dispatch(reloadAvatar()).unwrap();
+      onChanged(imagePath, mimeType);
     }
   }
 

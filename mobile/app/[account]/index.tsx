@@ -37,10 +37,7 @@ export default function Page() {
 
     (async () => {
       if (txJsonSigned) {
-        console.log("xxx1", accountName)
-
         console.log("txJsonSigned: ", txJsonSigned);
-
         const signedTx = decodeURIComponent(txJsonSigned as string)
         try {
           await dispatch(broadcastTxCommit(signedTx)).unwrap();
@@ -48,8 +45,7 @@ export default function Page() {
           console.error("on broadcastTxCommit", error);
         }
 
-        // dispatch(clearLinking());
-        console.log("xxx2", accountName)
+        dispatch(clearLinking());
         fetchData();
       }
     })();

@@ -44,6 +44,7 @@ export const postTxAndRedirectToSign = createAsyncThunk<MakeTxResponse, MakeTxAn
 })
 
 type MakeCallTxParams = {
+    packagePath?: string,
     fnc: string,
     args: string[],
     gasFee: string,
@@ -54,12 +55,12 @@ type MakeCallTxParams = {
 };
 
 export const makeCallTx = async (props: MakeCallTxParams, gnonative: GnoNativeApi): Promise<MakeTxResponse> => {
-    const { fnc, callerAddressBech32, gasFee, gasWanted, args } = props;
+    const { fnc, callerAddressBech32, gasFee, gasWanted, args, packagePath = "gno.land/r/berty/social" } = props;
 
     console.log("making a tx for: ", callerAddressBech32);
     const address = await gnonative.addressFromBech32(callerAddressBech32);
 
-    return await gnonative.makeCallTx("gno.land/r/berty/social", fnc, args, gasFee, gasWanted, address)
+    return await gnonative.makeCallTx(packagePath, fnc, args, gasFee, gasWanted, address)
 }
 
 export const broadcastTxCommit = createAsyncThunk<void, string, ThunkExtra>("tx/broadcastTxCommit", async (signedTx, thunkAPI) => {
