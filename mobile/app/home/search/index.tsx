@@ -4,7 +4,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSearch } from "@gno/hooks/use-search";
 import SearchResults from "@gno/components/list/search/search-result-list";
 import { colors } from "@gno/styles/colors";
-import {  selectAccount, useAppSelector } from "@gno/redux";
+import {  selectAccount, useAppDispatch, useAppSelector, setProfileAccountName } from "@gno/redux";
 
 export default function Search() {
   const router = useRouter();
@@ -12,6 +12,7 @@ export default function Search() {
   const search = useSearch();
   const [data, setData] = useState<string[]>([]);
   const account = useAppSelector(selectAccount);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     (async function () {
@@ -24,8 +25,9 @@ export default function Search() {
     })();
   }, [params.q]);
 
-  const onPress = (accountName: string) => {
-    router.navigate({ pathname: "account", params: { accountName } });
+  const onPress = async (accountName: string) => {
+    await dispatch(setProfileAccountName(accountName)); 
+    router.navigate({ pathname: "account" });
   };
 
   return (

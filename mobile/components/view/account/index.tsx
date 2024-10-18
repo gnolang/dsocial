@@ -40,7 +40,7 @@ function AccountView(props: Props) {
   } = props;
   const accountName = user.name;
 
-  const isFollowed = useMemo(() => followers.find((f) => f.address.toString() === currentUser.address.toString()) != null, [user, followers]);
+  const isFollowed = useMemo(() => followers.find((f) => f.address.toString() === currentUser.bech32) != null, [user, followers]);
 
   const avarUri = user.avatar ? user.avatar : "https://www.gravatar.com/avatar/tmp";
 
@@ -54,14 +54,14 @@ function AccountView(props: Props) {
         <View style={styles.followButtonRow}>
           {isFollowed ? (
             <Button.TouchableOpacity
-              onPress={() => onPressUnfollow(user.address.toString(), callerAddress)}
+              onPress={() => onPressUnfollow(user.bech32, callerAddress)}
               variant="primary"
               title="Unfollow"
               style={{ width: 100 }}
             />
           ) : (
             <Button.TouchableOpacity
-              onPress={() => onPressFollow(user.address.toString(), callerAddress)}
+              onPress={() => onPressFollow(user.bech32, callerAddress)}
               variant="primary"
               title="Follow"
               style={{ width: 100 }}

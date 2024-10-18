@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { router, useNavigation, usePathname } from "expo-router";
 import { AccountView } from "@gno/components/view";
 import { useSearch } from "@gno/hooks/use-search";
 import { Following, Post, User } from "@gno/types";
-import { setPostToReply, useAppSelector } from "@gno/redux";
-import { selectAccount } from "redux/features/accountSlice";
-import { setFollows } from "redux/features/profileSlice";
+import { broadcastTxCommit, clearLinking, selectQueryParamsTxJsonSigned, setPostToReply, useAppSelector, selectAccount, gnodTxAndRedirectToSign } from "@gno/redux";
+import { followTxAndRedirectToSign, selectProfileAccountName, setFollows, unfollowTxAndRedirectToSign } from "redux/features/profileSlice";
 import { useFeed } from "@gno/hooks/use-feed";
 import { useUserCache } from "@gno/hooks/use-user-cache";
 import ErrorView from "@gno/components/view/account/no-account-view";
@@ -14,7 +13,7 @@ import Layout from "@gno/components/layout";
 import { colors } from "@gno/styles/colors";
 
 export default function Page() {
-  const { accountName } = useLocalSearchParams<{ accountName: string }>();
+  const accountName = useAppSelector(selectProfileAccountName)
 
   const [loading, setLoading] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -30,6 +29,28 @@ export default function Page() {
   const dispatch = useDispatch();
 
   const currentUser = useAppSelector(selectAccount);
+  const txJsonSigned = useAppSelector(selectQueryParamsTxJsonSigned);
+
+  const pathName = usePathname();
+
+  useEffect(() => {
+
+    (async () => {
+      if (txJsonSigned) {
+        console.log("txJsonSigned: ", txJsonSigned);
+        const signedTx = decodeURIComponent(txJsonSigned as string)
+        try {
+          await dispatch(broadcastTxCommit(signedTx)).unwrap();
+        } catch (error) {
+          console.error("on broadcastTxCommit", error);
+        }
+
+        dispatch(clearLinking());
+        fetchData();
+      }
+    })();
+
+  }, [txJsonSigned]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -38,8 +59,11 @@ export default function Page() {
     return unsubscribe;
   }, [accountName]);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    console.log("fetchData", accountName);
     if (!accountName) return;
+
+    console.log("fetching data for account: ", currentUser?.bech32);
 
     try {
       setLoading("Loading account...");
@@ -87,7 +111,7 @@ export default function Page() {
     } finally {
       setLoading(undefined);
     }
-  };
+  }, [accountName]);
 
   const onPressFollowing = () => {
     router.navigate({ pathname: "account/following" });
@@ -98,15 +122,13 @@ export default function Page() {
   };
 
   const onPressFollow = async (address: string, callerAddress: Uint8Array) => {
-    await search.Follow(address, callerAddress);
-
-    fetchData();
+    await dispatch(followTxAndRedirectToSign({ address, callerAddress })).unwrap();
   };
 
   const onPressUnfollow = async (address: string, callerAddress: Uint8Array) => {
-    await search.Unfollow(address as string, callerAddress);
+    console.log("xxx0", accountName)
 
-    fetchData();
+    await dispatch(unfollowTxAndRedirectToSign({ address, callerAddress })).unwrap();
   };
 
   const onGnod = async (post: Post) => {
@@ -115,14 +137,16 @@ export default function Page() {
 
     if (!currentUser) throw new Error("No active account");
 
-    try {
-      await feed.onGnod(post, currentUser.address);
-      await fetchData();
-    } catch (error) {
-      console.error("Error while adding reaction: " + error);
-    } finally {
-      setLoading(undefined);
-    }
+    dispatch(gnodTxAndRedirectToSign({ post, callerAddressBech32: currentUser.bech32, pathName })).unwrap();
+
+    // try {
+    //   await feed.onGnod(post, currentUser.address);
+    //   await fetchData();
+    // } catch (error) {
+    //   console.error("Error while adding reaction: " + error);
+    // } finally {
+    //   setLoading(undefined);
+    // }
   };
 
   const onPressPost = async (item: Post) => {

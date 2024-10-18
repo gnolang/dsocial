@@ -6,6 +6,7 @@ import { GnoNativeProvider } from "@gnolang/gnonative";
 import { IndexerProvider } from "@gno/provider/indexer-provider";
 import { NotificationProvider } from "@gno/provider/notification-provider";
 import { ReduxProvider } from "redux/redux-provider";
+import { LinkingProvider } from "@gno/provider/linking-provider";
 
 const gnoDefaultConfig = {
   // @ts-ignore
@@ -30,17 +31,19 @@ export default function AppLayout() {
       <NotificationProvider config={notificationDefaultConfig}>
         <IndexerProvider config={indexerDefaultConfig}>
           <ReduxProvider>
-            <ThemeProvider value={DefaultTheme}>
-              <Guard>
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    headerLargeTitle: true,
-                    headerBackVisible: false,
-                  }}
-                />
-              </Guard>
-            </ThemeProvider>
+            <LinkingProvider>
+              <ThemeProvider value={DefaultTheme}>
+                <Guard>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      headerLargeTitle: true,
+                      headerBackVisible: false,
+                    }}
+                  />
+                </Guard>
+              </ThemeProvider>
+            </LinkingProvider>
           </ReduxProvider>
         </IndexerProvider>
       </NotificationProvider>

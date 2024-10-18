@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { makeCallTx } from "./linkingSlice";
 import { User } from "@gno/types";
-import { GnoNativeApi, KeyInfo } from "@gnolang/gnonative";
+import { GnoNativeApi } from "@gnolang/gnonative";
 import { ThunkExtra } from "redux/redux-provider";
-import { useUserCache } from "@gno/hooks/use-user-cache";
+import * as Linking from 'expo-linking';
 
 export interface CounterState {
   account?: User;
@@ -13,46 +14,53 @@ const initialState: CounterState = {
 };
 
 interface LoginParam {
-  keyInfo: KeyInfo;
+  bech32: string;
 }
 
 export const loggedIn = createAsyncThunk<User, LoginParam, ThunkExtra>("account/loggedIn", async (param, thunkAPI) => {
-  const { keyInfo } = param;
+  console.log("Logging in", param);
+  const { bech32 } = param;
 
   const gnonative = thunkAPI.extra.gnonative as GnoNativeApi;
 
-  const bech32 = await gnonative.addressToBech32(keyInfo.address);
-  const user: User = { bech32, ...keyInfo };
-
-  user.avatar = await loadBech32AvatarFromChain(bech32, thunkAPI);
+  const user: User = {
+    name: await getAccountName(bech32, gnonative) || 'Unknown',
+    address: await gnonative.addressFromBech32(bech32),
+    bech32,
+    avatar: await loadBech32AvatarFromChain(bech32, thunkAPI)
+  };
 
   return user;
 });
 
-export const saveAvatar = createAsyncThunk<void, { mimeType: string, base64: string }, ThunkExtra>("account/saveAvatar", async (param, thunkAPI) => {
-  const { mimeType, base64 } = param;
+async function getAccountName(bech32: string, gnonative: GnoNativeApi) {
+  const accountNameStr = await gnonative.qEval("gno.land/r/demo/users", `GetUserByAddress("${bech32}").Name`);
+  console.log("GetUserByAddress result:", accountNameStr);
+  const accountName = accountNameStr.match(/\("(\w+)"/)?.[1];
+  console.log("GetUserByAddress after regex", accountName);
+  return accountName
+}
+
+interface AvatarCallTxParams {
+  mimeType: string;
+  base64: string;
+  callerAddressBech32: string;
+  pathName: string;
+}
+
+export const avatarTxAndRedirectToSign = createAsyncThunk<void, AvatarCallTxParams, ThunkExtra>("account/avatarTxAndRedirectToSign", async (props, thunkAPI) => {
+  const { mimeType, base64, callerAddressBech32, pathName } = props;
 
   const gnonative = thunkAPI.extra.gnonative;
-  const userCache = thunkAPI.extra.userCache
 
-  const state = await thunkAPI.getState() as CounterState;
-  console.log("statexxx", state);
-  // @ts-ignore
-  const address = state.account?.account?.address;
+  const gasFee = "1000000ugnot";
+  const gasWanted = BigInt(10000000);
+  const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
+  const res = await makeCallTx({ packagePath: "gno.land/r/demo/profile", fnc: "SetStringField", args, gasFee, gasWanted, callerAddressBech32 }, gnonative);
 
-  try {
-    const gasFee = "1000000ugnot";
-    const gasWanted = 10000000;
+  const params = [`tx=${encodeURIComponent(res.txJson)}`, `address=${callerAddressBech32}`, `client_name=dSocial`, `reason=Upload a new avatar`, `callback=${encodeURIComponent('tech.berty.dsocial://' + pathName)}`];
+  Linking.openURL('land.gno.gnokey://tosign?' + params.join('&'))
 
-    const args: Array<string> = ["Avatar", String(`data:${mimeType};base64,` + base64)];
-    for await (const response of await gnonative.call("gno.land/r/demo/profile", "SetStringField", args, gasFee, gasWanted, address)) {
-      console.log("response on saving avatar: ", response);
-    }
-
-    userCache.invalidateCache();
-  } catch (error) {
-    console.error("on saving avatar", error);
-  }
 });
 
 export const reloadAvatar = createAsyncThunk<string | undefined, void, ThunkExtra>("account/reloadAvatar", async (param, thunkAPI) => {
@@ -92,6 +100,7 @@ export const accountSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(loggedIn.fulfilled, (state, action) => {
       state.account = action.payload;
+      console.log("Logged in", action.payload);
     });
     builder.addCase(loggedIn.rejected, (_, action) => {
       console.error("loggedIn.rejected", action);

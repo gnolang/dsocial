@@ -1,12 +1,12 @@
 import { ActivityIndicator, FlatList, Platform, StyleSheet, View, Alert as RNAlert, SafeAreaView } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation, usePathname, useRouter } from "expo-router";
 import { useFeed } from "@gno/hooks/use-feed";
 import Layout from "@gno/components/layout";
 import useScrollToTop from "@gno/components/utils/useScrollToTopWithOffset";
 import Button from "@gno/components/button";
 import { Post } from "@gno/types";
-import { selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
+import { gnodTxAndRedirectToSign, selectAccount, setPostToReply, useAppDispatch, useAppSelector } from "@gno/redux";
 import Alert from "@gno/components/alert";
 import { FeedView } from "@gno/components/view";
 
@@ -22,15 +22,13 @@ export default function Page() {
   const dispatch = useAppDispatch();
 
   const account = useAppSelector(selectAccount);
+  const pathName = usePathname();
 
   useScrollToTop(ref, Platform.select({ ios: -150, default: 0 }));
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      if (!account) {
-        RNAlert.alert("No user found.");
-        return;
-      }
+      if (!account) return;
       setError(undefined);
       setIsLoading(true);
       try {
@@ -56,17 +54,8 @@ export default function Page() {
   };
 
   const onGnod = async (post: Post) => {
-    setIsLoading(true);
-
     if (!account) throw new Error("No active account");
-
-    try {
-      await feed.onGnod(post, account.address);
-    } catch (error) {
-      RNAlert.alert("Error", "Error while adding reaction: " + error);
-    } finally {
-      setIsLoading(false);
-    }
+    dispatch(gnodTxAndRedirectToSign({ post, callerAddressBech32: account.bech32, pathName })).unwrap();
   };
 
   if (isLoading)

@@ -1,8 +1,8 @@
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
-import { router, useNavigation } from "expo-router";
+import { router, useNavigation, usePathname } from "expo-router";
 import { useEffect, useState } from "react";
 import { useGnoNativeContext } from "@gnolang/gnonative";
-import { logedOut, selectAccount, useAppDispatch, useAppSelector } from "@gno/redux";
+import { avatarTxAndRedirectToSign, broadcastTxCommit, clearLinking, logedOut, reloadAvatar, selectAccount, selectQueryParamsTxJsonSigned, useAppDispatch, useAppSelector } from "@gno/redux";
 import Button from "@gno/components/button";
 import Layout from "@gno/components/layout";
 import { LoadingModal } from "@gno/components/loading";
@@ -10,9 +10,10 @@ import { AccountBalance } from "@gno/components/settings";
 import Text from "@gno/components/text";
 import { useSearch } from "@gno/hooks/use-search";
 import { useNotificationContext } from "@gno/provider/notification-provider";
-import { onboarding } from "redux/features/signupSlice";
 import AvatarPicker from "@gno/components/avatar/avatar-picker";
 import { ProgressViewModal } from "@gno/components/view/progress";
+import { compressImage } from '@gno/utils/file-utils';
+import { useUserCache } from "@gno/hooks/use-user-cache";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ export default function Page() {
   const [chainID, setChainID] = useState("");
   const [remote, setRemote] = useState("");
   const [followersCount, setFollowersCount] = useState({ n_followers: 0, n_following: 0 });
+  const pathName = usePathname();
 
   const account = useAppSelector(selectAccount);
   const { gnonative } = useGnoNativeContext();
@@ -27,6 +29,9 @@ export default function Page() {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
   const push = useNotificationContext();
+  const txJsonSigned = useAppSelector(selectQueryParamsTxJsonSigned);
+
+  const userCache = useUserCache();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
@@ -38,22 +43,6 @@ export default function Page() {
     });
     return unsubscribe;
   }, [navigation]);
-
-  const onboard = async () => {
-    if (!account) {
-      console.log("No active account");
-      return;
-    }
-    setLoading(true);
-    try {
-      await dispatch(onboarding({ account })).unwrap();
-      fetchAccountData();
-    } catch (error) {
-      console.log("Error on onboard", JSON.stringify(error));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const onPressNotification = async () => {
     if (!account) {
@@ -101,13 +90,50 @@ export default function Page() {
     dispatch(logedOut());
   };
 
+  const onAvatarChanged = async (imagePath: string, mimeType?: string) => {
+    const imageCompressed = await compressImage(imagePath)
+    if (!imageCompressed || !mimeType || !imageCompressed.base64) {
+      console.log("Error compressing image or missing data");
+      return;
+    }
+
+    if (!account) throw new Error("No account found");
+    await dispatch(avatarTxAndRedirectToSign({ mimeType, base64: imageCompressed.base64, callerAddressBech32: account.bech32, pathName })).unwrap();
+  }
+
+  useEffect(() => {
+
+    (async () => {
+      if (txJsonSigned) {
+
+        console.log("txJsonSigned: ", txJsonSigned);
+
+        const signedTx = decodeURIComponent(txJsonSigned as string)
+        try {
+          await dispatch(broadcastTxCommit(signedTx)).unwrap();
+        } catch (error) {
+          console.error("on broadcastTxCommit", error);
+        }
+
+        dispatch(clearLinking());
+        userCache.invalidateCache();
+        
+        setTimeout(() => {
+          console.log("reloading avatar");
+          dispatch(reloadAvatar());
+        }, 500);
+      }
+    })();
+
+  }, [txJsonSigned]);
+
   return (
     <>
       <Layout.Container>
         <Layout.Body>
           <ScrollView >
             <View style={{ paddingBottom: 20 }}>
-              <AvatarPicker />
+              <AvatarPicker onChanged={onAvatarChanged} />
             </View>
             <>
               <AccountBalance activeAccount={account} />
@@ -124,7 +150,6 @@ export default function Page() {
             <Layout.Footer>
               <ProgressViewModal visible={modalVisible} onRequestClose={() => setModalVisible(false)} />
               <Button.TouchableOpacity title="Logs" onPress={() => setModalVisible(true)} variant="primary" />
-              <Button.TouchableOpacity title="Onboard the current user" onPress={onboard} variant="primary" />
               <Button.TouchableOpacity
                 title="Register to the notification service"
                 onPress={onPressNotification}
